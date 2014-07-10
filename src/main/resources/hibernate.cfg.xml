@@ -12,5 +12,7 @@
 		<property name="hibernate.temp.use_jdbc_metadata_defaults">false</property>
 		<mapping class="com.nodemanager.model.Cmts" />
 		<mapping class="com.nodemanager.model.Hub" />
+		<mapping class="com.nodemanager.model.Slots" />
+		<mapping class="com.nodemanager.model.Placa" />
 	</session-factory>
 </hibernate-configuration>
