@@ -1,7 +1,5 @@
 package com.nodemanager.model;
 
-import java.util.List;
-
 import javax.persistence.CascadeType;
 import javax.persistence.Column;
 import javax.persistence.Entity;
@@ -35,7 +33,8 @@ public class Slots {
 	@JoinColumn(name = "idCMTS")
 	private Cmts cmts;
 
-	@OneToOne(cascade = CascadeType.ALL, fetch = FetchType.EAGER)
+	
+	@OneToOne(mappedBy = "slots", targetEntity = Placa.class, cascade = CascadeType.ALL, fetch = FetchType.LAZY)
 	private Placa placa;
 
 	/**
@@ -106,7 +105,8 @@ public class Slots {
 	}
 
 	/**
-	 * @param placa the placa to set
+	 * @param placa
+	 *            the placa to set
 	 */
 	public void setPlaca(Placa placa) {
 		this.placa = placa;

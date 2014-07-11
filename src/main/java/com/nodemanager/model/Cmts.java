@@ -2,6 +2,8 @@ package com.nodemanager.model;
 
 import java.util.List;
 
+import javax.persistence.CascadeType;
+import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.FetchType;
 import javax.persistence.GeneratedValue;
@@ -9,12 +11,14 @@ import javax.persistence.Id;
 import javax.persistence.OneToMany;
 import javax.persistence.SequenceGenerator;
 import javax.persistence.Table;
-import javax.persistence.CascadeType;
+import javax.persistence.UniqueConstraint;
 
 import org.hibernate.annotations.NaturalId;
 
 @Entity
-@Table(name = "CMTS")
+@Table(name = "CMTS", uniqueConstraints = {
+		@UniqueConstraint(columnNames = "nome"),
+		@UniqueConstraint(columnNames = "ip") })
 @SequenceGenerator(name = "seq", sequenceName = "seq_cmts", allocationSize = 1, initialValue = 1)
 public class Cmts {
 
@@ -23,13 +27,19 @@ public class Cmts {
 	private Long id;
 
 	@NaturalId
-	private String name;
+	@Column(length = 45, unique = true, nullable = false)
+	private String nome;
 
+	@Column(length = 45, unique = true, nullable = false)
 	private String ip;
+
+	@Column(length = 45, nullable = false)
 	private String marca;
+
+	@Column(length = 45, nullable = false)
 	private String modelo;
 
-	@OneToMany(cascade = CascadeType.ALL, fetch = FetchType.EAGER)
+	@OneToMany(mappedBy = "cmts", targetEntity = Slots.class,  cascade = CascadeType.ALL, fetch = FetchType.LAZY)
 	private List<Slots> slots;
 
 	/**
@@ -48,18 +58,18 @@ public class Cmts {
 	}
 
 	/**
-	 * @return the name
+	 * @return the nome
 	 */
-	public String getName() {
-		return name;
+	public String getNome() {
+		return nome;
 	}
 
 	/**
-	 * @param name
-	 *            the name to set
+	 * @param nome
+	 *            the nome to set
 	 */
-	public void setName(String name) {
-		this.name = name;
+	public void setNome(String nome) {
+		this.nome = nome;
 	}
 
 	/**
