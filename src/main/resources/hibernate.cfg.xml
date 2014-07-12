@@ -14,5 +14,8 @@
 		<mapping class="com.nodemanager.model.Hub" />
 		<mapping class="com.nodemanager.model.Slots" />
 		<mapping class="com.nodemanager.model.Placa" />
+		<mapping class="com.nodemanager.model.Conector" />
+		<mapping class="com.nodemanager.model.Downstream" />
+		<mapping class="com.nodemanager.model.Upstream" />
 	</session-factory>
 </hibernate-configuration>

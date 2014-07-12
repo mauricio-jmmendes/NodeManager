@@ -8,6 +8,8 @@ import javax.persistence.Entity;
 import javax.persistence.FetchType;
 import javax.persistence.GeneratedValue;
 import javax.persistence.Id;
+import javax.persistence.JoinColumn;
+import javax.persistence.ManyToOne;
 import javax.persistence.OneToMany;
 import javax.persistence.SequenceGenerator;
 import javax.persistence.Table;
@@ -39,8 +41,12 @@ public class Cmts {
 	@Column(length = 45, nullable = false)
 	private String modelo;
 
-	@OneToMany(mappedBy = "cmts", targetEntity = Slots.class,  cascade = CascadeType.ALL, fetch = FetchType.LAZY)
+	@OneToMany(mappedBy = "cmts", targetEntity = Slots.class, cascade = CascadeType.ALL, fetch = FetchType.LAZY)
 	private List<Slots> slots;
+
+	@ManyToOne
+	@JoinColumn(name = "hub_id", unique = true, nullable = false)
+	private Hub hub;
 
 	/**
 	 * @return the id
@@ -130,5 +136,20 @@ public class Cmts {
 	 */
 	public void setSlots(List<Slots> slots) {
 		this.slots = slots;
+	}
+
+	/**
+	 * @return the hub
+	 */
+	public Hub getHub() {
+		return hub;
+	}
+
+	/**
+	 * @param hub
+	 *            the hub to set
+	 */
+	public void setHub(Hub hub) {
+		this.hub = hub;
 	}
 }

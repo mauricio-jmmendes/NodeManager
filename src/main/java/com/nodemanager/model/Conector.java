@@ -1,96 +1,132 @@
 package com.nodemanager.model;
 
-import javax.persistence.CascadeType;
+import java.util.List;
+
 import javax.persistence.Column;
 import javax.persistence.Entity;
-import javax.persistence.FetchType;
 import javax.persistence.GeneratedValue;
 import javax.persistence.Id;
 import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
 import javax.persistence.OneToMany;
-import javax.persistence.OneToOne;
 import javax.persistence.SequenceGenerator;
 import javax.persistence.Table;
 
 import com.nodemanager.util.Status;
 
-
 @Entity
 @Table(name = "CONECTOR")
 @SequenceGenerator(name = "seq", sequenceName = "seq_conector", allocationSize = 1, initialValue = 1)
 public class Conector {
-	
+
 	@Id
 	@GeneratedValue(generator = "seq")
 	private Long id;
-	
-	@Column(name = "cod_conector")
-	private String codConector;
-	
-	@Column(name = "status_conector")
-	private String statusConector;
-	
-	@ManyToOne
-	@JoinColumn(name = "idPlaca")
-	private Placa placa;
-	
-	@OneToMany
-	@JoinColumn(name = "idUpstream")
-	private Upstream upstream;
-	
-	@OneToMany
-	@JoinColumn(name = "idDownstream")
-	private Downstream downstream;
 
-	
+	@Column(name = "num_conector", nullable = false)
+	private String numConector;
+
+	@Column(name = "status_conector", unique = true, nullable = false)
+	private Status statusConector;
+
+	@ManyToOne
+	@JoinColumn(name = "placa_id")
+	private Placa placa;
+
+	@OneToMany(mappedBy = "conectorUp")
+	private List<Upstream> upstreamList;
+
+	@OneToMany(mappedBy = "conectorDown")
+	private List<Downstream> downstreamList;
+
+	/**
+	 * @return the id
+	 */
 	public Long getId() {
 		return id;
 	}
 
+	/**
+	 * @param id
+	 *            the id to set
+	 */
 	public void setId(Long id) {
 		this.id = id;
 	}
 
-	public String getCodConector() {
-		return codConector;
+	/**
+	 * @return the numConector
+	 */
+	public String getNumConector() {
+		return numConector;
 	}
 
-	public void setCodConector(String codConector) {
-		this.codConector = codConector;
+	/**
+	 * @param numConector
+	 *            the numConector to set
+	 */
+	public void setNumConector(String numConector) {
+		this.numConector = numConector;
 	}
 
-	public String getStatusConector() {
+	/**
+	 * @return the statusConector
+	 */
+	public Status getStatusConector() {
 		return statusConector;
 	}
 
-	public void setStatusConector(String statusConector) {
+	/**
+	 * @param statusConector
+	 *            the statusConector to set
+	 */
+	public void setStatusConector(Status statusConector) {
 		this.statusConector = statusConector;
 	}
 
+	/**
+	 * @return the placa
+	 */
 	public Placa getPlaca() {
 		return placa;
 	}
 
+	/**
+	 * @param placa
+	 *            the placa to set
+	 */
 	public void setPlaca(Placa placa) {
 		this.placa = placa;
 	}
 
-	public Upstream getUpstream() {
-		return upstream;
+	/**
+	 * @return the upstreamList
+	 */
+	public List<Upstream> getUpstreamList() {
+		return upstreamList;
 	}
 
-	public void setUpstream(Upstream upstream) {
-		this.upstream = upstream;
+	/**
+	 * @param upstreamList
+	 *            the upstreamList to set
+	 */
+	public void setUpstreamList(List<Upstream> upstreamList) {
+		this.upstreamList = upstreamList;
 	}
 
-	public Downstream getDownstream() {
-		return downstream;
+	/**
+	 * @return the downstreamList
+	 */
+	public List<Downstream> getDownstreamList() {
+		return downstreamList;
 	}
 
-	public void setDownstream(Downstream downstream) {
-		this.downstream = downstream;
+	/**
+	 * @param downstreamList
+	 *            the downstreamList to set
+	 */
+	public void setDownstreamList(List<Downstream> downstreamList) {
+		this.downstreamList = downstreamList;
 	}
-	
 
 }

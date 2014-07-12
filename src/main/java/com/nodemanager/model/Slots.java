@@ -1,9 +1,7 @@
 package com.nodemanager.model;
 
-import javax.persistence.CascadeType;
 import javax.persistence.Column;
 import javax.persistence.Entity;
-import javax.persistence.FetchType;
 import javax.persistence.GeneratedValue;
 import javax.persistence.Id;
 import javax.persistence.JoinColumn;
@@ -30,11 +28,10 @@ public class Slots {
 	private Status statusSlot;
 
 	@ManyToOne
-	@JoinColumn(name = "idCMTS")
+	@JoinColumn(name = "cmts_id")
 	private Cmts cmts;
 
-	
-	@OneToOne(mappedBy = "slots", targetEntity = Placa.class, cascade = CascadeType.ALL, fetch = FetchType.LAZY)
+	@OneToOne(mappedBy = "slots")
 	private Placa placa;
 
 	/**

@@ -1,8 +1,14 @@
 package com.nodemanager.model;
 
+import java.util.List;
+
+import javax.persistence.CascadeType;
+import javax.persistence.Column;
 import javax.persistence.Entity;
+import javax.persistence.FetchType;
 import javax.persistence.GeneratedValue;
 import javax.persistence.Id;
+import javax.persistence.OneToMany;
 import javax.persistence.SequenceGenerator;
 import javax.persistence.Table;
 
@@ -18,7 +24,11 @@ public class Hub {
 	private Long id;
 
 	@NaturalId
+	@Column(unique = true, nullable = false)
 	private String codHub;
+
+	@OneToMany(mappedBy = "hub", targetEntity = Cmts.class, cascade = CascadeType.ALL, fetch = FetchType.LAZY)
+	List<Cmts> cmtsList;
 
 	/**
 	 * @return the id
@@ -38,7 +48,7 @@ public class Hub {
 	/**
 	 * @return the codHub
 	 */
-	
+
 	public String getCodHub() {
 		return codHub;
 	}
@@ -49,6 +59,21 @@ public class Hub {
 	 */
 	public void setCodHub(String codHub) {
 		this.codHub = codHub;
+	}
+
+	/**
+	 * @return the cmtsList
+	 */
+	public List<Cmts> getCmtsList() {
+		return cmtsList;
+	}
+
+	/**
+	 * @param cmtsList
+	 *            the cmtsList to set
+	 */
+	public void setCmtsList(List<Cmts> cmtsList) {
+		this.cmtsList = cmtsList;
 	}
 
 }
