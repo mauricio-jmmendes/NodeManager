@@ -17,5 +17,6 @@
 		<mapping class="com.nodemanager.model.Conector" />
 		<mapping class="com.nodemanager.model.Downstream" />
 		<mapping class="com.nodemanager.model.Upstream" />
+		<mapping class="com.nodemanager.model.Node" />
 	</session-factory>
 </hibernate-configuration>

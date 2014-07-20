@@ -1,5 +1,7 @@
 package com.nodemanager.model;
 
+import java.util.List;
+
 import javax.persistence.CascadeType;
 import javax.persistence.Column;
 import javax.persistence.Entity;
@@ -7,6 +9,7 @@ import javax.persistence.FetchType;
 import javax.persistence.GeneratedValue;
 import javax.persistence.Id;
 import javax.persistence.JoinColumn;
+import javax.persistence.ManyToMany;
 import javax.persistence.ManyToOne;
 import javax.persistence.SequenceGenerator;
 import javax.persistence.Table;
@@ -15,11 +18,11 @@ import com.nodemanager.util.Status;
 
 @Entity
 @Table(name = "DOWNSTREAM")
-@SequenceGenerator(name = "seq", sequenceName = "seq_downstream", allocationSize = 1, initialValue = 1)
+@SequenceGenerator(name = "seqD", sequenceName = "seq_downstream", allocationSize = 1, initialValue = 1)
 public class Downstream {
 
 	@Id
-	@GeneratedValue(generator = "seq")
+	@GeneratedValue(generator = "seqD")
 	private Long id;
 
 	@Column(name = "status_down", nullable = false)
@@ -31,6 +34,9 @@ public class Downstream {
 	@ManyToOne(cascade = CascadeType.ALL, fetch = FetchType.EAGER)
 	@JoinColumn(name = "conector_id")
 	private Conector conectorDown;
+
+	@ManyToMany(fetch = FetchType.LAZY, mappedBy = "downstreams")
+	private List<Node> nodes;
 
 	/**
 	 * @return the id
@@ -90,6 +96,21 @@ public class Downstream {
 	 */
 	public void setConectorDown(Conector conectorDown) {
 		this.conectorDown = conectorDown;
+	}
+
+	/**
+	 * @return the nodes
+	 */
+	public List<Node> getNodes() {
+		return nodes;
+	}
+
+	/**
+	 * @param nodes
+	 *            the nodes to set
+	 */
+	public void setNodes(List<Node> nodes) {
+		this.nodes = nodes;
 	}
 
 }

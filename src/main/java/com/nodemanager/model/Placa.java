@@ -19,11 +19,11 @@ import com.nodemanager.util.Status;
 
 @Entity
 @Table(name = "PLACA", uniqueConstraints = { @UniqueConstraint(columnNames = "slots_id") })
-@SequenceGenerator(name = "seq", sequenceName = "seq_placa", allocationSize = 1, initialValue = 1)
+@SequenceGenerator(name = "seqP", sequenceName = "seq_placa", allocationSize = 1, initialValue = 1)
 public class Placa {
 
 	@Id
-	@GeneratedValue(generator = "seq")
+	@GeneratedValue(generator = "seqP")
 	private Long id;
 
 	@Column(name = "cod_placa")
@@ -34,7 +34,7 @@ public class Placa {
 
 	@OneToOne(cascade = CascadeType.ALL, optional = true, fetch = FetchType.EAGER, orphanRemoval = true)
 	@JoinColumn(name = "slots_id", unique = true)
-	Slots slots;
+	Slot slot;
 
 	@OneToMany(mappedBy = "placa")
 	List<Conector> conectorList;
@@ -87,15 +87,15 @@ public class Placa {
 	/**
 	 * @return the slots
 	 */
-	public Slots getSlots() {
-		return slots;
+	public Slot getSlot() {
+		return slot;
 	}
 
 	/**
 	 * @param slots
 	 *            the slots to set
 	 */
-	public void setSlots(Slots slots) {
-		this.slots = slots;
+	public void setSlot(Slot slot) {
+		this.slot = slot;
 	}
 }

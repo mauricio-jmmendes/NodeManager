@@ -16,11 +16,11 @@ import org.hibernate.annotations.NaturalId;
 
 @Entity
 @Table(name = "HUB")
-@SequenceGenerator(name = "seq", sequenceName = "seq_hub", allocationSize = 1, initialValue = 1)
+@SequenceGenerator(name = "seqH", sequenceName = "seq_hub", allocationSize = 1, initialValue = 1)
 public class Hub {
 
 	@Id
-	@GeneratedValue(generator = "seq")
+	@GeneratedValue(generator = "seqH")
 	private Long id;
 
 	@NaturalId

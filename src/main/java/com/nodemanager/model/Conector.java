@@ -16,11 +16,11 @@ import com.nodemanager.util.Status;
 
 @Entity
 @Table(name = "CONECTOR")
-@SequenceGenerator(name = "seq", sequenceName = "seq_conector", allocationSize = 1, initialValue = 1)
+@SequenceGenerator(name = "seqCon", sequenceName = "seq_conector", allocationSize = 1, initialValue = 1)
 public class Conector {
 
 	@Id
-	@GeneratedValue(generator = "seq")
+	@GeneratedValue(generator = "seqCon")
 	private Long id;
 
 	@Column(name = "num_conector", nullable = false)

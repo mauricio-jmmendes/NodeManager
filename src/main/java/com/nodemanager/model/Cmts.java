@@ -21,11 +21,11 @@ import org.hibernate.annotations.NaturalId;
 @Table(name = "CMTS", uniqueConstraints = {
 		@UniqueConstraint(columnNames = "nome"),
 		@UniqueConstraint(columnNames = "ip") })
-@SequenceGenerator(name = "seq", sequenceName = "seq_cmts", allocationSize = 1, initialValue = 1)
+@SequenceGenerator(name = "seqC", sequenceName = "seq_cmts", allocationSize = 1, initialValue = 1)
 public class Cmts {
 
 	@Id
-	@GeneratedValue(generator = "seq")
+	@GeneratedValue(generator = "seqC")
 	private Long id;
 
 	@NaturalId
@@ -41,8 +41,8 @@ public class Cmts {
 	@Column(length = 45, nullable = false)
 	private String modelo;
 
-	@OneToMany(mappedBy = "cmts", targetEntity = Slots.class, cascade = CascadeType.ALL, fetch = FetchType.LAZY)
-	private List<Slots> slots;
+	@OneToMany(mappedBy = "cmts", targetEntity = Slot.class, cascade = CascadeType.ALL, fetch = FetchType.LAZY)
+	private List<Slot> slots;
 
 	@ManyToOne
 	@JoinColumn(name = "hub_id", unique = true, nullable = false)
@@ -126,7 +126,7 @@ public class Cmts {
 	/**
 	 * @return the slots
 	 */
-	public List<Slots> getSlots() {
+	public List<Slot> getSlots() {
 		return slots;
 	}
 
@@ -134,7 +134,7 @@ public class Cmts {
 	 * @param slots
 	 *            the slots to set
 	 */
-	public void setSlots(List<Slots> slots) {
+	public void setSlots(List<Slot> slots) {
 		this.slots = slots;
 	}
 

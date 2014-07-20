@@ -14,11 +14,11 @@ import com.nodemanager.util.Status;
 
 @Entity
 @Table(name = "SLOTS")
-@SequenceGenerator(name = "seq", sequenceName = "seq_slots", allocationSize = 1, initialValue = 1)
-public class Slots {
+@SequenceGenerator(name = "seqS", sequenceName = "seq_slots", allocationSize = 1, initialValue = 1)
+public class Slot {
 
 	@Id
-	@GeneratedValue(generator = "seq")
+	@GeneratedValue(generator = "seqS")
 	private Long id;
 
 	@Column(name = "cod_slot")
@@ -31,7 +31,7 @@ public class Slots {
 	@JoinColumn(name = "cmts_id")
 	private Cmts cmts;
 
-	@OneToOne(mappedBy = "slots")
+	@OneToOne(mappedBy = "slot")
 	private Placa placa;
 
 	/**

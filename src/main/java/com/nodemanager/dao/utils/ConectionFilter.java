@@ -41,6 +41,6 @@ public class ConectionFilter implements Filter {
 	}
 
 	public void init(FilterConfig arg0) throws ServletException {
-		this.sessionFactory = HibernateUtil.getSessionFactory();
+		//this.sessionFactory = HibernateUtil.getSessionFactory();
 	}
 }
