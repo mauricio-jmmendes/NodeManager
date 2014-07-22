@@ -14,6 +14,7 @@
 		<class>com.nodemanager.model.Downstream</class>
 		<class>com.nodemanager.model.Upstream</class>
 		<class>com.nodemanager.model.Node</class>
+		<class>com.nodemanager.model.Login</class>
 
 		<properties>
 			<property name="hibernate.dialect" value="org.hibernate.dialect.MySQLDialect" />
