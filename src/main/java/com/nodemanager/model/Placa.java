@@ -1,5 +1,6 @@
 package com.nodemanager.model;
 
+import java.io.Serializable;
 import java.util.List;
 
 import javax.persistence.CascadeType;
@@ -20,7 +21,12 @@ import com.nodemanager.util.Status;
 @Entity
 @Table(name = "PLACA", uniqueConstraints = { @UniqueConstraint(columnNames = "slots_id") })
 @SequenceGenerator(name = "seqP", sequenceName = "seq_placa", allocationSize = 1, initialValue = 1)
-public class Placa {
+public class Placa implements Serializable {
+
+	/**
+	 * 
+	 */
+	private static final long serialVersionUID = 1L;
 
 	@Id
 	@GeneratedValue(generator = "seqP")
