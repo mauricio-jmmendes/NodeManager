@@ -14,6 +14,11 @@ import javax.persistence.ManyToOne;
 import javax.persistence.SequenceGenerator;
 import javax.persistence.Table;
 
+import org.apache.commons.lang3.builder.EqualsBuilder;
+import org.apache.commons.lang3.builder.HashCodeBuilder;
+import org.apache.commons.lang3.builder.ToStringBuilder;
+import org.apache.commons.lang3.builder.ToStringStyle;
+
 import com.nodemanager.util.Status;
 
 @Entity
@@ -111,6 +116,22 @@ public class Downstream {
 	 */
 	public void setNodes(List<Node> nodes) {
 		this.nodes = nodes;
+	}
+
+	@Override
+	public boolean equals(Object obj) {
+		return EqualsBuilder.reflectionEquals(this, obj);
+	}
+
+	@Override
+	public String toString() {
+		return ToStringBuilder.reflectionToString(this,
+				ToStringStyle.MULTI_LINE_STYLE);
+	}
+
+	@Override
+	public int hashCode() {
+		return HashCodeBuilder.reflectionHashCode(this);
 	}
 
 }

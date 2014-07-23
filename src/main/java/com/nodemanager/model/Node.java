@@ -16,6 +16,11 @@ import javax.persistence.SequenceGenerator;
 import javax.persistence.Table;
 import javax.persistence.UniqueConstraint;
 
+import org.apache.commons.lang3.builder.EqualsBuilder;
+import org.apache.commons.lang3.builder.HashCodeBuilder;
+import org.apache.commons.lang3.builder.ToStringBuilder;
+import org.apache.commons.lang3.builder.ToStringStyle;
+
 @Entity
 @Table(name = "NODE", uniqueConstraints = { @UniqueConstraint(columnNames = "cod_node") })
 @SequenceGenerator(name = "seqN", sequenceName = "seq_node", allocationSize = 1, initialValue = 1)
@@ -99,6 +104,22 @@ public class Node implements Serializable {
 	 */
 	public void setDownstreams(List<Downstream> downstreams) {
 		this.downstreams = downstreams;
+	}
+
+	@Override
+	public boolean equals(Object obj) {
+		return EqualsBuilder.reflectionEquals(this, obj);
+	}
+
+	@Override
+	public String toString() {
+		return ToStringBuilder.reflectionToString(this,
+				ToStringStyle.MULTI_LINE_STYLE);
+	}
+
+	@Override
+	public int hashCode() {
+		return HashCodeBuilder.reflectionHashCode(this);
 	}
 
 }
