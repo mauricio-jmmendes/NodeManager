@@ -15,9 +15,7 @@ import org.apache.commons.lang3.builder.ToStringStyle;
 import org.hibernate.annotations.NaturalId;
 
 @Entity
-@Table(name = "LOGIN", uniqueConstraints = {
-		@UniqueConstraint(columnNames = "login"),
-		@UniqueConstraint(columnNames = "senha") })
+@Table(name = "LOGIN", uniqueConstraints = { @UniqueConstraint(columnNames = "login") })
 @SequenceGenerator(name = "seqL", sequenceName = "seq_login", allocationSize = 1, initialValue = 1)
 public class Login {
 
@@ -29,7 +27,7 @@ public class Login {
 	@Column(length = 45, unique = true, nullable = false)
 	private String login;
 
-	@Column(length = 45, unique = true, nullable = false)
+	@Column(length = 45, nullable = false)
 	private String senha;
 
 	public Long getId() {

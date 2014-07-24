@@ -24,16 +24,16 @@
 		<p:dialog header="Login" widgetVar="dlg" resizable="false">
 			<h:panelGrid columns="2" cellpadding="5">
 				<h:outputLabel for="username" value="Username:" />
-				<p:inputText id="username" value="#{userLoginView.username}"
+				<p:inputText id="username" value="#{userLoginMB.username}"
 					required="true" label="username" />
 
 				<h:outputLabel for="password" value="Password:" />
-				<p:password id="password" value="#{userLoginView.password}"
+				<p:password id="password" value="#{userLoginMB.password}"
 					required="true" label="password" />
 
 				<f:facet name="footer">
 					<p:commandButton value="Login" update="growl"
-						actionListener="#{userLoginView.login}"
+						actionListener="#{userLoginMB.login}"
 						oncomplete="handleLoginRequest(xhr, status, args)" />
 				</f:facet>
 			</h:panelGrid>

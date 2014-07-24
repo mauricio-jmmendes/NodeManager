@@ -25,16 +25,16 @@ public class TestDAOLayer {
 		HubService hubService = new HubService(simpleEntityManager);
 
 		Hub hub = new Hub();
-		hub.setCodHub("HUB_B");
+		hub.setCodHub("HUB_D");
 
 		hubService.save(hub);
 
 		Cmts cmts = new Cmts();
 		cmts.setHub(hub);
-		cmts.setIp("201.11.12.2");
+		cmts.setIp("201.11.12.4");
 		cmts.setMarca("Motorolla");
 		cmts.setModelo("Motorolla");
-		cmts.setNome("CPSPRICMT01");
+		cmts.setNome("CPSPRICMT04");
 
 		List<Slot> slots = new ArrayList<>();
 
@@ -54,7 +54,7 @@ public class TestDAOLayer {
 
 		for (Cmts c : cmtsService.findAll()) {
 			System.out.println(c.getIp() + " - " + c.getMarca() + " - "
-					+ c.getModelo());
+					+ c.getNome());
 		}
 
 		/**
