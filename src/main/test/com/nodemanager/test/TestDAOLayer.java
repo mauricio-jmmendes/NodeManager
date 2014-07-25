@@ -25,16 +25,16 @@ public class TestDAOLayer {
 		HubService hubService = new HubService(simpleEntityManager);
 
 		Hub hub = new Hub();
-		hub.setCodHub("HUB_D");
+		hub.setCodHub("HUB_E");
 
 		hubService.save(hub);
 
 		Cmts cmts = new Cmts();
 		cmts.setHub(hub);
-		cmts.setIp("201.11.12.4");
+		cmts.setIp("201.11.12.10");
 		cmts.setMarca("Motorolla");
 		cmts.setModelo("Motorolla");
-		cmts.setNome("CPSPRICMT04");
+		cmts.setNome("CPSPRICMT08");
 
 		List<Slot> slots = new ArrayList<>();
 
