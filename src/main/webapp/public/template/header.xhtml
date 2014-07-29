@@ -9,36 +9,44 @@
 
 <body>
 	<ui:composition>
+		<div align="left"></div>
+		<p:panelGrid columns="2" style="border: none;">
+			<h:graphicImage id="img" name="NET-edited.jpg" style="display:true;"
+				height="60px" />
+
+			<h1>NodeManager - Projeto e controle de Nodes</h1>
+
+		</p:panelGrid>
 		<div id="mainHeader" align="center">
 			<h:form>
 				<p:growl id="messages" />
 
 				<p:menubar>
-					<p:submenu label="Cadastrar" >
+					<p:submenu label="Cadastrar">
 						<p:menuitem value="Hub" url="#" />
-						<p:menuitem value="CMTS" url="#" />
+						<p:menuitem value="Cmts" url="#" />
 						<p:menuitem value="Placa" url="#" />
 						<p:menuitem value="Node" url="#" />
 					</p:submenu>
 
 					<p:submenu label="Deletar">
 						<p:menuitem value="Hub" url="#" />
-						<p:menuitem value="CMTS" url="#" />
+						<p:menuitem value="Cmts" url="#" />
 						<p:menuitem value="Placa" url="#" />
 						<p:menuitem value="Node" url="#" />
 					</p:submenu>
 
 					<p:submenu label="Listar">
-						<p:menuitem value="CMTS" url="#" />
+						<p:menuitem value="Cmts" url="#" />
 						<p:menuitem value="Nodes" url="#" />
 					</p:submenu>
 
-					<p:submenu label="Projeto" >
-							<p:menuitem value="Migração" actionListener="#{menuView.save}"
-								 update="messages" />
-							<p:menuitem value="Quebra" actionListener="#{menuView.update}"
-								 update="messages" />
-								
+					<p:submenu label="Projeto">
+						<p:menuitem value="Migração" actionListener="#{menuView.save}"
+							update="messages" />
+						<p:menuitem value="Quebra" actionListener="#{menuView.update}"
+							update="messages" />
+
 					</p:submenu>
 
 					<p:menuitem value="Quit" url="http://www.primefaces.org"
