@@ -1,0 +1,26 @@
+<ui:composition template="template/main.xhtml"
+	xmlns="http://www.w3.org/1999/xhtml"
+	xmlns:f="http://java.sun.com/jsf/core"
+	xmlns:h="http://java.sun.com/jsf/html"
+	xmlns:ui="http://java.sun.com/jsf/facelets"
+	xmlns:p="http://primefaces.org/ui">
+
+	<ui:define name="content">
+		<div>
+			<h1>Cadastro de Hub</h1>
+		</div>
+		<h:form>
+			<p:outputLabel value="Digite o nome da HUB:" />
+			<p:inputText size="1" />
+
+			<br />
+			<p:growl id="growl" life="2000" />
+
+			<p:commandButton value="Cadastrar" id="ajax" update="growl" actionListener="#{hubCreateMB.buttonAction}" styleClass="ui-priority-primary" />
+		
+		
+		</h:form>
+		<div></div>
+
+	</ui:define>
+</ui:composition>
