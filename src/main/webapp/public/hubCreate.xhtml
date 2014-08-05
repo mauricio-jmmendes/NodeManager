@@ -7,18 +7,17 @@
 
 	<ui:define name="content">
 		<div>
-			<h1>Cadastro de Hub</h1>
+			<h2>Cadastro de Hub</h2>
 		</div>
 		<h:form>
-			<p:outputLabel value="Digite o nome da HUB:" />
-			<p:inputText size="1" />
-
-			<br />
-			<p:growl id="growl" life="2000" />
-
-			<p:commandButton value="Cadastrar" id="ajax" update="growl" actionListener="#{hubCreateMB.buttonAction}" styleClass="ui-priority-primary" />
-		
-		
+			<h:panelGrid columns="2">
+				<p:outputLabel value="Digite o nome da HUB:" />
+				<p:inputText maxlength="3" size="1" value="#{hubMB.hub.codHub}"/>
+				<p:growl id="growl" life="2000" />
+				<p:commandButton value="Cadastrar" id="ajax" update="growl"
+					actionListener="#{hubMB.save}"
+					styleClass="ui-priority-primary" />
+			</h:panelGrid>
 		</h:form>
 		<div></div>
 

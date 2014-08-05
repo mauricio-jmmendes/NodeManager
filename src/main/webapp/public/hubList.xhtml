@@ -1,0 +1,56 @@
+<ui:composition template="template/main.xhtml"
+	xmlns="http://www.w3.org/1999/xhtml"
+	xmlns:f="http://java.sun.com/jsf/core"
+	xmlns:h="http://java.sun.com/jsf/html"
+	xmlns:ui="http://java.sun.com/jsf/facelets"
+	xmlns:p="http://primefaces.org/ui">
+
+	<ui:define name="content">
+		<div id="container" style="border: double;" align="left">
+			<h2>Lista de HUB</h2>
+
+			<h:form>
+				<p:growl id="growl" sticky="true" showDetail="true" life="3000" />
+
+				<div align="right">
+					<h:commandLink value="Novo" action="hubCreate?faces-redirect=true" />
+					&#160;
+					<h:commandButton value="Listar" action="#{hubMB.list()}">
+						<f:ajax render="tabela" />
+					</h:commandButton>
+				</div>
+
+				<p:dataTable id="tabela" var="hub" value="#{hubMB.list()}"
+					paginatorTemplate="{CurrentPageReport}  {FirstPageLink} {PreviousPageLink} {PageLinks} {NextPageLink} {LastPageLink}"
+					paginator="true" rows="5" style="margin-bottom:10px">
+					<p:column>
+						<f:facet name="header">
+							<h:outputText value="Id" />
+						</f:facet>
+						##{hub.id}
+					</p:column>
+					<p:column>
+						<f:facet name="header">
+							<h:outputText value="Hub" />
+						</f:facet>
+						#{hub.codHub}
+					</p:column>
+
+					<p:column>
+						<f:facet name="header">
+							<h:outputText value="Opções" />
+						</f:facet>
+						<h:commandLink value="editar" action="#{hubMB.prepareToEdit(hub)}">
+						</h:commandLink>  &#160;
+						<h:commandLink value="remover" action="#{hubMB.delete}"
+							onclick="return confirm('Deseja realmente remover este HUB?');"
+							update="growl">
+							<f:ajax render="@form" />
+							<f:setPropertyActionListener target="#{hubMB.hub}" value="#{hub}" />
+						</h:commandLink>
+					</p:column>
+				</p:dataTable>
+			</h:form>
+		</div>
+	</ui:define>
+</ui:composition>

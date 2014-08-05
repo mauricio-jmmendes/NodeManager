@@ -30,9 +30,21 @@ public class HubService {
 	public List<Hub> findAll() {
 		return dao.findAll();
 	}
-	
+
 	public Hub getByCodHub(String codHub) {
-		
+
 		return dao.getByCodHub(codHub);
+	}
+
+	public void delete(Hub hub) {
+		try {
+			simpleEntityManager.beginTransaction();
+			dao.delete(hub);
+			simpleEntityManager.commit();
+		} catch (Exception e) {
+			e.printStackTrace();
+			simpleEntityManager.rollBack();
+		}
+
 	}
 }
