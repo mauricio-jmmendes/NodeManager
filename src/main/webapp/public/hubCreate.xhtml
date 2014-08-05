@@ -12,11 +12,10 @@
 		<h:form>
 			<h:panelGrid columns="2">
 				<p:outputLabel value="Digite o nome da HUB:" />
-				<p:inputText maxlength="3" size="1" value="#{hubMB.hub.codHub}"/>
+				<p:inputText maxlength="3" size="1" value="#{hubMB.hub.codHub}" />
 				<p:growl id="growl" life="2000" />
 				<p:commandButton value="Cadastrar" id="ajax" update="growl"
-					actionListener="#{hubMB.save}"
-					styleClass="ui-priority-primary" />
+					actionListener="#{hubMB.save}" action="hubList?faces-redirect=true" />
 			</h:panelGrid>
 		</h:form>
 		<div></div>

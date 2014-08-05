@@ -23,21 +23,16 @@
 
 				<p:menubar>
 					<p:submenu label="Cadastrar">
-						<p:menuitem value="Hub" url="#" />
-						<p:menuitem value="Cmts" url="#" />
-						<p:menuitem value="Placa" url="#" />
-						<p:menuitem value="Node" url="#" />
-					</p:submenu>
-
-					<p:submenu label="Deletar">
-						<p:menuitem value="Hub" url="#" />
-						<p:menuitem value="Cmts" url="#" />
+						<p:menuitem value="Hub" url="hubCreate.jsf" />
+						<p:menuitem value="Cmts" url="cmtsCreateEdit.jsf"
+							actionListener="#{cmtsMB.prepareToAdd}" immediate="true" />
 						<p:menuitem value="Placa" url="#" />
 						<p:menuitem value="Node" url="#" />
 					</p:submenu>
 
 					<p:submenu label="Listar">
-						<p:menuitem value="Cmts" url="#" />
+						<p:menuitem value="Hubs" url="hubList.jsf" />
+						<p:menuitem value="Cmts" url="cmtsList.jsf" />
 						<p:menuitem value="Nodes" url="#" />
 					</p:submenu>
 

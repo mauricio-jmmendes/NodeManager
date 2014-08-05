@@ -13,6 +13,7 @@ import com.nodemanager.model.Cmts;
 import com.nodemanager.model.Hub;
 import com.nodemanager.service.CmtsService;
 import com.nodemanager.service.HubService;
+import com.nodemanager.util.JPAUtil;
 
 @ManagedBean
 @SessionScoped
@@ -36,10 +37,10 @@ public class CmtsMB {
 
   @PostConstruct
   public void init() {
-    simpleEntityManager = new SimpleEntityManager(persistenceUnitName);
-    cmtsService = new CmtsService(simpleEntityManager);
-    hubService = new HubService(simpleEntityManager);
+    cmtsService = new CmtsService(JPAUtil.getSimpleEntityManager());
+    hubService = new HubService(JPAUtil.getSimpleEntityManager());
     cmts = new Cmts();
+    hubs = hubService.findAll();
     list();
   }
 
