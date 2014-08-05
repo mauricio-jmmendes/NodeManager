@@ -8,28 +8,28 @@ import com.nodemanager.model.Conector;
 
 public class ConectorService {
 
-	private ConectorDAO dao;
+  private ConectorDAO dao;
 
-	private SimpleEntityManager simpleEntityManager;
+  private SimpleEntityManager simpleEntityManager;
 
-	public ConectorService(SimpleEntityManager simpleEntityManager) {
-		this.simpleEntityManager = simpleEntityManager;
-		dao = new ConectorDAO(simpleEntityManager.getEntityManager());
-	}
+  public ConectorService(SimpleEntityManager simpleEntityManager) {
+    this.simpleEntityManager = simpleEntityManager;
+    dao = new ConectorDAO(simpleEntityManager.getEntityManager());
+  }
 
-	public void save(Conector conector) {
-		try {
-			simpleEntityManager.beginTransaction();
-			dao.save(conector);
-			simpleEntityManager.commit();
-		} catch (Exception e) {
-			e.printStackTrace();
-			simpleEntityManager.rollBack();
-		}
-	}
+  public void save(Conector conector) {
+    try {
+      simpleEntityManager.beginTransaction();
+      dao.save(conector);
+      simpleEntityManager.commit();
+    } catch (Exception e) {
+      e.printStackTrace();
+      simpleEntityManager.rollBack();
+    }
+  }
 
-	public List<Conector> findAll() {
-		return dao.findAll();
-	}
+  public List<Conector> findAll() {
+    return dao.findAll();
+  }
 
 }

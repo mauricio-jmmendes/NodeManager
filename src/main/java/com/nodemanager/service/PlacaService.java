@@ -8,28 +8,28 @@ import com.nodemanager.model.Placa;
 
 public class PlacaService {
 
-	private PlacaDAO dao;
+  private PlacaDAO dao;
 
-	private SimpleEntityManager simpleEntityManager;
+  private SimpleEntityManager simpleEntityManager;
 
-	public PlacaService(SimpleEntityManager simpleEntityManager) {
-		this.simpleEntityManager = simpleEntityManager;
-		dao = new PlacaDAO(simpleEntityManager.getEntityManager());
-	}
+  public PlacaService(SimpleEntityManager simpleEntityManager) {
+    this.simpleEntityManager = simpleEntityManager;
+    dao = new PlacaDAO(simpleEntityManager.getEntityManager());
+  }
 
-	public void save(Placa placa) {
-		try {
-			simpleEntityManager.beginTransaction();
-			dao.save(placa);
-			simpleEntityManager.commit();
-		} catch (Exception e) {
-			e.printStackTrace();
-			simpleEntityManager.rollBack();
-		}
-	}
+  public void save(Placa placa) {
+    try {
+      simpleEntityManager.beginTransaction();
+      dao.save(placa);
+      simpleEntityManager.commit();
+    } catch (Exception e) {
+      e.printStackTrace();
+      simpleEntityManager.rollBack();
+    }
+  }
 
-	public List<Placa> findAll() {
-		return dao.findAll();
-	}
+  public List<Placa> findAll() {
+    return dao.findAll();
+  }
 
 }

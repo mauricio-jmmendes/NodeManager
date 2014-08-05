@@ -14,72 +14,69 @@ import com.nodemanager.service.LoginService;
 @ManagedBean
 public class UserLoginMB {
 
-	private static final String persistenceUnitName = "NodeManagerPU";
-	private SimpleEntityManager simpleEntityManager;
+  private static final String persistenceUnitName = "NodeManagerPU";
+  private SimpleEntityManager simpleEntityManager;
 
-	private Login login;
-	private LoginService loginService;
+  private Login login;
+  private LoginService loginService;
 
-	private String username;
-	private String password;
+  private String username;
+  private String password;
 
-	public UserLoginMB() {
-		this.setLogin(new Login());
-		this.simpleEntityManager = new SimpleEntityManager(persistenceUnitName);
-		this.loginService = new LoginService(simpleEntityManager);
-	}
+  public UserLoginMB() {
+    this.setLogin(new Login());
+    this.simpleEntityManager = new SimpleEntityManager(persistenceUnitName);
+    this.loginService = new LoginService(simpleEntityManager);
+  }
 
-	public String getUsername() {
-		return username;
-	}
+  public String getUsername() {
+    return username;
+  }
 
-	public void setUsername(String username) {
-		this.username = username;
-	}
+  public void setUsername(String username) {
+    this.username = username;
+  }
 
-	public String getPassword() {
-		return password;
-	}
+  public String getPassword() {
+    return password;
+  }
 
-	public void setPassword(String password) {
-		this.password = password;
-	}
+  public void setPassword(String password) {
+    this.password = password;
+  }
 
-	/**
-	 * @return the login
-	 */
-	public Login getLogin() {
-		return login;
-	}
+  /**
+   * @return the login
+   */
+  public Login getLogin() {
+    return login;
+  }
 
-	/**
-	 * @param login
-	 *            the login to set
-	 */
-	public void setLogin(Login login) {
-		this.login = login;
-	}
+  /**
+   * @param login the login to set
+   */
+  public void setLogin(Login login) {
+    this.login = login;
+  }
 
-	public void login(ActionEvent event) {
-		RequestContext context = RequestContext.getCurrentInstance();
-		FacesMessage message = null;
-		boolean loggedIn = false;
+  public void login(ActionEvent event) {
+    RequestContext context = RequestContext.getCurrentInstance();
+    FacesMessage message = null;
+    boolean loggedIn = false;
 
-		if (username != null && username.equals("admin") && password != null
-				&& password.equals("admin")) {
-			loggedIn = true;
-			login.setLogin(username);
-			login.setSenha(password);
-			loginService.save(login);
-			message = new FacesMessage(FacesMessage.SEVERITY_INFO, "Welcome",
-					username);
-		} else {
-			loggedIn = false;
-			message = new FacesMessage(FacesMessage.SEVERITY_WARN,
-					"Loggin Error", "Invalid credentials");
-		}
+    if (username != null && username.equals("admin") && password != null
+        && password.equals("admin")) {
+      loggedIn = true;
+      login.setLogin(username);
+      login.setSenha(password);
+      loginService.save(login);
+      message = new FacesMessage(FacesMessage.SEVERITY_INFO, "Welcome", username);
+    } else {
+      loggedIn = false;
+      message = new FacesMessage(FacesMessage.SEVERITY_WARN, "Loggin Error", "Invalid credentials");
+    }
 
-		FacesContext.getCurrentInstance().addMessage(null, message);
-		context.addCallbackParam("loggedIn", loggedIn);
-	}
+    FacesContext.getCurrentInstance().addMessage(null, message);
+    context.addCallbackParam("loggedIn", loggedIn);
+  }
 }

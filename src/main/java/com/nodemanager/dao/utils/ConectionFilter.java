@@ -13,34 +13,34 @@ import org.hibernate.SessionFactory;
 
 public class ConectionFilter implements Filter {
 
-	private SessionFactory sessionFactory;
+  private SessionFactory sessionFactory;
 
-	public void destroy() {
-		
-	}
+  public void destroy() {
 
-	public void doFilter(ServletRequest request, ServletResponse response,
-			FilterChain chain) throws IOException, ServletException {
-		try {
-			this.sessionFactory.getCurrentSession().beginTransaction();
-			System.out.println("open");
-			chain.doFilter(request, response);
-			this.sessionFactory.getCurrentSession().getTransaction().commit();
-			this.sessionFactory.getCurrentSession().close();
-			System.out.println("close");
-		} catch (Throwable ex) {
-			try {
-				if (this.sessionFactory.getCurrentSession().getTransaction().isActive()) {
-					this.sessionFactory.getCurrentSession().getTransaction().rollback();
-				}
-			} catch (Throwable t) {
-				t.printStackTrace();
-			}
-			ex.printStackTrace();
-		}
-	}
+  }
 
-	public void init(FilterConfig arg0) throws ServletException {
-		//this.sessionFactory = HibernateUtil.getSessionFactory();
-	}
+  public void doFilter(ServletRequest request, ServletResponse response, FilterChain chain)
+      throws IOException, ServletException {
+    try {
+      this.sessionFactory.getCurrentSession().beginTransaction();
+      System.out.println("open");
+      chain.doFilter(request, response);
+      this.sessionFactory.getCurrentSession().getTransaction().commit();
+      this.sessionFactory.getCurrentSession().close();
+      System.out.println("close");
+    } catch (Throwable ex) {
+      try {
+        if (this.sessionFactory.getCurrentSession().getTransaction().isActive()) {
+          this.sessionFactory.getCurrentSession().getTransaction().rollback();
+        }
+      } catch (Throwable t) {
+        t.printStackTrace();
+      }
+      ex.printStackTrace();
+    }
+  }
+
+  public void init(FilterConfig arg0) throws ServletException {
+    // this.sessionFactory = HibernateUtil.getSessionFactory();
+  }
 }

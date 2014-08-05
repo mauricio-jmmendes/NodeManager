@@ -12,54 +12,52 @@ import com.nodemanager.service.HubService;
 import com.nodemanager.util.Status;
 
 public class TestDAOLayer {
-	public static void main(String[] args) {
-		String persistenceUnitName = "NodeManagerPU";
+  public static void main(String[] args) {
+    String persistenceUnitName = "NodeManagerPU";
 
-		SimpleEntityManager simpleEntityManager = new SimpleEntityManager(
-				persistenceUnitName);
+    SimpleEntityManager simpleEntityManager = new SimpleEntityManager(persistenceUnitName);
 
-		/**
-		 * THE SERVICE LAYER ENCAPSULATES EVERY BEGIN/COMMIT/ROLLBACK
-		 */
-		CmtsService cmtsService = new CmtsService(simpleEntityManager);
-		HubService hubService = new HubService(simpleEntityManager);
+    /**
+     * THE SERVICE LAYER ENCAPSULATES EVERY BEGIN/COMMIT/ROLLBACK
+     */
+    CmtsService cmtsService = new CmtsService(simpleEntityManager);
+    HubService hubService = new HubService(simpleEntityManager);
 
-		Hub hub = new Hub();
-		hub.setCodHub("HUB_D");
+    Hub hub = new Hub();
+    hub.setCodHub("HUB_B");
 
-		hubService.save(hub);
+    hubService.save(hub);
 
-		Cmts cmts = new Cmts();
-		cmts.setHub(hub);
-		cmts.setIp("201.11.12.4");
-		cmts.setMarca("Motorolla");
-		cmts.setModelo("Motorolla");
-		cmts.setNome("CPSPRICMT04");
+    Cmts cmts = new Cmts();
+    cmts.setHub(hub);
+    cmts.setIp("201.11.12.1");
+    cmts.setMarca("Motorolla");
+    cmts.setModelo("Motorolla");
+    cmts.setNome("CPSPRICMT01");
 
-		List<Slot> slots = new ArrayList<>();
+    List<Slot> slots = new ArrayList<>();
 
-		for (int i = 1; i < 11; i++) {
-			Slot slot = new Slot();
-			slot.setCmts(cmts);
-			slot.setCodSlot(i + "/0");
-			slot.setStatusSlot(Status.LIVRE);
+    for (int i = 1; i < 11; i++) {
+      Slot slot = new Slot();
+      slot.setCmts(cmts);
+      slot.setCodSlot(i + "/0");
+      slot.setStatusSlot(Status.LIVRE);
 
-			slots.add(slot);
+      slots.add(slot);
 
-		}
+    }
 
-		cmts.setSlots(slots);
+    cmts.setSlots(slots);
 
-		cmtsService.save(cmts);
+    cmtsService.save(cmts);
 
-		for (Cmts c : cmtsService.findAll()) {
-			System.out.println(c.getIp() + " - " + c.getMarca() + " - "
-					+ c.getNome());
-		}
+    for (Cmts c : cmtsService.findAll()) {
+      System.out.println(c.getIp() + " - " + c.getMarca() + " - " + c.getNome());
+    }
 
-		/**
-		 * ALWAYS NEED TO BE CALLED!
-		 */
-		simpleEntityManager.close();
-	}
+    /**
+     * ALWAYS NEED TO BE CALLED!
+     */
+    simpleEntityManager.close();
+  }
 }

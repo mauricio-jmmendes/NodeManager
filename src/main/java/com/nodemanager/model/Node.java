@@ -22,104 +22,103 @@ import org.apache.commons.lang3.builder.ToStringBuilder;
 import org.apache.commons.lang3.builder.ToStringStyle;
 
 @Entity
-@Table(name = "NODE", uniqueConstraints = { @UniqueConstraint(columnNames = "cod_node") })
+@Table(name = "NODE", uniqueConstraints = {@UniqueConstraint(columnNames = "cod_node")})
 @SequenceGenerator(name = "seqN", sequenceName = "seq_node", allocationSize = 1, initialValue = 1)
 public class Node implements Serializable {
 
-	/**
+  /**
 	 * 
 	 */
-	private static final long serialVersionUID = 1L;
+  private static final long serialVersionUID = 1L;
 
-	@Id
-	@GeneratedValue(generator = "seqN")
-	private Long id;
+  @Id
+  @GeneratedValue(generator = "seqN")
+  private Long id;
 
-	@Column(name = "cod_node", unique = true, nullable = false, length = 10)
-	private String codNode;
+  @Column(name = "cod_node", unique = true, nullable = false, length = 10)
+  private String codNode;
 
-	@ManyToMany(fetch = FetchType.LAZY, cascade = CascadeType.ALL)
-	@JoinTable(name = "NODE_UPSTREAM", joinColumns = { @JoinColumn(name = "node_id", nullable = false, updatable = false) }, inverseJoinColumns = { @JoinColumn(name = "upstream_id", nullable = false, updatable = false) })
-	private List<Upstream> upstreams;
+  @ManyToMany(fetch = FetchType.LAZY, cascade = CascadeType.ALL)
+  @JoinTable(name = "NODE_UPSTREAM", joinColumns = {@JoinColumn(name = "node_id", nullable = false,
+      updatable = false)}, inverseJoinColumns = {@JoinColumn(name = "upstream_id",
+      nullable = false, updatable = false)})
+  private List<Upstream> upstreams;
 
-	@ManyToMany(fetch = FetchType.LAZY, cascade = CascadeType.ALL)
-	@JoinTable(name = "NODE_DOWNSTREAM", joinColumns = { @JoinColumn(name = "node_id", nullable = false, updatable = false) }, inverseJoinColumns = { @JoinColumn(name = "downstream_id", nullable = false, updatable = false) })
-	private List<Downstream> downstreams;
+  @ManyToMany(fetch = FetchType.LAZY, cascade = CascadeType.ALL)
+  @JoinTable(name = "NODE_DOWNSTREAM", joinColumns = {@JoinColumn(name = "node_id",
+      nullable = false, updatable = false)}, inverseJoinColumns = {@JoinColumn(
+      name = "downstream_id", nullable = false, updatable = false)})
+  private List<Downstream> downstreams;
 
-	/**
-	 * @return the id
-	 */
-	public Long getId() {
-		return id;
-	}
+  /**
+   * @return the id
+   */
+  public Long getId() {
+    return id;
+  }
 
-	/**
-	 * @param id
-	 *            the id to set
-	 */
-	public void setId(Long id) {
-		this.id = id;
-	}
+  /**
+   * @param id the id to set
+   */
+  public void setId(Long id) {
+    this.id = id;
+  }
 
-	/**
-	 * @return the codNode
-	 */
-	public String getCodNode() {
-		return codNode;
-	}
+  /**
+   * @return the codNode
+   */
+  public String getCodNode() {
+    return codNode;
+  }
 
-	/**
-	 * @param codNode
-	 *            the codNode to set
-	 */
-	public void setCodNode(String codNode) {
-		this.codNode = codNode;
-	}
+  /**
+   * @param codNode the codNode to set
+   */
+  public void setCodNode(String codNode) {
+    this.codNode = codNode;
+  }
 
-	/**
-	 * @return the upstreams
-	 */
-	public List<Upstream> getUpstreams() {
-		return upstreams;
-	}
+  /**
+   * @return the upstreams
+   */
+  public List<Upstream> getUpstreams() {
+    return upstreams;
+  }
 
-	/**
-	 * @param upstreams
-	 *            the upstreams to set
-	 */
-	public void setUpstreams(List<Upstream> upstreams) {
-		this.upstreams = upstreams;
-	}
+  /**
+   * @param upstreams the upstreams to set
+   */
+  public void setUpstreams(List<Upstream> upstreams) {
+    this.upstreams = upstreams;
+  }
 
-	/**
-	 * @return the downstreams
-	 */
-	public List<Downstream> getDownstreams() {
-		return downstreams;
-	}
+  /**
+   * @return the downstreams
+   */
+  public List<Downstream> getDownstreams() {
+    return downstreams;
+  }
 
-	/**
-	 * @param downstreams
-	 *            the downstreams to set
-	 */
-	public void setDownstreams(List<Downstream> downstreams) {
-		this.downstreams = downstreams;
-	}
+  /**
+   * @param downstreams the downstreams to set
+   */
+  public void setDownstreams(List<Downstream> downstreams) {
+    this.downstreams = downstreams;
+  }
 
-	@Override
-	public boolean equals(Object obj) {
-		return EqualsBuilder.reflectionEquals(this, obj);
-	}
+  @Override
+  public boolean equals(Object obj) {
+    return EqualsBuilder.reflectionEquals(this, obj);
+  }
 
-	@Override
-	public String toString() {
-		return ToStringBuilder.reflectionToString(this,
-				ToStringStyle.MULTI_LINE_STYLE);
-	}
+  @Override
+  public String toString() {
+    return ToStringBuilder.reflectionToString(this, ToStringStyle.MULTI_LINE_STYLE);
+  }
 
-	@Override
-	public int hashCode() {
-		return HashCodeBuilder.reflectionHashCode(this);
-	}
+  @Override
+  public int hashCode() {
+    return HashCodeBuilder.reflectionHashCode(this);
+  }
 
 }

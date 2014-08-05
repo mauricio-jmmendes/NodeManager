@@ -6,39 +6,39 @@
 	xmlns:p="http://primefaces.org/ui">
 
 	<ui:define name="content">
-		<div id="container" align="left">
-			<h1>Cadastro de Usuários</h1>
+		<div id="container" style="border: thick;" align="left">
+			<h1>Cadastrar CMTS</h1>
 
-			<h:form>
-				<h:outputLabel value="Cod" for="nome" />
-				<h:inputText id="nome" styleClass="texto-longo"
-					value="#{usuarioBean.usuario.nome}" label="Nome" required="true" />
-				<h:outputLabel value="Login" for="login" />
-				<h:inputText id="login" value="#{usuarioBean.usuario.login}"
-					label="Login" required="true">
-					<f:validateLength minimum="4" />
-				</h:inputText>
-				<h:outputLabel value="E-mail" for="email" />
-				<h:inputText id="email" value="#{usuarioBean.usuario.email}"
-					label="E-mail" required="true" />
-				<fieldset class="confirma-senha">
-					<legend>Entre com a senha e confirmação de senha</legend>
-					<h:outputLabel value="Senha" for="senha" />
-					<h:inputSecret id="senha" value="#{usuarioBean.usuario.senha}"
-						label="Senha" required="true" redisplay="true" />
-					<h:outputLabel value="Confirma" for="confirmacaoDeSenha" />
-					<h:inputSecret id="confirmacaoDeSenha"
-						value="#{usuarioBean.confirmacaoDeSenha}" label="Confirma"
-						required="true" />
-				</fieldset>
-				<div align="right">
-					<h:commandLink value="Voltar" immediate="true"
-						action="lista?faces-redirect=true" />
-					&#160;
-					<h:commandButton value="Salvar" action="#{usuarioBean.adiciona}">
-						<f:ajax execute="@form" render=":mensagens" />
-					</h:commandButton>
-				</div>
+			<h:form id="form">
+				<p:growl id="growl" sticky="false" showDetail="true" life="8000" />
+
+				<p:panel header="Cadastrar CMTS">
+					<h:panelGrid columns="2" id="display">
+						<h:outputLabel value="Nome: " for="nome" />
+						<h:inputText id="nome" value="#{cmtsMB.cmts.nome}" label="Nome"
+							required="true" />
+						<h:outputLabel value="Marca: " for="marca" />
+						<h:inputText id="marca" value="#{cmtsMB.cmts.marca}" label="Marca"
+							required="true" />
+						<h:outputLabel value="Modelo: " for="modelo" />
+						<h:inputText id="modelo" value="#{cmtsMB.cmts.modelo}"
+							label="modelo" required="true" />
+						<h:outputLabel value="IP: " for="ip" />
+						<h:inputText id="ip" value="#{cmtsMB.cmts.ip}" label="Ip"
+							required="true" />
+
+						<p:outputLabel for="hub" value="HUB: " />
+						<p:selectOneMenu id="hub" value="#{cmtsMB.hubId}">
+							<f:selectItem itemLabel="Selecione a HUB" itemValue="" />
+							<f:selectItems value="#{cmtsMB.hubs}" var="hub"
+								itemValue="#{hub.id}" itemLabel="#{hub.codHub}" />
+						</p:selectOneMenu>
+
+						<p:commandButton id="btnSalvar" value="Salvar"
+							icon="ui-icon ui-icon-disk" actionListener="#{cmtsMB.save}"
+							update="form" action="cmtsList?faces-redirect=true" />
+					</h:panelGrid>
+				</p:panel>
 			</h:form>
 		</div>
 	</ui:define>

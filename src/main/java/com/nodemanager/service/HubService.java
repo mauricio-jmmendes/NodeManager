@@ -7,44 +7,50 @@ import com.nodemanager.dao.utils.SimpleEntityManager;
 import com.nodemanager.model.Hub;
 
 public class HubService {
-	private HubDAO dao;
 
-	private SimpleEntityManager simpleEntityManager;
+  private HubDAO dao;
 
-	public HubService(SimpleEntityManager simpleEntityManager) {
-		this.simpleEntityManager = simpleEntityManager;
-		dao = new HubDAO(simpleEntityManager.getEntityManager());
-	}
+  private SimpleEntityManager simpleEntityManager;
 
-	public void save(Hub hub) {
-		try {
-			simpleEntityManager.beginTransaction();
-			dao.save(hub);
-			simpleEntityManager.commit();
-		} catch (Exception e) {
-			e.printStackTrace();
-			simpleEntityManager.rollBack();
-		}
-	}
+  public HubService(SimpleEntityManager simpleEntityManager) {
+    this.simpleEntityManager = simpleEntityManager;
+    dao = new HubDAO(simpleEntityManager.getEntityManager());
+  }
 
-	public List<Hub> findAll() {
-		return dao.findAll();
-	}
+  public void save(Hub hub) {
+    try {
+      simpleEntityManager.beginTransaction();
+      dao.save(hub);
+      simpleEntityManager.commit();
+    } catch (Exception e) {
+      e.printStackTrace();
+      simpleEntityManager.rollBack();
+    }
+  }
 
-	public Hub getByCodHub(String codHub) {
+  public List<Hub> findAll() {
+    return dao.findAll();
+  }
 
-		return dao.getByCodHub(codHub);
-	}
+  public Hub getByCodHub(String codHub) {
+    return dao.getByCodHub(codHub);
+  }
 
-	public void delete(Hub hub) {
-		try {
-			simpleEntityManager.beginTransaction();
-			dao.delete(hub);
-			simpleEntityManager.commit();
-		} catch (Exception e) {
-			e.printStackTrace();
-			simpleEntityManager.rollBack();
-		}
+  public void delete(Hub hub) {
+    try {
+      simpleEntityManager.beginTransaction();
+      dao.delete(hub);
+      simpleEntityManager.commit();
+    } catch (Exception e) {
+      e.printStackTrace();
+      simpleEntityManager.rollBack();
+    }
 
-	}
+  }
+
+  public Hub getById(Long hubId) {
+
+    return dao.getById(hubId);
+
+  }
 }

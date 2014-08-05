@@ -8,28 +8,28 @@ import com.nodemanager.model.Node;
 
 public class NodeService {
 
-	private NodeDAO dao;
+  private NodeDAO dao;
 
-	private SimpleEntityManager simpleEntityManager;
+  private SimpleEntityManager simpleEntityManager;
 
-	public NodeService(SimpleEntityManager simpleEntityManager) {
-		this.simpleEntityManager = simpleEntityManager;
-		dao = new NodeDAO(simpleEntityManager.getEntityManager());
-	}
+  public NodeService(SimpleEntityManager simpleEntityManager) {
+    this.simpleEntityManager = simpleEntityManager;
+    dao = new NodeDAO(simpleEntityManager.getEntityManager());
+  }
 
-	public void save(Node node) {
-		try {
-			simpleEntityManager.beginTransaction();
-			dao.save(node);
-			simpleEntityManager.commit();
-		} catch (Exception e) {
-			e.printStackTrace();
-			simpleEntityManager.rollBack();
-		}
-	}
+  public void save(Node node) {
+    try {
+      simpleEntityManager.beginTransaction();
+      dao.save(node);
+      simpleEntityManager.commit();
+    } catch (Exception e) {
+      e.printStackTrace();
+      simpleEntityManager.rollBack();
+    }
+  }
 
-	public List<Node> findAll() {
-		return dao.findAll();
-	}
+  public List<Node> findAll() {
+    return dao.findAll();
+  }
 
 }

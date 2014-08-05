@@ -7,28 +7,28 @@ import com.nodemanager.dao.utils.SimpleEntityManager;
 import com.nodemanager.model.Downstream;
 
 public class DownstreamService {
-	private DownstreamDAO dao;
+  private DownstreamDAO dao;
 
-	private SimpleEntityManager simpleEntityManager;
+  private SimpleEntityManager simpleEntityManager;
 
-	public DownstreamService(SimpleEntityManager simpleEntityManager) {
-		this.simpleEntityManager = simpleEntityManager;
-		dao = new DownstreamDAO(simpleEntityManager.getEntityManager());
-	}
+  public DownstreamService(SimpleEntityManager simpleEntityManager) {
+    this.simpleEntityManager = simpleEntityManager;
+    dao = new DownstreamDAO(simpleEntityManager.getEntityManager());
+  }
 
-	public void save(Downstream downstream) {
-		try {
-			simpleEntityManager.beginTransaction();
-			dao.save(downstream);
-			simpleEntityManager.commit();
-		} catch (Exception e) {
-			e.printStackTrace();
-			simpleEntityManager.rollBack();
-		}
-	}
+  public void save(Downstream downstream) {
+    try {
+      simpleEntityManager.beginTransaction();
+      dao.save(downstream);
+      simpleEntityManager.commit();
+    } catch (Exception e) {
+      e.printStackTrace();
+      simpleEntityManager.rollBack();
+    }
+  }
 
-	public List<Downstream> findAll() {
-		return dao.findAll();
-	}
+  public List<Downstream> findAll() {
+    return dao.findAll();
+  }
 
 }

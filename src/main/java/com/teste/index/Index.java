@@ -8,12 +8,12 @@ import javax.faces.bean.RequestScoped;
 @ManagedBean
 public class Index {
 
-	@PostConstruct
-	public void init() {
-		System.out.println("Bean executado!");
-	}
+  @PostConstruct
+  public void init() {
+    System.out.println("Bean executado!");
+  }
 
-	public String getMessage() {
-		return "Hello World JSF!";
-	}
+  public String getMessage() {
+    return "Hello World JSF!";
+  }
 }

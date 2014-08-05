@@ -8,28 +8,28 @@ import com.nodemanager.model.Login;
 
 public class LoginService {
 
-	private LoginDAO dao;
+  private LoginDAO dao;
 
-	private SimpleEntityManager simpleEntityManager;
+  private SimpleEntityManager simpleEntityManager;
 
-	public LoginService(SimpleEntityManager simpleEntityManager) {
-		this.simpleEntityManager = simpleEntityManager;
-		dao = new LoginDAO(simpleEntityManager.getEntityManager());
-	}
+  public LoginService(SimpleEntityManager simpleEntityManager) {
+    this.simpleEntityManager = simpleEntityManager;
+    dao = new LoginDAO(simpleEntityManager.getEntityManager());
+  }
 
-	public void save(Login login) {
-		try {
-			simpleEntityManager.beginTransaction();
-			dao.save(login);
-			simpleEntityManager.commit();
-		} catch (Exception e) {
-			e.printStackTrace();
-			simpleEntityManager.rollBack();
-		}
-	}
+  public void save(Login login) {
+    try {
+      simpleEntityManager.beginTransaction();
+      dao.save(login);
+      simpleEntityManager.commit();
+    } catch (Exception e) {
+      e.printStackTrace();
+      simpleEntityManager.rollBack();
+    }
+  }
 
-	public List<Login> findAll() {
-		return dao.findAll();
-	}
+  public List<Login> findAll() {
+    return dao.findAll();
+  }
 
 }
