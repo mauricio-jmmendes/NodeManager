@@ -32,4 +32,15 @@ public class PlacaService {
     return dao.findAll();
   }
 
+  public void delete(Placa placa) {
+    try {
+      simpleEntityManager.beginTransaction();
+      dao.delete(placa);
+      simpleEntityManager.commit();
+    } catch (Exception e) {
+      e.printStackTrace();
+      simpleEntityManager.rollBack();
+    }
+  }
+
 }

@@ -5,7 +5,7 @@ import java.util.List;
 
 import javax.annotation.PostConstruct;
 import javax.faces.bean.ManagedBean;
-import javax.faces.bean.SessionScoped;
+import javax.faces.bean.RequestScoped;
 
 import com.nodemanager.dao.utils.SimpleEntityManager;
 import com.nodemanager.managedbean.util.FacesUtils;
@@ -16,7 +16,7 @@ import com.nodemanager.service.HubService;
 import com.nodemanager.util.JPAUtil;
 
 @ManagedBean
-@SessionScoped
+@RequestScoped
 public class CmtsMB {
 
   String persistenceUnitName = "NodeManagerPU";
