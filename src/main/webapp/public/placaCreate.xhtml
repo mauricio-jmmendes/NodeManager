@@ -1,0 +1,40 @@
+<ui:composition template="template/main.xhtml"
+	xmlns="http://www.w3.org/1999/xhtml"
+	xmlns:f="http://java.sun.com/jsf/core"
+	xmlns:h="http://java.sun.com/jsf/html"
+	xmlns:ui="http://java.sun.com/jsf/facelets"
+	xmlns:p="http://primefaces.org/ui">
+
+	<ui:define name="content">
+
+		<h:form>
+			<p:panel header="Cadastrar Placa">
+				<h:panelGrid columns="2">
+					<p:outputLabel for="hub" value="HUB: " />
+					<p:selectOneMenu id="hub" value="#{cmtsMB.hubId}">
+						<f:selectItem itemLabel="Selecione a HUB" itemValue="" />
+						<f:selectItems value="#{cmtsMB.hubs}" var="hub"
+							itemValue="#{hub.id}" itemLabel="#{hub.codHub}" />
+					</p:selectOneMenu>
+					<p:outputLabel value="CMTS: " />
+					<p:selectOneMenu>
+					</p:selectOneMenu>
+					<p:outputLabel value="Placa:" />
+					<p:inputText value="Digite o modelo da placa"/>
+					<p:outputLabel value="Slot:" />
+					<p:selectOneMenu>
+					</p:selectOneMenu>
+					<p:outputLabel value="Conectores:" />
+					<p:inputText size="10" />
+					<p:growl id="growl" life="2000" />
+					<p:commandButton value="Cadastrar" id="ajax" update="growl"
+						actionListener="#{placaMB.save}"
+						action="placaList?faces-redirect=true" />
+				</h:panelGrid>
+				<br />
+
+			</p:panel>
+		</h:form>
+
+	</ui:define>
+</ui:composition>
