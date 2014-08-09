@@ -1,5 +1,6 @@
 package com.nodemanager.model;
 
+import java.io.Serializable;
 import java.util.List;
 
 import javax.persistence.CascadeType;
@@ -21,7 +22,12 @@ import org.hibernate.annotations.NaturalId;
 @Entity
 @Table(name = "HUB")
 @SequenceGenerator(name = "seqH", sequenceName = "seq_hub", allocationSize = 1, initialValue = 1)
-public class Hub {
+public class Hub implements Serializable {
+
+  /**
+   * 
+   */
+  private static final long serialVersionUID = 1L;
 
   @Id
   @GeneratedValue(generator = "seqH")

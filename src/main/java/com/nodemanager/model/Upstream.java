@@ -1,5 +1,6 @@
 package com.nodemanager.model;
 
+import java.io.Serializable;
 import java.util.List;
 
 import javax.persistence.CascadeType;
@@ -25,7 +26,12 @@ import com.nodemanager.util.Status;
 @Table(name = "UPSTREAM")
 @SequenceGenerator(name = "seqU", sequenceName = "seq_upstream", allocationSize = 1,
     initialValue = 1)
-public class Upstream {
+public class Upstream implements Serializable {
+
+  /**
+   * 
+   */
+  private static final long serialVersionUID = 1L;
 
   @Id
   @GeneratedValue(generator = "seqU")

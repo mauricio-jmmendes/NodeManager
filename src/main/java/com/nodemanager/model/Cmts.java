@@ -1,5 +1,6 @@
 package com.nodemanager.model;
 
+import java.io.Serializable;
 import java.util.List;
 
 import javax.persistence.CascadeType;
@@ -25,7 +26,12 @@ import org.hibernate.annotations.NaturalId;
 @Table(name = "CMTS", uniqueConstraints = {@UniqueConstraint(columnNames = "nome"),
     @UniqueConstraint(columnNames = "ip")})
 @SequenceGenerator(name = "seqC", sequenceName = "seq_cmts", allocationSize = 1, initialValue = 1)
-public class Cmts {
+public class Cmts implements Serializable {
+
+  /**
+   * 
+   */
+  private static final long serialVersionUID = 1L;
 
   @Id
   @GeneratedValue(generator = "seqC")
@@ -45,7 +51,7 @@ public class Cmts {
   private String modelo;
 
   @OneToMany(mappedBy = "cmts", targetEntity = Slot.class, cascade = CascadeType.ALL,
-      fetch = FetchType.LAZY)
+      fetch = FetchType.EAGER)
   private List<Slot> slots;
 
   @ManyToOne

@@ -8,25 +8,49 @@
 	<ui:define name="content">
 
 		<h:form>
+			<p:growl id="growl" sticky="false" showDetail="true" life="2000" />
+
 			<p:panel header="Cadastrar Placa">
 				<h:panelGrid columns="2">
+
 					<p:outputLabel for="hub" value="HUB: " />
-					<p:selectOneMenu id="hub" value="#{cmtsMB.hubId}">
+					<p:selectOneMenu id="hub" value="#{placaMB.hubId}" required="true">
 						<f:selectItem itemLabel="Selecione a HUB" itemValue="" />
-						<f:selectItems value="#{cmtsMB.hubs}" var="hub"
-							itemValue="#{hub.id}" itemLabel="#{hub.codHub}" />
+						<f:selectItems value="#{placaMB.hubs}" var="hub"
+							itemValue="#{hub.id}" itemLabel="#{hub.codHub}">
+
+						</f:selectItems>
+						<p:ajax update="lstBoxCmts"
+							listener="#{placaMB.handleHubListBoxChange}" />
 					</p:selectOneMenu>
+
 					<p:outputLabel value="CMTS: " />
-					<p:selectOneMenu>
+					<p:selectOneMenu id="lstBoxCmts" value="#{placaMB.cmtsId}"
+						required="true">
+						<f:selectItem itemLabel="Selecione o CMTS" itemValue="" />
+						<f:selectItems value="#{placaMB.cmtsList}" var="cmts"
+							itemValue="#{cmts.id}" itemLabel="#{cmts.nome}">
+
+						</f:selectItems>
+						<p:ajax update="slotSOM"
+							listener="#{placaMB.handleCmtsListBoxChange}" process="@this" />
 					</p:selectOneMenu>
-					<p:outputLabel value="Placa:" />
-					<p:inputText value="Digite o modelo da placa"/>
+
 					<p:outputLabel value="Slot:" />
-					<p:selectOneMenu>
+					<p:selectOneMenu id="slotSOM" value="#{placaMB.slotId}"
+						required="true">
+						<f:selectItem itemLabel="Selecione o Slot" itemValue="" />
+						<f:selectItems value="#{placaMB.slots}" var="slot"
+							itemValue="#{slot.id}" itemLabel="#{slot.codSlot}" />
 					</p:selectOneMenu>
+
+					<p:outputLabel value="Placa:" />
+					<p:inputText placeholder="Digite o modelo da placa"
+						value="#{placaMB.placa.codPlaca}" />
+
 					<p:outputLabel value="Conectores:" />
 					<p:inputText size="10" />
-					<p:growl id="growl" life="2000" />
+
 					<p:commandButton value="Cadastrar" id="ajax" update="growl"
 						actionListener="#{placaMB.save}"
 						action="placaList?faces-redirect=true" />

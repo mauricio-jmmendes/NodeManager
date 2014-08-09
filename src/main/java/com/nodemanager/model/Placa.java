@@ -107,6 +107,20 @@ public class Placa implements Serializable {
     this.slot = slot;
   }
 
+  /**
+   * @return the conectorList
+   */
+  public List<Conector> getConectorList() {
+    return conectorList;
+  }
+
+  /**
+   * @param conectorList the conectorList to set
+   */
+  public void setConectorList(List<Conector> conectorList) {
+    this.conectorList = conectorList;
+  }
+
   @Override
   public boolean equals(Object obj) {
     return EqualsBuilder.reflectionEquals(this, obj);

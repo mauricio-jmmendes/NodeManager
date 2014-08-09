@@ -1,5 +1,6 @@
 package com.nodemanager.model;
 
+import java.io.Serializable;
 import java.util.List;
 
 import javax.persistence.Column;
@@ -23,7 +24,12 @@ import com.nodemanager.util.Status;
 @Table(name = "CONECTOR")
 @SequenceGenerator(name = "seqCon", sequenceName = "seq_conector", allocationSize = 1,
     initialValue = 1)
-public class Conector {
+public class Conector implements Serializable {
+
+  /**
+   * 
+   */
+  private static final long serialVersionUID = 1L;
 
   @Id
   @GeneratedValue(generator = "seqCon")
