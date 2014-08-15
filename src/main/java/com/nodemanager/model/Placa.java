@@ -48,7 +48,8 @@ public class Placa implements Serializable {
   @JoinColumn(name = "slots_id", unique = true)
   Slot slot;
 
-  @OneToMany(mappedBy = "placa")
+  @OneToMany(mappedBy = "placa", targetEntity = Conector.class, cascade = CascadeType.ALL,
+      fetch = FetchType.LAZY)
   List<Conector> conectorList;
 
   /**

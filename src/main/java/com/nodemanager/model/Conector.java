@@ -3,8 +3,10 @@ package com.nodemanager.model;
 import java.io.Serializable;
 import java.util.List;
 
+import javax.persistence.CascadeType;
 import javax.persistence.Column;
 import javax.persistence.Entity;
+import javax.persistence.FetchType;
 import javax.persistence.GeneratedValue;
 import javax.persistence.Id;
 import javax.persistence.JoinColumn;
@@ -38,17 +40,19 @@ public class Conector implements Serializable {
   @Column(name = "num_conector", nullable = false)
   private String numConector;
 
-  @Column(name = "status_conector", unique = true, nullable = false)
+  @Column(name = "status_conector", nullable = false)
   private Status statusConector;
 
   @ManyToOne
   @JoinColumn(name = "placa_id")
   private Placa placa;
 
-  @OneToMany(mappedBy = "conectorUp")
+  @OneToMany(mappedBy = "conectorUp", targetEntity = Upstream.class, cascade = CascadeType.ALL,
+      fetch = FetchType.LAZY)
   private List<Upstream> upstreamList;
 
-  @OneToMany(mappedBy = "conectorDown")
+  @OneToMany(mappedBy = "conectorDown", targetEntity = Downstream.class, cascade = CascadeType.ALL,
+      fetch = FetchType.LAZY)
   private List<Downstream> downstreamList;
 
   /**

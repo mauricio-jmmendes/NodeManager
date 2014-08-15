@@ -6,8 +6,7 @@
 	xmlns:p="http://primefaces.org/ui">
 
 	<ui:define name="content">
-
-		<h:form>
+		<h:form prependId="false">
 			<p:growl id="growl" sticky="false" showDetail="true" life="2000" />
 
 			<p:panel header="Cadastrar Placa">
@@ -49,14 +48,84 @@
 						value="#{placaMB.placa.codPlaca}" />
 
 					<p:outputLabel value="Conectores:" />
-					<p:inputText size="10" />
+					<p:inputText id="conList" placeholder="0,1, 2, 3, 4, 5, ..."
+						value="#{placaMB.converter.stringConectorList}" />
 
-					<p:commandButton value="Cadastrar" id="ajax" update="growl"
-						actionListener="#{placaMB.save}"
-						action="placaList?faces-redirect=true" />
+					<p:commandButton id="ajax" value="Add"
+						actionListener="#{placaMB.addConectorsAction}"
+						process="@this, conList" update="conector" />
 				</h:panelGrid>
-				<br />
 
+				<br />
+				<h:panelGroup>
+					<p:panelGrid id="grid" columns="4">
+						<p:selectOneMenu id="conector"
+							value="#{placaMB.converter.stringNumConector}" required="true">
+							<f:selectItem itemLabel="Selecione o Conector" itemValue="" />
+							<f:selectItems value="#{placaMB.conectors}" var="conector"
+								itemValue="#{conector.numConector}"
+								itemLabel="#{conector.numConector}">
+							</f:selectItems>
+						</p:selectOneMenu>
+
+						<p:selectOneMenu id="typeStream"
+							value="#{placaMB.converter.stringTypeStream}" required="true">
+							<f:selectItem itemLabel="Selecione o tipo de Stream" itemValue="" />
+							<f:selectItem itemLabel="UPSTREAM" itemValue="UPSTREAM" />
+							<f:selectItem itemLabel="DOWNSTREAM" itemValue="DOWNSTREAM" />
+						</p:selectOneMenu>
+
+						<p:inputText placeholder="0,1, 2, 3, 4, 5, ..."
+							value="#{placaMB.converter.stringNameUpOrDownList}" />
+
+						<p:commandButton value="Add"
+							actionListener="#{placaMB.addConvertersAction}"
+							process="@this, grid" update="converterDT" />
+					</p:panelGrid>
+
+					<p:spacer />
+
+					<p:dataTable id="converterDT" var="converter"
+						value="#{placaMB.converterList}">
+						<p:column>
+							<f:facet name="header">
+								<h:outputText value="Conector" />
+							</f:facet>
+						#{converter.stringNumConector}
+					</p:column>
+						<p:column>
+							<f:facet name="header">
+								<h:outputText value="Tipo" />
+							</f:facet>
+						#{converter.stringTypeStream}
+					</p:column>
+						<p:column>
+							<f:facet name="header">
+								<h:outputText value="Nomes" />
+							</f:facet>
+						#{converter.stringNameUpOrDownList}
+					</p:column>
+						<p:column>
+							<f:facet name="header">
+								<h:outputText value="Opções" />
+							</f:facet>
+							<h:commandLink value="editar" action="#{placaMB.prepareToEdit()}">
+							</h:commandLink>  &#160;
+						<h:commandLink value="remover" action="#{placaMB.delete()}"
+								onclick="return confirm('Deseja realmente remover essa Configuração?');"
+								update="growl">
+								<f:ajax render="@form" />
+							</h:commandLink>
+						</p:column>
+
+					</p:dataTable>
+
+					<br />
+
+					<p:commandButton value="Cadastrar" id="addPlaca" update="growl"
+						actionListener="#{placaMB.save}"
+						action="hubList?faces-redirect=true" />
+				</h:panelGroup>
 			</p:panel>
 		</h:form>
 

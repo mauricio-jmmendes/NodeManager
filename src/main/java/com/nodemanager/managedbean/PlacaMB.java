@@ -33,7 +33,6 @@ public class PlacaMB {
   private Long cmtsId;
   private List<Cmts> cmtsList;
 
-
   private Long slotId;
   private Slot slot;
   private List<Slot> slots;
@@ -42,6 +41,7 @@ public class PlacaMB {
   private PlacaService placaService;
 
   private Conector conector;
+  private List<Conector> conectors;
 
   private Converter converter;
   private List<Converter> converterList = new ArrayList<>();
@@ -54,6 +54,9 @@ public class PlacaMB {
 
     placa = new Placa();
     placaService = new PlacaService(JPAUtil.getSimpleEntityManager());
+
+    conector = new Conector();
+    conectors = new ArrayList<>();
 
     hubService = new HubService(JPAUtil.getSimpleEntityManager());
     hubs = hubService.findAll();
@@ -75,6 +78,20 @@ public class PlacaMB {
     }
   }
 
+  public void addConectorsAction() {
+    for (String conn : converter.getConectorList()) {
+      Conector conector = new Conector();
+      conector.setNumConector(conn);
+      conectors.add(conector);
+    }
+  }
+
+  public void addConvertersAction() {
+    converterList.add(converter);
+    converter = new Converter();
+
+  }
+
   public void save() {
 
     slot = getSlotFromCmtsById();
@@ -87,10 +104,10 @@ public class PlacaMB {
     for (Converter converter : converterList) {
       conector = new Conector();
 
-      conector.setNumConector(converter.getPrimeiroParametro());
+      conector.setNumConector(converter.getStringNumConector());
       conector.setStatusConector(Status.OCUPADO);
 
-      if (converter.getSegundoParametro().equals("UPSTREAM")) {
+      if (converter.getStringTypeStream().equals("UPSTREAM")) {
 
         List<Upstream> upstreams = new ArrayList<>();
 
@@ -105,7 +122,7 @@ public class PlacaMB {
 
         conector.setUpstreamList(upstreams);
 
-      } else {
+      } else { // if not then it is a downstream
 
         List<Downstream> downstreams = new ArrayList<>();
 
@@ -296,6 +313,20 @@ public class PlacaMB {
    */
   public void setConector(Conector conector) {
     this.conector = conector;
+  }
+
+  /**
+   * @return the conectors
+   */
+  public List<Conector> getConectors() {
+    return conectors;
+  }
+
+  /**
+   * @param conectors the conectors to set
+   */
+  public void setConectors(List<Conector> conectors) {
+    this.conectors = conectors;
   }
 
   /**

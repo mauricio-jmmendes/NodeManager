@@ -51,7 +51,7 @@ public class Cmts implements Serializable {
   private String modelo;
 
   @OneToMany(mappedBy = "cmts", targetEntity = Slot.class, cascade = CascadeType.ALL,
-      fetch = FetchType.EAGER)
+      fetch = FetchType.LAZY)
   private List<Slot> slots;
 
   @ManyToOne
