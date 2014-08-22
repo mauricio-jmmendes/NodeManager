@@ -74,6 +74,7 @@ public class PlacaMB {
     for (Cmts myCmts : cmtsList) {
       if (myCmts.getId() == cmtsId) {
         slots = myCmts.getSlots();
+        break;
       }
     }
   }

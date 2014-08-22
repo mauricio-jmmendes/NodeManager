@@ -1,5 +1,7 @@
 package com.nodemanager.model;
 
+import java.io.Serializable;
+
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
@@ -17,7 +19,12 @@ import org.hibernate.annotations.NaturalId;
 @Entity
 @Table(name = "LOGIN", uniqueConstraints = {@UniqueConstraint(columnNames = "login")})
 @SequenceGenerator(name = "seqL", sequenceName = "seq_login", allocationSize = 1, initialValue = 1)
-public class Login {
+public class Login implements Serializable {
+
+  /**
+   * 
+   */
+  private static final long serialVersionUID = 1L;
 
   @Id
   @GeneratedValue(generator = "seqL")
