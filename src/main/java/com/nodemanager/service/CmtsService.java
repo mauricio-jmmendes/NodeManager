@@ -24,6 +24,7 @@ public class CmtsService {
       simpleEntityManager.beginTransaction();
       createSlots(cmts);
       dao.save(cmts);
+      
       simpleEntityManager.commit();
     } catch (Exception e) {
       e.printStackTrace();

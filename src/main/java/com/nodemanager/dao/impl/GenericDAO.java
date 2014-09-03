@@ -33,6 +33,7 @@ public class GenericDAO<T, PK> implements IGenericDAO<T, PK> {
   @Override
   public void save(T entity) {
     entityManager.persist(entity);
+    entityManager.flush();
   }
 
   /*

@@ -99,6 +99,7 @@ public class PlacaMB {
     slot.setStatusSlot(Status.OCUPADO);
 
     placa.setSlot(slot);
+    slot.setPlaca(placa);
 
     List<Conector> conectors = new ArrayList<>();
 
@@ -154,7 +155,7 @@ public class PlacaMB {
 
   private Slot getSlotFromCmtsById() {
     for (Slot mySlot : slots) {
-      if (mySlot.getId() == slotId) {
+      if (mySlot.getId().longValue() == slotId.longValue()) {
         return mySlot;
       }
     }

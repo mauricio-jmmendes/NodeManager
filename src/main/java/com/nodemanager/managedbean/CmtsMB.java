@@ -7,7 +7,6 @@ import javax.annotation.PostConstruct;
 import javax.faces.bean.ManagedBean;
 import javax.faces.bean.RequestScoped;
 
-import com.nodemanager.dao.utils.SimpleEntityManager;
 import com.nodemanager.managedbean.util.FacesUtils;
 import com.nodemanager.model.Cmts;
 import com.nodemanager.model.Hub;
@@ -18,10 +17,6 @@ import com.nodemanager.util.JPAUtil;
 @ManagedBean
 @RequestScoped
 public class CmtsMB {
-
-  String persistenceUnitName = "NodeManagerPU";
-
-  SimpleEntityManager simpleEntityManager;
 
   private CmtsService cmtsService;
 
@@ -54,7 +49,16 @@ public class CmtsMB {
   }
 
   public void save() {
-    cmts.setHub(hubService.getById(hubId));
+    Hub hub = hubService.getById(hubId);
+    cmts.setHub(hub);
+    if (null != hub.getCmtsList()) {
+      hub.getCmtsList().add(cmts);
+    } else {
+      List<Cmts> list = new ArrayList<>();
+      list.add(cmts);
+      hub.setCmtsList(list);
+    }
+
     cmtsService.save(cmts);
     FacesUtils.addInfoMessage("CMTS cadastrado com sucesso!");
     FacesUtils.getExternalContext().getFlash().setKeepMessages(true);
