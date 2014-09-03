@@ -8,13 +8,15 @@ import javax.faces.bean.ManagedBean;
 import javax.faces.bean.ViewScoped;
 
 import com.nodemanager.model.Cmts;
+import com.nodemanager.model.Conector;
+import com.nodemanager.model.Downstream;
 import com.nodemanager.model.Hub;
 import com.nodemanager.model.Node;
 import com.nodemanager.model.Placa;
 import com.nodemanager.model.Slot;
+import com.nodemanager.model.Upstream;
 import com.nodemanager.service.HubService;
 import com.nodemanager.service.NodeService;
-import com.nodemanager.service.PlacaService;
 import com.nodemanager.util.JPAUtil;
 
 @ManagedBean
@@ -35,11 +37,9 @@ public class NodeMB {
   private Long placaId;
   private Placa placa;
   private List<Placa> placas;
-  
-  private String[] selectedUps;
-  private String[] selectedDowns;
 
-  private PlacaService placaService;
+  private List<String> selectedUps;
+  private List<String> selectedDowns;
 
   @PostConstruct
   public void init() {
@@ -77,16 +77,49 @@ public class NodeMB {
       }
     }
   }
-  
+
   public void loadPlaca() {
-    for(Placa myPlaca : placas){
+    for (Placa myPlaca : placas) {
       if (myPlaca.getId() == placaId) {
         placa = myPlaca;
       }
     }
   }
 
-  public void save() {}
+  public void save() {
+    List<Upstream> ups = new ArrayList<>();
+    List<Downstream> downs = new ArrayList<>();
+
+    for (String idUp : selectedUps) {
+      for (Conector conn : placa.getConectorList()) {
+        for (Upstream up : conn.getUpstreamList()) {
+          if (up.getId() == Long.parseLong(idUp)) {
+            up.getNodes().add(node);
+            ups.add(up);
+            break;
+          }
+        }
+      }
+    }
+
+    for (String idDown : selectedDowns) {
+      for (Conector conn : placa.getConectorList()) {
+        for (Downstream down : conn.getDownstreamList()) {
+          if (down.getId() == Long.parseLong(idDown)) {
+            down.getNodes().add(node);
+            downs.add(down);
+            break;
+          }
+        }
+      }
+    }
+
+    node.setUpstreams(ups);
+    node.setDownstreams(downs);
+
+    nodeService.save(node);
+
+  }
 
   /**
    * @return the node
@@ -203,29 +236,37 @@ public class NodeMB {
   /**
    * @return the selectedUps
    */
-  public String[] getSelectedUps() {
+  public List<String> getSelectedUps() {
     return selectedUps;
   }
 
   /**
    * @param selectedUps the selectedUps to set
    */
-  public void setSelectedUps(String[] selectedUps) {
-    this.selectedUps = selectedUps;
+  public void setSelectedUps(List<String> selectedUps) {
+    if (null == this.selectedUps) {
+      this.selectedUps = selectedUps;
+    } else if (selectedUps.size() != 0) {
+      this.selectedUps.addAll(selectedUps);
+    }
   }
 
   /**
    * @return the selectedDowns
    */
-  public String[] getSelectedDowns() {
+  public List<String> getSelectedDowns() {
     return selectedDowns;
   }
 
   /**
    * @param selectedDowns the selectedDowns to set
    */
-  public void setSelectedDowns(String[] selectedDowns) {
-    this.selectedDowns = selectedDowns;
+  public void setSelectedDowns(List<String> selectedDowns) {
+    if (null == this.selectedDowns) {
+      this.selectedDowns = selectedDowns;
+    } else if (selectedDowns.size() != 0) {
+      this.selectedDowns.addAll(selectedDowns);
+    }
   }
 
 }
