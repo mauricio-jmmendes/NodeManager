@@ -32,4 +32,8 @@ public class NodeService {
     return dao.findAll();
   }
 
+  public List<Node> findByCodNode(String codNode) {
+    return dao.findByCodNode(codNode);
+  }
+
 }

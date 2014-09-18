@@ -12,7 +12,7 @@
 			<h:form>
 				<p:growl id="growl" sticky="false" showDetail="true" life="8000" />
 
-				<div align="right">
+				<div align="right" style="margin-bottom:10px;width: 1200px">
 					<h:commandButton value="Novo" action="cmtsCreateEdit?faces-redirect=true"
 						actionListener="#{cmtsMB.prepareToAdd}" immediate="true" />
 					<p:spacer />
@@ -23,7 +23,7 @@
 
 				<p:dataTable id="tabela" var="cmts" value="#{cmtsMB.cmtsList}"
 					paginatorTemplate="{CurrentPageReport}  {FirstPageLink} {PreviousPageLink} {PageLinks} {NextPageLink} {LastPageLink}"
-					paginator="true" rows="5" style="margin-bottom:10px">
+					paginator="true" rows="5" style="margin-bottom:10px;width: 1200px">
 					<p:column>
 						<f:facet name="header">
 							<h:outputText value="Id" />

@@ -34,7 +34,7 @@ public class Hub implements Serializable {
   private Long id;
 
   @NaturalId
-  @Column(unique = true, nullable = false)
+  @Column(name = "cod_hub", unique = true, nullable = false)
   private String codHub;
 
   @OneToMany(mappedBy = "hub", targetEntity = Cmts.class, cascade = CascadeType.ALL,

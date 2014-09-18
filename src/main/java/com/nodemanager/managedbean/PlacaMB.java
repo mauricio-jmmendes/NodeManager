@@ -117,7 +117,7 @@ public class PlacaMB {
           Upstream upstream = new Upstream();
           upstream.setConectorUp(conector);
           upstream.setNumUpStream(Integer.parseInt(element));
-          upstream.setStatusUp(Status.OCUPADO);
+          upstream.setStatusUp(Status.LIVRE);
 
           upstreams.add(upstream);
         }
@@ -132,7 +132,7 @@ public class PlacaMB {
           Downstream downstream = new Downstream();
           downstream.setConectorDown(conector);
           downstream.setNumDownStream(Integer.parseInt(element));
-          downstream.setStatusDown(Status.OCUPADO);
+          downstream.setStatusDown(Status.LIVRE);
 
           downstreams.add(downstream);
         }

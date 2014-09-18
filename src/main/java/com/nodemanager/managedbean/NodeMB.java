@@ -23,8 +23,9 @@ import com.nodemanager.util.JPAUtil;
 @ViewScoped
 public class NodeMB {
 
-  Node node;
-  NodeService nodeService;
+  private Node node;
+  private List<Node> nodes;
+  private NodeService nodeService;
 
   private Long hubId;
   private List<Hub> hubs;
@@ -41,14 +42,28 @@ public class NodeMB {
   private List<String> selectedUps;
   private List<String> selectedDowns;
 
+  private String selectedRetorno;
+  private String selectedDireto;
+
   @PostConstruct
   public void init() {
 
     nodeService = new NodeService(JPAUtil.getSimpleEntityManager());
     node = new Node();
 
+    nodes = new ArrayList<>();
+
     hubService = new HubService(JPAUtil.getSimpleEntityManager());
     hubs = hubService.findAll();
+
+    placa = new Placa();
+    placas = new ArrayList<>();
+
+  }
+
+  public void prepareToAdd() {
+    this.node = new Node();
+    this.hubs = hubService.findAll();
 
     placa = new Placa();
     placas = new ArrayList<>();
@@ -78,6 +93,11 @@ public class NodeMB {
     }
   }
 
+  public void loadNode() {
+    nodes = nodeService.findByCodNode(node.getCodNode());
+  }
+
+
   public void loadPlaca() {
     for (Placa myPlaca : placas) {
       if (myPlaca.getId() == placaId) {
@@ -86,39 +106,157 @@ public class NodeMB {
     }
   }
 
-  public void save() {
-    List<Upstream> ups = new ArrayList<>();
-    List<Downstream> downs = new ArrayList<>();
+  public void addUps() {
+
+    String retorno = node.getCodNode() + "-" + selectedRetorno;
+
+    node.setCodNode(retorno);
+
+    List<Upstream> retornos = new ArrayList<>();
 
     for (String idUp : selectedUps) {
       for (Conector conn : placa.getConectorList()) {
+        
+        if (null == conn.getUpstreamList()) {
+          continue;
+        }
+        
         for (Upstream up : conn.getUpstreamList()) {
           if (up.getId() == Long.parseLong(idUp)) {
-            up.getNodes().add(node);
-            ups.add(up);
-            break;
+            if (null != up.getNodes()) {
+              if (!up.getNodes().contains(node)) {
+                up.getNodes().add(node);
+                retornos.add(up);
+                break;
+              }
+            } else {
+              List<Node> nodes = new ArrayList<>();
+              nodes.add(node);
+
+              up.setNodes(nodes);
+
+              retornos.add(up);
+              break;
+            }
           }
         }
       }
     }
+
+
+
+    if (!retornos.isEmpty()) {
+      if (null != node.getUpstreams()) {
+        node.getUpstreams().addAll(retornos);
+      } else {
+        node.setUpstreams(retornos);
+      }
+
+      selectedUps.clear();
+    }
+
+    if (!nodes.contains(node)) {
+      nodes.add(node);
+      node = new Node();
+    }
+  }
+
+  public List<Upstream> retornoList() {
+
+    List<Upstream> ups = new ArrayList<>();
+
+    for (Node node : nodes) {
+      if (null != node.getUpstreams()) {
+        for (Upstream upstream : node.getUpstreams()) {
+          if (!ups.contains(upstream)) {
+            ups.add(upstream);
+          }
+        }
+      }
+    }
+
+    return ups;
+  }
+
+  public List<Downstream> diretoList() {
+    List<Downstream> downs = new ArrayList<>();
+    for (Node node : nodes) {
+      if (null != node.getDownstreams()) {
+        for (Downstream down : node.getDownstreams()) {
+          if (!downs.contains(node)) {
+            downs.add(down);
+          }
+        }
+      }
+    }
+
+    return downs;
+  }
+
+
+  public void addDowns() {
+
+    String retorno = node.getCodNode() + "-" + selectedDireto;
+
+    node.setCodNode(retorno);
+
+    List<Downstream> diretos = new ArrayList<>();
 
     for (String idDown : selectedDowns) {
       for (Conector conn : placa.getConectorList()) {
+        if (null == conn.getDownstreamList()) {
+          continue;
+        }
         for (Downstream down : conn.getDownstreamList()) {
           if (down.getId() == Long.parseLong(idDown)) {
-            down.getNodes().add(node);
-            downs.add(down);
-            break;
+            if (null != down.getNodes()) {
+              if (!down.getNodes().contains(node)) {
+                down.getNodes().add(node);
+                diretos.add(down);
+                break;
+              }
+            } else {
+              List<Node> nodes = new ArrayList<>();
+              nodes.add(node);
+
+              down.setNodes(nodes);
+
+              diretos.add(down);
+              break;
+            }
+            
+            
+            
+            if (!down.getNodes().contains(node)) {
+              down.getNodes().add(node);
+              diretos.add(down);
+              break;
+            }
           }
         }
       }
     }
 
-    node.setUpstreams(ups);
-    node.setDownstreams(downs);
+    if (!diretos.isEmpty()) {
+      if (null != node.getUpstreams()) {
+        node.getDownstreams().addAll(diretos);
+      } else {
+        node.setDownstreams(diretos);
+      }
 
-    nodeService.save(node);
+      selectedDowns.clear();
+    }
 
+    if (!nodes.contains(node)) {
+      nodes.add(node);
+      node = new Node();
+    }
+  }
+
+  public void save() {
+    for (Node node : nodes) {
+      nodeService.save(node);
+    }
   }
 
   /**
@@ -133,6 +271,20 @@ public class NodeMB {
    */
   public void setNode(Node node) {
     this.node = node;
+  }
+
+  /**
+   * @return the nodes
+   */
+  public List<Node> getNodes() {
+    return nodes;
+  }
+
+  /**
+   * @param nodes the nodes to set
+   */
+  public void setNodes(List<Node> nodes) {
+    this.nodes = nodes;
   }
 
   /**
@@ -267,6 +419,34 @@ public class NodeMB {
     } else if (selectedDowns.size() != 0) {
       this.selectedDowns.addAll(selectedDowns);
     }
+  }
+
+  /**
+   * @return the selectedRetorno
+   */
+  public String getSelectedRetorno() {
+    return selectedRetorno;
+  }
+
+  /**
+   * @param selectedRetorno the selectedRetorno to set
+   */
+  public void setSelectedRetorno(String selectedRetorno) {
+    this.selectedRetorno = selectedRetorno;
+  }
+
+  /**
+   * @return the selectedDireto
+   */
+  public String getSelectedDireto() {
+    return selectedDireto;
+  }
+
+  /**
+   * @param selectedDireto the selectedDireto to set
+   */
+  public void setSelectedDireto(String selectedDireto) {
+    this.selectedDireto = selectedDireto;
   }
 
 }

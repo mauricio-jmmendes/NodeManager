@@ -14,7 +14,6 @@ import javax.persistence.JoinTable;
 import javax.persistence.ManyToMany;
 import javax.persistence.SequenceGenerator;
 import javax.persistence.Table;
-import javax.persistence.UniqueConstraint;
 
 import org.apache.commons.lang3.builder.EqualsBuilder;
 import org.apache.commons.lang3.builder.HashCodeBuilder;
@@ -22,7 +21,7 @@ import org.apache.commons.lang3.builder.ToStringBuilder;
 import org.apache.commons.lang3.builder.ToStringStyle;
 
 @Entity
-@Table(name = "NODE", uniqueConstraints = {@UniqueConstraint(columnNames = "cod_node")})
+@Table(name = "NODE")
 @SequenceGenerator(name = "seqN", sequenceName = "seq_node", allocationSize = 1, initialValue = 1)
 public class Node implements Serializable {
 
@@ -35,7 +34,7 @@ public class Node implements Serializable {
   @GeneratedValue(generator = "seqN")
   private Long id;
 
-  @Column(name = "cod_node", unique = true, nullable = false, length = 10)
+  @Column(name = "cod_node", nullable = false, length = 10)
   private String codNode;
 
   @ManyToMany(fetch = FetchType.LAZY, cascade = CascadeType.ALL)

@@ -13,7 +13,7 @@
 				<h:panelGrid columns="2">
 					<p:outputLabel value="Node:" />
 					<p:inputText placeholder="Digite o código do Node"
-						value="#{nodeMB.node.codNode}" />
+						value="#{nodeMB.node.codNode}" required="true" />
 
 					<p:outputLabel for="hub" value="HUB: " />
 					<p:selectOneMenu id="hub" value="#{nodeMB.hubId}" required="true">
@@ -43,42 +43,166 @@
 						required="true">
 						<f:selectItem itemLabel="Selecione a Placa" itemValue="" />
 						<f:selectItems value="#{nodeMB.placas}" var="placa"
-							itemValue="#{placa.id}" itemLabel="#{placa.codPlaca}" />
+							itemValue="#{placa.id}" itemLabel="#{placa.slot.codSlot} - #{placa.codPlaca}" />
 						<p:ajax update="conectors" listener="#{nodeMB.loadPlaca}"
 							process="@this" />
 					</p:selectOneMenu>
 				</h:panelGrid>
 
-				<p:spacer />
+				<br />
 
-				<h:panelGroup>
-					<p:panelGrid id="conectors" columns="2" style="width:800px;">
+				<h:panelGroup id="conectors">
+					<p:outputLabel value="retorno: " />
+					<p:selectOneMenu id="retorno" value="#{nodeMB.selectedRetorno}">
+						<f:selectItem itemLabel="A" itemValue="A" />
+						<f:selectItem itemLabel="B" itemValue="B" />
+						<f:selectItem itemLabel="C" itemValue="C" />
+						<f:selectItem itemLabel="D" itemValue="D" />
+					</p:selectOneMenu>
 
+					<p:panelGrid id="panelUp" columns="3" style="width:400px;">
 						<ui:repeat var="conn" value="#{nodeMB.placa.conectorList}">
-						<p:outputLabel value="Conector: #{conn.numConector}" />
-							<p:selectManyCheckbox value="#{nodeMB.selectedUps}" layout="grid"
-								columns="5">
+
+
+							<p:outputLabel rendered="#{not empty conn.upstreamList}"
+								value="Conector: #{conn.numConector}" />
+
+							<p:selectManyCheckbox rendered="#{not empty conn.upstreamList}"
+								value="#{nodeMB.selectedUps}" layout="grid" columns="4">
 								<f:selectItems value="#{conn.upstreamList}" var="up"
-									itemValue="#{up.id}" itemLabel="up#{up.numUpStream}"
-									 />
+									itemValue="#{up.id}" itemLabel="up#{up.numUpStream}" />
 							</p:selectManyCheckbox>
-							<p:selectManyCheckbox value="#{nodeMB.selectedDowns}"
-								layout="grid" columns="10">
-								<f:selectItems value="#{conn.downstreamList}" var="down"
-									itemValue="#{down.id}" itemLabel="dw#{down.numDownStream}" />
-							</p:selectManyCheckbox>
+
 						</ui:repeat>
 
+						<p:commandButton id="ajaxUp" value="Add"
+							actionListener="#{nodeMB.addUps}" process="@form"
+							update="dtRetorno" />
 					</p:panelGrid>
 
 					<br />
 
+					<p:dataTable id="dtRetorno" var="up"
+						value="#{nodeMB.retornoList()}" style="width: 600px;">
+						<p:column>
+							<f:facet name="header">
+								<h:outputText value="CMTS" />
+							</f:facet>
+						#{up.conectorUp.placa.slot.cmts.nome}
+					</p:column>
+
+						<p:column>
+							<f:facet name="header">
+								<h:outputText value="Placa" />
+							</f:facet>
+							#{up.conectorUp.placa.codPlaca}
+						</p:column>
+
+						<p:column>
+							<f:facet name="header">
+								<h:outputText value="Conector" />
+							</f:facet>
+							#{up.conectorUp.numConector}
+						</p:column>
+
+						<p:column>
+							<f:facet name="header">
+								<h:outputText value="Upstream" />
+							</f:facet>
+							#{up.numUpStream}
+						</p:column>
+
+						<p:column>
+							<f:facet name="header">
+								<h:outputText value="Retorno" />
+							</f:facet>
+							<ui:repeat var="node" value="#{up.nodes}">
+								#{node.codNode}, 
+							</ui:repeat>
+						</p:column>
+
+					</p:dataTable>
+
+					<br />
+
+					<p:outputLabel value="direto: " />
+					<p:selectOneMenu id="direto" value="#{nodeMB.selectedDireto}">
+						<f:selectItem itemLabel="A" itemValue="A" />
+						<f:selectItem itemLabel="B" itemValue="B" />
+						<f:selectItem itemLabel="C" itemValue="C" />
+						<f:selectItem itemLabel="D" itemValue="D" />
+					</p:selectOneMenu>
+					<p:panelGrid id="panelDown" columns="3" style="width:400px;">
+						<ui:repeat var="conn" value="#{nodeMB.placa.conectorList}">
+
+							<p:outputLabel rendered="#{not empty conn.downstreamList}"
+								value="Conector: #{conn.numConector}" />
+
+							<p:selectManyCheckbox rendered="#{not empty conn.downstreamList}"
+								value="#{nodeMB.selectedDowns}" layout="grid" columns="4">
+								<f:selectItems value="#{conn.downstreamList}" var="down"
+									itemValue="#{down.id}" itemLabel="dw#{down.numDownStream}">
+								</f:selectItems>
+							</p:selectManyCheckbox>
+						</ui:repeat>
+
+						<p:commandButton id="ajaxDown" value="Add"
+							actionListener="#{nodeMB.addDowns}" process="@form"
+							update="dtDireto" />
+					</p:panelGrid>
+
+					<br />
+
+					<p:dataTable id="dtDireto" var="down"
+						value="#{nodeMB.diretoList()}" style="width:600px;">
+
+						<p:column>
+							<f:facet name="header">
+								<h:outputText value="CMTS" />
+							</f:facet>
+						#{down.conectorDown.placa.slot.cmts.nome}
+					</p:column>
+
+						<p:column>
+							<f:facet name="header">
+								<h:outputText value="Placa" />
+							</f:facet>
+						#{down.conectorDown.placa.codPlaca}
+					</p:column>
+
+						<p:column>
+							<f:facet name="header">
+								<h:outputText value="Conector" />
+							</f:facet>
+						#{down.conectorDown.numConector}
+					</p:column>
+
+						<p:column>
+							<f:facet name="header">
+								<h:outputText value="Downstream" />
+							</f:facet>
+						#{down.numDownStream}
+								</p:column>
+
+						<p:column>
+							<f:facet name="header">
+								<h:outputText value="Direto" />
+							</f:facet>
+							<ui:repeat var="node" value="#{down.nodes}">
+								
+								#{node.codNode}, 
+
+								</ui:repeat>
+						</p:column>
+					</p:dataTable>
+
+					<br />
+
 					<p:commandButton value="Cadastrar" id="addNode" update="growl"
-						actionListener="#{nodeMB.save}" action="cmtsCreateEdit?faces-redirect=true"
-						 />
+						actionListener="#{nodeMB.save}"
+						action="cmtsCreateEdit?faces-redirect=true" />
 				</h:panelGroup>
 			</p:panel>
 		</h:form>
-
 	</ui:define>
 </ui:composition>

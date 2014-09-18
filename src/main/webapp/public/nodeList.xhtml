@@ -1,0 +1,140 @@
+<ui:composition template="template/main.xhtml"
+	xmlns="http://www.w3.org/1999/xhtml"
+	xmlns:f="http://java.sun.com/jsf/core"
+	xmlns:h="http://java.sun.com/jsf/html"
+	xmlns:ui="http://java.sun.com/jsf/facelets"
+	xmlns:p="http://primefaces.org/ui">
+
+	<ui:define name="content">
+		<div id="container" style="border: double;" align="left">
+			<h1>Dados do Node</h1>
+
+			<h:form>
+				<p:growl id="growl" sticky="false" showDetail="true" life="8000" />
+
+				<h:panelGrid columns="3">
+					<p:outputLabel value="Node:" />
+					<p:inputText placeholder="Digite o código do Node"
+						value="#{nodeMB.node.codNode}" required="true" />
+
+					<p:commandButton id="ajax" value="Buscar"
+						actionListener="#{nodeMB.loadNode()}" process="@form"
+						update="@form" rendered="#{nodeMB.node.codNode ne ''}" />
+				</h:panelGrid>
+
+				<p:panelGrid style="margin-top:20px">
+					<f:facet name="header">
+						<p:row>
+							<p:column colspan="7">#{nodeMB.node.codNode}</p:column>
+						</p:row>
+						<p:row>
+							<p:column colspan="2">Conf. Semifinals</p:column>
+							<p:column colspan="2">Conf. Finals</p:column>
+							<p:column colspan="2">NBA Finals</p:column>
+							<p:column>Champion</p:column>
+						</p:row>
+
+					</f:facet>
+				</p:panelGrid>
+
+				<br />
+
+				<h:panelGroup id="conectors">
+
+					<p:fieldset legend="Retorno" toggleable="true" toggleSpeed="500">
+
+						<p:dataTable id="dtRetorno" var="up"
+							value="#{nodeMB.retornoList()}" style="width: 800px;">
+							<p:column>
+								<f:facet name="header">
+									<h:outputText value="CMTS" />
+								</f:facet>
+						#{up.conectorUp.placa.slot.cmts.nome}
+					</p:column>
+
+							<p:column>
+								<f:facet name="header">
+									<h:outputText value="Placa" />
+								</f:facet>
+							#{up.conectorUp.placa.slot.codSlot} - #{up.conectorUp.placa.codPlaca}
+						</p:column>
+
+							<p:column>
+								<f:facet name="header">
+									<h:outputText value="Conector" />
+								</f:facet>
+							#{up.conectorUp.numConector}
+						</p:column>
+
+							<p:column>
+								<f:facet name="header">
+									<h:outputText value="Upstream" />
+								</f:facet>
+							#{up.numUpStream}
+						</p:column>
+
+							<p:column>
+								<f:facet name="header">
+									<h:outputText value="Retorno" />
+								</f:facet>
+								<ui:repeat var="node" value="#{up.nodes}">
+								#{node.codNode}, 
+							</ui:repeat>
+							</p:column>
+						</p:dataTable>
+					</p:fieldset>
+
+					<br />
+
+					<p:fieldset legend="Direto" toggleable="true" toggleSpeed="500">
+
+						<p:dataTable id="dtDireto" var="down"
+							value="#{nodeMB.diretoList()}" style="width:800px;">
+
+							<p:column>
+								<f:facet name="header">
+									<h:outputText value="CMTS" />
+								</f:facet>
+						#{down.conectorDown.placa.slot.cmts.nome}
+					</p:column>
+
+							<p:column>
+								<f:facet name="header">
+									<h:outputText value="Placa" />
+								</f:facet>
+						#{down.conectorDown.placa.slot.codSlot} - #{down.conectorDown.placa.codPlaca}
+					</p:column>
+
+							<p:column>
+								<f:facet name="header">
+									<h:outputText value="Conector" />
+								</f:facet>
+						#{down.conectorDown.numConector}
+					</p:column>
+
+							<p:column>
+								<f:facet name="header">
+									<h:outputText value="Downstream" />
+								</f:facet>
+						#{down.numDownStream}
+								</p:column>
+
+							<p:column>
+								<f:facet name="header">
+									<h:outputText value="Direto" />
+								</f:facet>
+								<ui:repeat var="node" value="#{down.nodes}">
+								
+								#{node.codNode}, 
+
+								</ui:repeat>
+							</p:column>
+						</p:dataTable>
+
+					</p:fieldset>
+
+				</h:panelGroup>
+			</h:form>
+		</div>
+	</ui:define>
+</ui:composition>
