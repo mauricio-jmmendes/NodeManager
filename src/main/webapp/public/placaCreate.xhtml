@@ -116,7 +116,7 @@
 									target="#{placaMB.converter}" />
 							</p:commandButton>
 
-							<p:spacer width="20px"/>
+							<p:spacer width="20px" />
 
 							<p:commandButton value="remover" process="@this"
 								oncomplete="PF('confirmDialog').show()">
@@ -137,17 +137,18 @@
 			<p:dialog header="Remover configuração" widgetVar="confirmDialog"
 				modal="false" resizable="false">
 				<p:outputPanel id="confirmDetail" style="text-align:center;">
-					<p:panelGrid columns="3" style="border-style: none; ">
+					<p:panelGrid columns="3" styleClass="myPanelGrid">
+
 
 						<h:outputText value="Deseja realmente remover essa Configuração?" />
 
 						<p:commandButton value="Sim" id="yes"
 							actionListener="#{placaMB.deleteConverterAction}"
 							update="converterDT" process="@this"
-							oncomplete="PF('configDialog').hide()" />
+							oncomplete="PF('confirmDialog').hide()" />
 
 						<p:commandButton value="Não" id="no"
-							onclick="PF('configDialog').hide()"
+							onclick="PF('confirmDialog').hide()"
 							styleClass="ui-priority-primary" />
 					</p:panelGrid>
 				</p:outputPanel>
