@@ -58,7 +58,7 @@
 
 				<br />
 				<h:panelGroup>
-					<p:panelGrid id="grid" columns="4">
+					<p:panelGrid id="grid" columns="4" styleClass="myPanelGrid">
 						<p:selectOneMenu id="conector"
 							value="#{placaMB.converter.stringNumConector}" required="true">
 							<f:selectItem itemLabel="Selecione o Conector" itemValue="" />
@@ -86,7 +86,7 @@
 					<p:spacer />
 
 					<p:dataTable id="converterDT" var="converter"
-						value="#{placaMB.converterList}">
+						value="#{placaMB.converterList}" style="width: 1000px;">>
 						<p:column>
 							<f:facet name="header">
 								<h:outputText value="Conector" />
@@ -109,15 +109,21 @@
 							<f:facet name="header">
 								<h:outputText value="Opções" />
 							</f:facet>
-							<h:commandLink value="editar" action="#{placaMB.prepareToEdit()}">
-							</h:commandLink>  &#160;
-						<h:commandLink value="remover" action="#{placaMB.delete()}"
-								onclick="return confirm('Deseja realmente remover essa Configuração?');"
-								update="growl">
-								<f:ajax render="@form" />
-							</h:commandLink>
-						</p:column>
 
+							<p:commandButton value="editar" process="@this"
+								oncomplete="PF('confirmDialog').show()">
+								<f:setPropertyActionListener value="#{converter}"
+									target="#{placaMB.converter}" />
+							</p:commandButton>
+
+							<p:spacer width="20px" />
+
+							<p:commandButton value="remover" process="@this"
+								oncomplete="PF('confirmDialog').show()">
+								<f:setPropertyActionListener value="#{converter}"
+									target="#{placaMB.converter}" />
+							</p:commandButton>
+						</p:column>
 					</p:dataTable>
 
 					<br />
@@ -127,6 +133,27 @@
 						action="hubList?faces-redirect=true" />
 				</h:panelGroup>
 			</p:panel>
+
+			<p:dialog header="Remover configuração" widgetVar="confirmDialog"
+				modal="false" resizable="false">
+				<p:outputPanel id="confirmDetail" style="text-align:center;">
+					<p:panelGrid columns="3" styleClass="myPanelGrid">
+
+						<h:outputText value="Deseja realmente remover essa Configuração?" />
+
+						<p:commandButton value="Sim" id="yes"
+							actionListener="#{placaMB.deleteConverterAction}"
+							update="converterDT" process="@this"
+							immediate="true"
+							oncomplete="PF('confirmDialog').hide()" />
+
+						<p:commandButton value="Não" id="no"
+							onclick="PF('confirmDialog').hide()"
+								immediate="true"
+							styleClass="ui-priority-primary" />
+					</p:panelGrid>
+				</p:outputPanel>
+			</p:dialog>
 		</h:form>
 
 	</ui:define>

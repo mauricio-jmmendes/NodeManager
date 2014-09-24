@@ -6,6 +6,7 @@ import java.util.List;
 import javax.annotation.PostConstruct;
 import javax.faces.bean.ManagedBean;
 import javax.faces.bean.ViewScoped;
+import javax.faces.event.ActionEvent;
 
 import com.nodemanager.managedbean.util.Converter;
 import com.nodemanager.managedbean.util.FacesUtils;
@@ -91,6 +92,11 @@ public class PlacaMB {
     converterList.add(converter);
     converter = new Converter();
 
+  }
+
+  public void deleteConverterAction(ActionEvent actionEvent) {
+    converterList.remove(converter);
+    converter = new Converter();
   }
 
   public void save() {

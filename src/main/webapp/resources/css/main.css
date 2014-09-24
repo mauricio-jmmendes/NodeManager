@@ -1,11 +1,16 @@
-.ui-layout-north { 
-z-index: 3!important; 
-overflow: visible!important; 
-} 
-.ui-layout-north .ui-layout-unit-content { 
-overflow: visible!important; 
-} 
+.ui-layout-north {
+	z-index: 3 !important;
+	overflow: visible !important;
+}
 
-.ui-menu,.ui-menubar,.ui-menu-child { 
-min-width: 180px!important; 
-} 
+.ui-layout-north .ui-layout-unit-content {
+	overflow: visible !important;
+}
+
+.ui-menu,.ui-menubar,.ui-menu-child {
+	min-width: 180px !important;
+}
+
+.myPanelGrid tr, .myPanelGrid td {
+	border: none !important;
+}
