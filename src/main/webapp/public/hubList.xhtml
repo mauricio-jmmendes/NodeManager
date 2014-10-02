@@ -6,23 +6,24 @@
 	xmlns:p="http://primefaces.org/ui">
 
 	<ui:define name="content">
-		<div id="container" style="border: double;" align="left">
+		<div id="container" style="border: none;" align="center">
 			<h2>Lista de HUB</h2>
 
 			<h:form>
 				<p:growl id="growl" sticky="true" showDetail="true" life="3000" />
 
-				<div align="right">
-					<h:commandLink value="Novo" action="hubCreate?faces-redirect=true" />
+				<div align="right" style="margin-bottom: 10px; width: 90%">
+					<p:commandButton value="Novo"
+						action="hubCreate?faces-redirect=true" />
 					&#160;
-					<h:commandButton value="Listar" action="#{hubMB.list()}">
+					<p:commandButton value="Listar" action="#{hubMB.list()}">
 						<f:ajax render="tabela" />
-					</h:commandButton>
+					</p:commandButton>
 				</div>
 
 				<p:dataTable id="tabela" var="hub" value="#{hubMB.list()}"
 					paginatorTemplate="{CurrentPageReport}  {FirstPageLink} {PreviousPageLink} {PageLinks} {NextPageLink} {LastPageLink}"
-					paginator="true" rows="5" style="margin-bottom:10px">
+					paginator="true" rows="5" style="margin-bottom:10px;width: 90%">>
 					<p:column>
 						<f:facet name="header">
 							<h:outputText value="Id" />

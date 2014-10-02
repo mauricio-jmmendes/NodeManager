@@ -6,14 +6,14 @@
 	xmlns:p="http://primefaces.org/ui">
 
 	<ui:define name="content">
-		<div id="container" style="border: double;" align="left">
+		<div id="container" style="border: none;" align="center">
 			<h1>Dados do Node</h1>
 
 			<h:form>
 				<p:growl id="growl" sticky="false" showDetail="true" life="8000" />
 
 				<h:panelGrid columns="3">
-					<p:outputLabel value="Node:" />
+					<p:outputLabel value="Node: " />
 					<p:inputText placeholder="Digite o código do Node"
 						value="#{nodeMB.node.codNode}" required="true" />
 
@@ -22,7 +22,7 @@
 						update="@form" rendered="#{nodeMB.node.codNode ne ''}" />
 				</h:panelGrid>
 
-				<p:panelGrid style="margin-top:20px">
+			<!-- 	<p:panelGrid style="margin-top:20px">
 					<f:facet name="header">
 						<p:row>
 							<p:column colspan="7">#{nodeMB.node.codNode}</p:column>
@@ -35,13 +35,13 @@
 						</p:row>
 
 					</f:facet>
-				</p:panelGrid>
+				</p:panelGrid> -->
 
 				<br />
 
 				<h:panelGroup id="conectors">
 
-					<p:fieldset legend="Retorno" toggleable="true" toggleSpeed="500">
+					<p:fieldset legend="Retorno" toggleable="true" toggleSpeed="500" style="margin-bottom: 10px; width: 1000px">
 
 						<p:dataTable id="dtRetorno" var="up"
 							value="#{nodeMB.retornoList()}" style="width: 1000px;">
@@ -86,7 +86,7 @@
 
 					<br />
 
-					<p:fieldset legend="Direto" toggleable="true" toggleSpeed="500">
+					<p:fieldset legend="Direto" toggleable="true" toggleSpeed="500" style="margin-bottom: 10px; width: 1000px">
 
 						<p:dataTable id="dtDireto" var="down"
 							value="#{nodeMB.diretoList()}" style="width: 1000px;" resizableColumns="true">

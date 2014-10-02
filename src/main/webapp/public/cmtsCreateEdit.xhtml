@@ -6,25 +6,26 @@
 	xmlns:p="http://primefaces.org/ui">
 
 	<ui:define name="content">
-		<div id="container" style="border: thick;" align="left">
-			<h1>Cadastrar CMTS</h1>
+		<div id="container" style="border: none; margin-left: 3%;"
+			align="left">
+			<h2>Cadastrar CMTS</h2>
 
 			<h:form id="form">
 				<p:growl id="growl" sticky="false" showDetail="true" life="8000" />
 
-				<p:panel header="Cadastrar CMTS">
-					<h:panelGrid columns="2" id="display">
-						<h:outputLabel value="Nome: " for="nome" />
-						<h:inputText id="nome" value="#{cmtsMB.cmts.nome}" label="Nome"
+				<p:panel style="border: none;">
+					<p:panelGrid columns="2" id="display" styleClass="myPanelGrid">
+						<p:outputLabel value="Nome: " for="nome" />
+						<p:inputText id="nome" value="#{cmtsMB.cmts.nome}" label="Nome"
 							required="true" />
-						<h:outputLabel value="Marca: " for="marca" />
-						<h:inputText id="marca" value="#{cmtsMB.cmts.marca}" label="Marca"
+						<p:outputLabel value="Marca: " for="marca" />
+						<p:inputText id="marca" value="#{cmtsMB.cmts.marca}" label="Marca"
 							required="true" />
-						<h:outputLabel value="Modelo: " for="modelo" />
-						<h:inputText id="modelo" value="#{cmtsMB.cmts.modelo}"
+						<p:outputLabel value="Modelo: " for="modelo" />
+						<p:inputText id="modelo" value="#{cmtsMB.cmts.modelo}"
 							label="modelo" required="true" />
-						<h:outputLabel value="IP: " for="ip" />
-						<h:inputText id="ip" value="#{cmtsMB.cmts.ip}" label="Ip"
+						<p:outputLabel value="IP: " for="ip" />
+						<p:inputText id="ip" value="#{cmtsMB.cmts.ip}" label="Ip"
 							required="true" />
 
 						<p:outputLabel for="hub" value="HUB: " />
@@ -34,10 +35,12 @@
 								itemValue="#{hub.id}" itemLabel="#{hub.codHub}" />
 						</p:selectOneMenu>
 
+						<p:spacer />
+
 						<p:commandButton id="btnSalvar" value="Salvar"
 							icon="ui-icon ui-icon-disk" actionListener="#{cmtsMB.save}"
 							update="form" action="cmtsList?faces-redirect=true" />
-					</h:panelGrid>
+					</p:panelGrid>
 				</p:panel>
 			</h:form>
 		</div>

@@ -1,3 +1,75 @@
+html {
+	font-family: sans-serif !important;
+	-ms-text-size-adjust: 100% !important;
+	-webkit-text-size-adjust: 100% !important;
+}
+
+body {
+	font-family: "Helvetica Neue", Helvetica, Arial, sans-serif;
+	font-size: 14px;
+	line-height: 1.42857143;
+	color: #333;
+	background-color: #fff
+}
+
+h1,h2,h3,h4,h5,h6,.h1,.h2,.h3,.h4,.h5,.h6 {
+	font-family: inherit;
+	font-weight: 500;
+	line-height: 1.1;
+	color: inherit
+}
+
+h1 small,h2 small,h3 small,h4 small,h5 small,h6 small,.h1 small,.h2 small,.h3 small,.h4 small,.h5 small,.h6 small,h1 .small,h2 .small,h3 .small,h4 .small,h5 .small,h6 .small,.h1 .small,.h2 .small,.h3 .small,.h4 .small,.h5 .small,.h6 .small
+	{
+	font-weight: 400;
+	line-height: 1;
+	color: #999
+}
+
+h1,.h1,h2,.h2,h3,.h3 {
+	margin-top: 20px;
+	margin-bottom: 10px
+}
+
+h1 small,.h1 small,h2 small,.h2 small,h3 small,.h3 small,h1 .small,.h1 .small,h2 .small,.h2 .small,h3 .small,.h3 .small
+	{
+	font-size: 65%
+}
+
+h4,.h4,h5,.h5,h6,.h6 {
+	margin-top: 10px;
+	margin-bottom: 10px
+}
+
+h4 small,.h4 small,h5 small,.h5 small,h6 small,.h6 small,h4 .small,.h4 .small,h5 .small,.h5 .small,h6 .small,.h6 .small
+	{
+	font-size: 75%
+}
+
+h1,.h1 {
+	font-size: 36px
+}
+
+h2,.h2 {
+	font-size: 30px
+}
+
+h3,.h3 {
+	font-size: 24px
+}
+
+h4,.h4 {
+	font-size: 18px
+}
+
+h5,.h5 {
+	font-size: 14px
+}
+
+h6,.h6 {
+	font-size: 12px
+}
+
 .ui-layout-north {
 	z-index: 3 !important;
 	overflow: visible !important;
@@ -5,12 +77,54 @@
 
 .ui-layout-north .ui-layout-unit-content {
 	overflow: visible !important;
+	height: 20% !important;
 }
 
 .ui-menu,.ui-menubar,.ui-menu-child {
 	min-width: 180px !important;
 }
 
-.myPanelGrid tr, .myPanelGrid td {
+.myPanelGrid tr,.myPanelGrid td {
 	border: none !important;
+}
+
+/* .jumbotron {
+	font-size: 43px;
+	margin-bottom: 0px;
+	background-color: #eee
+}
+ */
+.jumbotron {
+	padding: 15px;
+	margin-bottom: 0px;
+	font-size: 21px;
+	font-weight: 200;
+	line-height: 2.1428571435;
+	color: inherit;
+	background-color: #eee
+}
+
+@media screen and (min-width: 768px) {
+	.jumbotron h1,.jumbotron .h1 {
+		font-size: 53px;
+	}
+}
+
+.myPanelGridH tr,.myPanelGridH td {
+	border: none !important;
+	color: inherit;
+	background-color: #eee
+}
+
+.ui-fieldset-legend {
+	margin-right: 5em;
+}
+
+.ui-panel .ui-panel-title {
+	font-size: x-large;
+}
+
+.ui-state-hover,.ui-widget-content .ui-state-hover,.ui-widget-header .ui-state-hover
+	{
+	background-position: 0px -50px;
 }

@@ -7,31 +7,33 @@
 	xmlns:c="http://java.sun.com/jsp/jstl/core"
 	xmlns:p="http://primefaces.org/ui">
 
-<f:view locale="#{languageMB.localeCode}">
+<f:view>
 	<h:head>
 		<meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
 		<meta http-equiv="Pragma" content="no-cache" />
 		<meta http-equiv="Cache-Control" content="no-cache" />
 		<meta http-equiv="Expires" content="0" />
-		<link rel="shortcut icon" type="image/x-icon"
-			href="#{request.contextPath}/resources/images/wpattern_wproject.ico" />
+
+<!--
+		<h:outputStylesheet library="bootstrap/css" name="bootstrap.min.css" />
+		 	<h:outputStylesheet library="bootstrap/css"
+			name="bootstrap-theme.min.css" />
+		
+		<h:outputScript library="jquery" name="jquery-1.9.1.min.js" />
+ -->
+		<h:outputScript library="bootstrap/js" name="bootstrap.min.js" />
 		<link rel="stylesheet" type="text/css"
 			href="#{request.contextPath}/resources/css/main.css" />
-		<script type="text/javascript"
-			src="#{request.contextPath}/resources/js/main.js" />
+
 		<title>NodeManager - Projeto e controle de nodes</title>
 	</h:head>
 
 	<h:body>
 		<p:layout fullPage="true">
-			<p:layoutUnit position="north" size="100px" resizable="false"
-				closable="false" collapsible="false" visible="true">
+			<p:layoutUnit position="north" resizable="false" size="185"
+				closable="false" collapsible="false" visible="true"
+				style="border: none">
 				<ui:include src="header.xhtml" />
-			</p:layoutUnit>
-
-			<p:layoutUnit position="south" size="60" resizable="false"
-				closable="false" collapsible="false">
-				<ui:include src="footer.xhtml" />
 			</p:layoutUnit>
 
 			<p:layoutUnit position="west" size="200" resizable="false"
@@ -39,7 +41,7 @@
 				<!--  <ui:include src="menu.xhtml" /> -->
 			</p:layoutUnit>
 
-			<p:layoutUnit position="center">
+			<p:layoutUnit position="center" resizable="true">
 				<ui:insert name="content">Put default content here, if any.</ui:insert>
 
 			</p:layoutUnit>

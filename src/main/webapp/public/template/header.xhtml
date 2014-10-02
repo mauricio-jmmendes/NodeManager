@@ -9,15 +9,18 @@
 
 <body>
 	<ui:composition>
-		<div align="left"></div>
-		<p:panelGrid columns="2" styleClass="myPanelGrid" >
-			<h:graphicImage id="img" name="NET-edited.jpg" style="display:true;"
-				height="60px" />
+		<div class="jumbotron">
+			<p:panelGrid columns="2" styleClass="myPanelGridH">
+				<h:graphicImage id="img" name="NET-ed.jpg" style="display:true;"
+					height="80px" />
 
-			<h1>NodeManager - Projeto e controle de Nodes</h1>
+				<h1>
+					NodeManager <small>Projeto e controle de Nodes</small>
+				</h1>
 
-		</p:panelGrid>
-		<div id="mainHeader" align="center">
+			</p:panelGrid>
+		</div>
+		<div id="mainHeader" align="center" class="navbar">
 			<h:form>
 				<p:growl id="messages" />
 
@@ -44,11 +47,10 @@
 
 					</p:submenu>
 
-					<p:menuitem value="Quit" url="http://www.primefaces.org"
-						icon="ui-icon-close" />
-
 					<f:facet name="options">
-						<p:inputText style="margin-right:10px" placeholder="Buscar node" />
+						<p:inputText style="padding: 5px;" placeholder="Buscar node" />
+						<p:commandButton style="margin-right: 3em;" type="button"
+							icon="ui-icon-search" />
 						<p:commandButton type="button" value="Logout"
 							icon="ui-icon-extlink" />
 					</f:facet>

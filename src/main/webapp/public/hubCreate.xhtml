@@ -6,19 +6,24 @@
 	xmlns:p="http://primefaces.org/ui">
 
 	<ui:define name="content">
-		<div>
-			<h2>Cadastro de Hub</h2>
+		<div class="container-fluid">
+			<div>
+				<h2 class="h1">Cadastro de Hub</h2>
+			</div>
+
+			<div class="row">
+				<div class="col-lg-8">
+					<h:form styleClass="form-control">
+					<p:outputLabel value="Digite o nome da HUB:" />
+							<p:inputText size="10" value="#{hubMB.hub.codHub}" />
+							<p:growl id="growl" life="2000" />
+							<p:commandButton value="Cadastrar" id="ajax" update="growl"
+								actionListener="#{hubMB.save}"
+								action="hubList?faces-redirect=true" />
+					</h:form>
+				</div>
+			</div>
 		</div>
-		<h:form>
-			<h:panelGrid columns="2">
-				<p:outputLabel value="Digite o nome da HUB:" />
-				<p:inputText maxlength="3" size="1" value="#{hubMB.hub.codHub}" />
-				<p:growl id="growl" life="2000" />
-				<p:commandButton value="Cadastrar" id="ajax" update="growl"
-					actionListener="#{hubMB.save}" action="hubList?faces-redirect=true" />
-			</h:panelGrid>
-		</h:form>
-		<div></div>
 
 	</ui:define>
 </ui:composition>
