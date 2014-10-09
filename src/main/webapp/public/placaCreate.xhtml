@@ -109,15 +109,7 @@
 							<f:facet name="header">
 								<h:outputText value="Opções" />
 							</f:facet>
-
-							<p:commandButton value="editar" process="@this"
-								oncomplete="PF('editDialog').show()">
-								<f:setPropertyActionListener value="#{converter}"
-									target="#{placaMB.converter}" />
-							</p:commandButton>
-
-							<p:spacer width="20px" />
-
+							
 							<p:commandButton value="remover" process="@this"
 								oncomplete="PF('confirmDialog').show()">
 								<f:setPropertyActionListener value="#{converter}"
@@ -152,37 +144,6 @@
 							styleClass="ui-priority-primary" />
 					</p:panelGrid>
 				</p:outputPanel>
-			</p:dialog>
-
-			<p:dialog header="Remover configuração" widgetVar="editDialog"
-				 resizable="false">
-				<h:panelGroup>
-					<p:panelGrid id="editGrid" columns="1" styleClass="myPanelGrid">
-						<p:selectOneMenu id="editConector"
-							value="#{placaMB.converter.stringNumConector}" required="true">
-							<f:selectItem itemLabel="Selecione o Conector" itemValue="" />
-							<f:selectItems value="#{placaMB.conectors}" var="conector"
-								itemValue="#{conector.numConector}"
-								itemLabel="#{conector.numConector}">
-							</f:selectItems>
-						</p:selectOneMenu>
-
-						<p:selectOneMenu id="editTypeStream"
-							value="#{placaMB.converter.stringTypeStream}" required="true">
-							<f:selectItem itemLabel="Selecione o tipo de Stream" itemValue="" />
-							<f:selectItem itemLabel="UPSTREAM" itemValue="UPSTREAM" />
-							<f:selectItem itemLabel="DOWNSTREAM" itemValue="DOWNSTREAM" />
-						</p:selectOneMenu>
-
-						<p:inputText placeholder="0,1, 2, 3, 4, 5, ..."
-							value="#{placaMB.converter.stringNameUpOrDownList}" />
-
-						<p:commandButton value="Add"
-							actionListener="#{placaMB.addConvertersAction}"
-							process="@this, grid" update="converterDT"
-							onclick="PF('editDialog').hide()" />
-					</p:panelGrid>
-				</h:panelGroup>
 			</p:dialog>
 		</h:form>
 

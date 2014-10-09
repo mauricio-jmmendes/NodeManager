@@ -9,14 +9,17 @@
 		<h:form prependId="false">
 			<p:growl id="growl" sticky="false" showDetail="true" life="2000" />
 
-			<p:panel styleClass="form-group" header="Cadastrar Node" style="margin: 15px; width: 900px">
+			<p:panel styleClass="form-group" header="Cadastrar Node"
+				style="margin: 15px; width: 900px">
 				<h:panelGrid columns="2">
 					<p:outputLabel styleClass="control-label" value="Node:" />
-					<p:inputText styleClass="form-control" placeholder="Digite o código do Node"
+					<p:inputText styleClass="form-control"
+						placeholder="Digite o código do Node"
 						value="#{nodeMB.node.codNode}" required="true" />
 
 					<p:outputLabel styleClass="control-label" for="hub" value="HUB: " />
-					<p:selectOneMenu style="width:150px;" id="hub" value="#{nodeMB.hubId}" required="true">
+					<p:selectOneMenu style="width:150px;" id="hub"
+						value="#{nodeMB.hubId}" required="true">
 						<f:selectItem itemLabel="Selecione a HUB" itemValue="" />
 						<f:selectItems value="#{nodeMB.hubs}" var="hub"
 							itemValue="#{hub.id}" itemLabel="#{hub.codHub}">
@@ -43,7 +46,8 @@
 						required="true">
 						<f:selectItem itemLabel="Selecione a Placa" itemValue="" />
 						<f:selectItems value="#{nodeMB.placas}" var="placa"
-							itemValue="#{placa.id}" itemLabel="#{placa.slot.codSlot} - #{placa.codPlaca}" />
+							itemValue="#{placa.id}"
+							itemLabel="#{placa.slot.codSlot} - #{placa.codPlaca}" />
 						<p:ajax update="conectors" listener="#{nodeMB.loadPlaca}"
 							process="@this" />
 					</p:selectOneMenu>
@@ -52,13 +56,16 @@
 				<br />
 
 				<h:panelGroup id="conectors">
-					<p:outputLabel value="retorno: " />
-					<p:selectOneMenu id="retorno" value="#{nodeMB.selectedRetorno}">
+					<p:outputLabel value="Retorno: " />
+					<p:selectOneRadio id="retorno" value="#{nodeMB.selectedRetorno}">
 						<f:selectItem itemLabel="A" itemValue="A" />
 						<f:selectItem itemLabel="B" itemValue="B" />
 						<f:selectItem itemLabel="C" itemValue="C" />
 						<f:selectItem itemLabel="D" itemValue="D" />
-					</p:selectOneMenu>
+						<f:selectItems value="#{nodeMB.placas}" var="placa"
+							itemValue="#{placa.id}"
+							itemLabel="#{placa.slot.codSlot} - #{placa.codPlaca}" />
+					</p:selectOneRadio>
 
 					<p:panelGrid id="panelUp" columns="8" style="width:800px;">
 						<ui:repeat var="conn" value="#{nodeMB.placa.conectorList}">
@@ -75,7 +82,7 @@
 
 						</ui:repeat>
 
-						<p:commandButton id="ajaxUp" value="Add"
+						<p:commandButton style="align: center;" id="ajaxUp" value="Add"
 							actionListener="#{nodeMB.addUps}" process="@form"
 							update="dtRetorno" />
 					</p:panelGrid>
@@ -83,7 +90,7 @@
 					<br />
 
 					<p:dataTable id="dtRetorno" var="up"
-						value="#{nodeMB.retornoList()}" style="width: 600px;">
+						value="#{nodeMB.retornoList()}" style="width: 80%;">
 						<p:column>
 							<f:facet name="header">
 								<h:outputText value="CMTS" />
@@ -125,13 +132,13 @@
 
 					<br />
 
-					<p:outputLabel value="direto: " />
-					<p:selectOneMenu id="direto" value="#{nodeMB.selectedDireto}">
+					<p:outputLabel value="Direto: " />
+					<p:selectOneRadio id="direto" value="#{nodeMB.selectedDireto}">
 						<f:selectItem itemLabel="A" itemValue="A" />
 						<f:selectItem itemLabel="B" itemValue="B" />
 						<f:selectItem itemLabel="C" itemValue="C" />
 						<f:selectItem itemLabel="D" itemValue="D" />
-					</p:selectOneMenu>
+					</p:selectOneRadio>
 					<p:panelGrid id="panelDown" columns="3" style="width:400px;">
 						<ui:repeat var="conn" value="#{nodeMB.placa.conectorList}">
 

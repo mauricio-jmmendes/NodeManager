@@ -127,4 +127,8 @@ h6,.h6 {
 .ui-state-hover,.ui-widget-content .ui-state-hover,.ui-widget-header .ui-state-hover
 	{
 	background-position: 0px -50px;
+
+.ui-dialog,.ui-dialog-content {
+	top: 400px;
+	z-index: 4 !important;
 }
