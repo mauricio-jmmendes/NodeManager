@@ -11,7 +11,7 @@
 			<h2>Cadastrar CMTS</h2>
 
 			<h:form id="form">
-				<p:growl id="growl" sticky="false" showDetail="true" life="8000" />
+				<p:growl id="growl" sticky="false" showDetail="true" life="4000" />
 
 				<p:panel style="border: none;">
 					<p:panelGrid columns="2" id="display" styleClass="myPanelGrid">
@@ -27,6 +27,10 @@
 						<p:outputLabel value="IP: " for="ip" />
 						<p:inputText id="ip" value="#{cmtsMB.cmts.ip}" label="Ip"
 							required="true" />
+							
+						<p:outputLabel value="Slots: " for="slotList" />
+						<p:inputText id="slotList" placeholder="0, 1, 2, 3, 4, 5, ..."
+						value="#{cmtsMB.slotList}" />
 
 						<p:outputLabel for="hub" value="HUB: " />
 						<p:selectOneMenu id="hub" value="#{cmtsMB.hubId}">

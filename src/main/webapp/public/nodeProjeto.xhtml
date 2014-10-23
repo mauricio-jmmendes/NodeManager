@@ -11,152 +11,366 @@
 			align="left">
 			<h1>Dados do Node</h1>
 
-			<h:form>
+			<h:form id="myForm">
 				<p:growl id="growl" sticky="false" showDetail="true" life="8000" />
 
-				<h:panelGrid columns="3">
-					<p:outputLabel value="Node: " />
-					<p:inputText placeholder="Digite o código do Node"
-						value="#{projetoMB.node.codNode}" required="true" />
+				<p:panelGrid columns="2" style="border: none;">
+					<p:panel id="firstPanel" rendered="#{projetoMB.firstPanel}">
+						<h:panelGrid columns="3">
+							<p:outputLabel value="Node: " />
+							<p:inputText placeholder="Digite o código do Node"
+								value="#{projetoMB.codNode}" required="true" />
 
-					<p:commandButton id="ajax" value="Buscar"
-						actionListener="#{projetoMB.loadNode()}" process="@form"
-						update="@form" rendered="#{projetoMB.node.codNode ne ''}" />
-				</h:panelGrid>
+							<p:commandButton id="ajax" value="Buscar"
+								actionListener="#{projetoMB.loadNode()}" process="@form"
+								update="@form" rendered="#{projetoMB.codNode ne ''}" />
+						</h:panelGrid>
 
-				<br />
+						<br />
 
-				<p:dataTable id="dtRetorno" var="conn"
-					value="#{projetoMB.retornoConnectorsList()}" style="width: 60%;">
-					<p:column style="width:15%">
+						<p:panelGrid id="Retorno">
+							<p:row>
+								<p:column styleClass="ui-style-default">
+									<h:outputText value="CMTS" />
+								</p:column>
+								<p:column styleClass="ui-style-default">
+									<h:outputText value="Placa" />
+								</p:column>
+								<p:column styleClass="ui-style-default">
+									<h:outputText value="Conector" />
+								</p:column>
+								<p:column styleClass="ui-style-default">
+									<h:outputText value="Upstream" />
+								</p:column>
+								<p:column styleClass="ui-style-default">
+									<h:outputText value="Retorno" />
+								</p:column>
+								<p:column styleClass="ui-style-default">
+									<h:outputText value="Opções" />
+								</p:column>
+							</p:row>
 
-						<f:facet name="header">
-							<h:outputText value="CMTS" />
-						</f:facet>
+							<c:forEach items="#{projetoMB.retornoConnectorsList()}"
+								var="conn">
+								<p:row>
+									<p:column>
+										<f:facet name="header">
+											<h:outputText value="CMTS" />
+										</f:facet>
 						#{conn.placa.slot.cmts.nome}
 					</p:column>
-
-					<p:column style="width:12%">
-						<f:facet name="header">
-							<h:outputText value="Placa" />
-						</f:facet>
+									<p:column>
+										<f:facet name="header">
+											<h:outputText value="Placa" />
+										</f:facet>
 							#{conn.placa.slot.codSlot} - #{conn.placa.codPlaca}
 						</p:column>
 
-					<p:column style="width:9%">
-						<f:facet name="header">
-							<h:outputText value="Conector" />
-						</f:facet>
+									<p:column>
+										<f:facet name="header">
+											<h:outputText value="Conector" />
+										</f:facet>
 							#{conn.numConector}
 						</p:column>
-					<p:column>
-						<f:facet name="header">
-							<h:outputText value="Upstreams" />
-						</f:facet>
-						<ui:repeat var="up" value="#{conn.upstreamList}">
-							<ui:repeat varStatus="status" var="node" value="#{up.nodes}">
-								<p:outputLabel rendered="false"
-									value=" (- #{node.codNode.contains(projetoMB.node.codNode)} - #{up.numUpStream} - #{node.codNode} -) " />
-								<p:outputLabel
-									value=" #{projetoMB.setUpstreamRendered(up, node)}" />
-								<h:outputText
-									rendered="#{(node.codNode.contains(projetoMB.node.codNode)) and (conn.upstreamList.indexOf(up) ne conn.upstreamList.size()-1)}"
-									value=", " />
-							</ui:repeat>
 
-						</ui:repeat>
+									<p:column>
+										<f:facet name="header">
+											<h:outputText value="Upstream" />
+										</f:facet>
+										<ui:repeat var="up" value="#{conn.upstreamList}">
+											<ui:repeat var="node" value="#{up.nodes}">
+												<p:outputLabel
+													value="#{projetoMB.setUpstreamRendered(up, node)}" />
+												<p:outputLabel
+													rendered="#{(node.codNode.contains(projetoMB.codNode)) and (conn.upstreamList.indexOf(up) ne conn.upstreamList.size()-1)}"
+													value=", " />
+											</ui:repeat>
+										</ui:repeat>
+									</p:column>
+
+									<p:column>
+										<f:facet name="header">
+											<h:outputText value="Retorno" />
+										</f:facet>
+
+										<ui:repeat var="up" value="#{conn.upstreamList}">
+											<ui:repeat var="node" value="#{up.nodes}">
+												<h:outputText
+													value="#{projetoMB.setNodeRendered(conn, node)}" />
+
+
+												<h:outputText
+													rendered="#{(node.codNode.contains(projetoMB.codNode)) and (up.nodes.indexOf(node) lt up.nodes.size()-1)}"
+													value=", " />
+											</ui:repeat>
+										</ui:repeat>
+									</p:column>
+
+									<p:column>
+										<p:commandButton value="Quebrar" process="@this"
+											update="@form" action="#{projetoMB.prepareNodeForQuebra()}">
+											<f:setPropertyActionListener value="#{conn}"
+												target="#{projetoMB.conn}" />
+
+											<f:ajax render="searchPanel" />
+										</p:commandButton>
+									</p:column>
+								</p:row>
+							</c:forEach>
+						</p:panelGrid>
+
+						<br />
+
+						<p:panelGrid id="Direto">
+							<p:row>
+								<p:column styleClass="ui-style-default">
+									<h:outputText value="CMTS" />
+								</p:column>
+								<p:column styleClass="ui-style-default">
+									<h:outputText value="Placa" />
+								</p:column>
+								<p:column styleClass="ui-style-default">
+									<h:outputText value="Conector" />
+								</p:column>
+								<p:column styleClass="ui-style-default">
+									<h:outputText value="Downstream" />
+								</p:column>
+								<p:column styleClass="ui-style-default">
+									<h:outputText value="Direto" />
+								</p:column>
+							</p:row>
+
+							<c:forEach items="#{projetoMB.diretoConnectorsList()}" var="conn">
+								<p:row>
+									<p:column>
+										<f:facet name="header">
+											<h:outputText value="CMTS" />
+										</f:facet>
+						#{conn.placa.slot.cmts.nome}
 					</p:column>
-
-					<p:column>
-						<f:facet name="header">
-							<h:outputText value="Retorno" />
-						</f:facet>
-
-						<ui:repeat var="up" value="#{conn.upstreamList}">
-							<ui:repeat var="node" value="#{up.nodes}">
-								<h:outputText value="#{node.codNode}, "
-									rendered="#{node.codNode.contains(projetoMB.node.codNode)}" />
-							</ui:repeat>
-						</ui:repeat>
-					</p:column>
-
-					<p:column style="width:12%">
-						<f:facet name="header">
-							<h:outputText value="Opções" />
-						</f:facet>
-						<p:commandButton value="Quebrar" process="@this"
-							actionListener="#{projetoMB.viewDialogQuebra()}">
-							<f:setPropertyActionListener value="#{up}"
-								target="#{projetoMB.up}" />
-						</p:commandButton>
-					</p:column>
-				</p:dataTable>
-
-				<br />
-
-				<p:panelGrid id="Direto">
-					<p:row>
-						<p:column styleClass="ui-style-default">
-							<h:outputText value="CMTS" />
+									<p:column>
+										<f:facet name="header">
+											<h:outputText value="Placa" />
+										</f:facet>
+							#{conn.placa.slot.codSlot} - #{conn.placa.codPlaca}
 						</p:column>
-						<p:column styleClass="ui-style-default">
-							<h:outputText value="Placa" />
-						</p:column>
-						<p:column styleClass="ui-style-default">
-							<h:outputText value="Conector" />
-						</p:column>
-						<p:column styleClass="ui-style-default">
-							<h:outputText value="Downstream" />
-						</p:column>
-						<p:column styleClass="ui-style-default">
-							<h:outputText value="Direto" />
-						</p:column>
-					</p:row>
 
-					<c:forEach items="#{projetoMB.diretoConnectorsList()}" var="conn">
-						<p:row>
+									<p:column>
+										<f:facet name="header">
+											<h:outputText value="Conector" />
+										</f:facet>
+							#{conn.numConector}
+						</p:column>
+
+									<p:column>
+										<f:facet name="header">
+											<h:outputText value="Downstream" />
+										</f:facet>
+										<ui:repeat var="down" value="#{conn.downstreamList}">
+
+											<ui:repeat var="node" value="#{down.nodes}">
+												<p:outputLabel
+													value="#{projetoMB.setDownstreamRendered(down, node)}" />
+												<p:outputLabel
+													rendered="#{(node.codNode.contains(projetoMB.codNode)) and (conn.downstreamList.indexOf(down) ne conn.downstreamList.size()-1)}"
+													value=", " />
+											</ui:repeat>
+
+										</ui:repeat>
+									</p:column>
+
+									<p:column>
+										<f:facet name="header">
+											<h:outputText value="Direto" />
+										</f:facet>
+										<ui:repeat var="down" value="#{conn.downstreamList}">
+											<ui:repeat var="node" value="#{down.nodes}">
+												<h:outputText
+													value="#{projetoMB.setNodeRendered(conn, node)}" />
+												<h:outputText
+													rendered="#{(node.codNode.contains(projetoMB.codNode)) and (down.nodes.indexOf(node) lt down.nodes.size()-1)}"
+													value=", " />
+											</ui:repeat>
+										</ui:repeat>
+									</p:column>
+								</p:row>
+							</c:forEach>
+						</p:panelGrid>
+					</p:panel>
+					<p:panel id="searchPanel" rendered="#{projetoMB.secondPanel}">
+						<h:panelGrid columns="2" cellpadding="5" class="ui-grid">
+							<h:outputLabel for="spinUp" value=" Quantidade Retorno: " />
+							<p:spinner id="spinRetorno" value="#{projetoMB.qtdRetorno}" />
+
+							<h:outputLabel for="spinUp" value=" Quantidade Upstream: " />
+							<p:spinner id="spinUp" value="#{projetoMB.qtdUpstream}" />
+
+							<h:outputLabel for="spinDown" value="Quantidade de Downstream: " />
+							<p:spinner id="spinDown" value="#{projetoMB.qtdDownstream}" />
+
+							<h:outputText value="Somente upstreams livres: " />
+							<p:selectBooleanCheckbox value="#{projetoMB.soUpsLivres}" />
+
+							<h:outputText value="Somente downstreams livres: " />
+							<p:selectBooleanCheckbox value="#{projetoMB.soDownsLivres}" />
+
+							<p:panelGrid columns="2" styleClass="myPanelGrid">
+								<h:outputText value="Escolha o CMTS: " />
+								<p:selectBooleanCheckbox value="#{projetoMB.cmtsChecked}">
+									<p:ajax update="myForm:checkCmtsPanel" process="@this" />
+								</p:selectBooleanCheckbox>
+							</p:panelGrid>
+
+							<p:panelGrid columns="1" id="checkCmtsPanel"
+								styleClass="myPanelGrid">
+								<p:selectOneMenu value="#{projetoMB.cmtsId}"
+									rendered="#{projetoMB.cmtsChecked}">
+									<f:selectItem itemLabel="Selecione o CMTS" itemValue="" />
+									<f:selectItems value="#{projetoMB.cmtsList}" var="cmts"
+										itemValue="#{cmts.id}" itemLabel="#{cmts.nome}">
+									</f:selectItems>
+								</p:selectOneMenu>
+							</p:panelGrid>
+
+							<p:commandButton id="btnSearch" value="Pesquisar"
+								actionListener="#{projetoMB.loadPlacas()}" process="@form"
+								update="@form" rendered="#{projetoMB.node.codNode ne ''}" />
+
+						</h:panelGrid>
+					</p:panel>
+
+					<p:panel id="dpRetorno" rendered="#{projetoMB.displayPanel}">
+						<p:panelGrid styleClass="myPanelGrid" columns="2">
+							<p:outputLabel value="Placa: " />
+							<p:selectOneMenu id="lstBoxPlaca" value="#{projetoMB.placaId}">
+								<f:selectItem itemLabel="Selecione a Placa" itemValue="" />
+								<f:selectItems value="#{projetoMB.placas}" var="placa"
+									itemValue="#{placa.id}"
+									itemLabel="#{placa.slot.codSlot} - #{placa.codPlaca}" />
+								<p:ajax update="dtRetorno dtDireto"
+									listener="#{projetoMB.loadPlaca}" process="@this" />
+							</p:selectOneMenu>
+						</p:panelGrid>
+
+						<br />
+						<br />
+
+						<p:dataTable id="dtRetorno" var="up"
+							value="#{projetoMB.retornoList()}" editable="true"
+							editMode="cell" style="width: 580px">
+
+							<p:ajax event="cellEdit" listener="#{projetoMB.onCellEdit(up)}"
+								update="@this" />
+
 							<p:column>
 								<f:facet name="header">
 									<h:outputText value="CMTS" />
 								</f:facet>
-						#{conn.placa.slot.cmts.nome}
+						#{up.conectorUp.placa.slot.cmts.nome}
 					</p:column>
+
 							<p:column>
 								<f:facet name="header">
 									<h:outputText value="Placa" />
 								</f:facet>
-							#{conn.placa.slot.codSlot} - #{conn.placa.codPlaca}
+							#{up.conectorUp.placa.codPlaca}
 						</p:column>
 
-							<p:column>
+							<p:column style="width: 5%;">
 								<f:facet name="header">
-									<h:outputText value="Conector" />
+									<h:outputText value="Conn" />
 								</f:facet>
-							#{conn.numConector}
+							#{up.conectorUp.numConector}
 						</p:column>
 
-							<p:column>
+							<p:column style="width: 5%;">
 								<f:facet name="header">
-									<h:outputText value="Downstream" />
+									<h:outputText value="Ups" />
 								</f:facet>
-								<ui:repeat var="down" value="#{conn.downstreamList}">
-									<h:outputText value="#{down.numDownStream}, " />
-								</ui:repeat>
+							#{up.numUpStream}
+						</p:column>
+
+							<p:column style="width: 15%;">
+								<f:facet name="header">
+									<h:outputText value="Retorno" />
+								</f:facet>
+
+								<p:cellEditor>
+									<f:facet name="output">
+										<ui:repeat var="node" value="#{up.nodes}">
+								#{node.codNode}, 
+							</ui:repeat>
+									</f:facet>
+									<f:facet name="input">
+										<p:inputText value="#{projetoMB.strNodeQuebrado}" />
+									</f:facet>
+								</p:cellEditor>
+
+
 							</p:column>
+						</p:dataTable>
+					</p:panel>
+
+					<p:panel id="dpDireto" rendered="#{projetoMB.displayPanel}">
+						<p:dataTable id="dtDireto" var="down"
+							value="#{projetoMB.diretoList()}" editable="true" editMode="cell">
+
+							<p:ajax event="cellEdit" listener="#{projetoMB.onCellEdit(down)}"
+								update="@this" />
+
+							<p:column>
+								<f:facet name="header">
+									<h:outputText value="CMTS" />
+								</f:facet>
+						#{down.conectorDown.placa.slot.cmts.nome}
+					</p:column>
+
+							<p:column>
+								<f:facet name="header">
+									<h:outputText value="Placa" />
+								</f:facet>
+						#{down.conectorDown.placa.codPlaca}
+					</p:column>
+
+							<p:column style="width: 5%;">
+								<f:facet name="header">
+									<h:outputText value="Conn" />
+								</f:facet>
+						#{down.conectorDown.numConector}
+					</p:column>
+
+							<p:column style="width: 7%;">
+								<f:facet name="header">
+									<h:outputText value="Downs" />
+								</f:facet>
+						#{down.numDownStream}
+								</p:column>
 
 							<p:column>
 								<f:facet name="header">
 									<h:outputText value="Direto" />
 								</f:facet>
-								<ui:repeat var="down" value="#{conn.downstreamList}">
-									<ui:repeat var="node" value="#{down.nodes}">
-										<h:outputText value="#{node.codNode}, "
-											rendered="#{node.codNode.contains(projetoMB.node.codNode)}" />
-									</ui:repeat>
-								</ui:repeat>
+
+								<p:cellEditor>
+									<f:facet name="output">
+										<ui:repeat var="node" value="#{down.nodes}">
+								#{node.codNode}, 
+							</ui:repeat>
+									</f:facet>
+									<f:facet name="input">
+										<p:inputText value="#{projetoMB.strNodeQuebrado}"
+											style="width:96%" label="Year" />
+									</f:facet>
+								</p:cellEditor>
+
+
 							</p:column>
-						</p:row>
-					</c:forEach>
+						</p:dataTable>
+					</p:panel>
+					<p:commandButton id="btnBack" value="Voltar"
+						actionListener="#{projetoMB.reset()}" process="@form"
+						update="@form" rendered="#{not projetoMB.firstPanel}" />
+
 				</p:panelGrid>
 			</h:form>
 		</div>

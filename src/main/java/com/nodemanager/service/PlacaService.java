@@ -5,6 +5,7 @@ import java.util.List;
 import com.nodemanager.dao.impl.PlacaDAO;
 import com.nodemanager.dao.utils.SimpleEntityManager;
 import com.nodemanager.model.Placa;
+import com.nodemanager.util.Status;
 
 public class PlacaService {
 
@@ -30,6 +31,10 @@ public class PlacaService {
 
   public List<Placa> findAll() {
     return dao.findAll();
+  }
+
+  public List<Placa> findPlacaByUpstreamStatus(Long idCmts, Long qtdUpstream, Status soUpsLivres) {
+    return dao.findPlacaByUpstreamStatus(idCmts, qtdUpstream, soUpsLivres);
   }
 
   public void delete(Placa placa) {

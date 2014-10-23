@@ -116,6 +116,14 @@ h6,.h6 {
 	background-color: #eee
 }
 
+.myPanelGridPanel td {
+	vertical-align: top;
+}
+
+.ui-growl {
+	display: table-column-group;
+}
+
 .ui-fieldset-legend {
 	margin-right: 5em;
 }
@@ -124,11 +132,17 @@ h6,.h6 {
 	font-size: x-large;
 }
 
+.ui-selectonemenu {
+	width: 100% !important;
+}
+
+.ui-selectonemenu-label {
+	width: 96% !important;
+}
+
 .ui-state-hover,.ui-widget-content .ui-state-hover,.ui-widget-header .ui-state-hover
 	{
-	background-position: 0px -50px;
-
-.ui-dialog,.ui-dialog-content {
-	top: 400px;
+	background-position: 0px -50px; . ui-dialog ,.ui-dialog-content { top :
+	400px;
 	z-index: 4 !important;
 }

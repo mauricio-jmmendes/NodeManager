@@ -1,0 +1,222 @@
+<ui:composition template="template/main.xhtml"
+	xmlns="http://www.w3.org/1999/xhtml"
+	xmlns:f="http://java.sun.com/jsf/core"
+	xmlns:h="http://java.sun.com/jsf/html"
+	xmlns:ui="http://java.sun.com/jsf/facelets"
+	xmlns:p="http://primefaces.org/ui"
+	xmlns:c="http://java.sun.com/jsp/jstl/core">
+
+	<ui:define name="content">
+		<div id="container" style="border: none;" align="center">
+			<h1>Dados do Node</h1>
+			<h:form prependId="false">
+				<p:growl id="growl" sticky="false" showDetail="true" life="2000" />
+
+				<p:panel styleClass="form-group" header="Cadastrar Node"
+					style="margin: 15px; width: 900px">
+					<h:panelGrid columns="2">
+						<p:outputLabel styleClass="control-label" value="Node:" />
+						<p:inputText styleClass="form-control"
+							placeholder="Digite o código do Node"
+							value="#{projetoMB.node.codNode}" required="true" />
+
+						<p:outputLabel styleClass="control-label" for="hub" value="HUB: " />
+						<p:selectOneMenu style="width:150px;" id="hub"
+							value="#{projetoMB.hubId}" required="true">
+							<f:selectItem itemLabel="Selecione a HUB" itemValue="" />
+							<f:selectItems value="#{projetoMB.hubs}" var="hub"
+								itemValue="#{hub.id}" itemLabel="#{hub.codHub}">
+
+							</f:selectItems>
+							<p:ajax update="lstBoxCmts"
+								listener="#{projetoMB.handleHubListBoxChange}" />
+						</p:selectOneMenu>
+
+						<p:outputLabel value="CMTS: " />
+						<p:selectOneMenu id="lstBoxCmts" value="#{projetoMB.cmtsId}"
+							required="true">
+							<f:selectItem itemLabel="Selecione o CMTS" itemValue="" />
+							<f:selectItems value="#{projetoMB.cmtsList}" var="cmts"
+								itemValue="#{cmts.id}" itemLabel="#{cmts.nome}">
+
+							</f:selectItems>
+							<p:ajax update="lstBoxPlaca"
+								listener="#{projetoMB.handleCmtsListBoxChange}" process="@this" />
+						</p:selectOneMenu>
+
+						<p:outputLabel value="Placa:" />
+						<p:selectOneMenu id="lstBoxPlaca" value="#{projetoMB.placaId}"
+							required="true">
+							<f:selectItem itemLabel="Selecione a Placa" itemValue="" />
+							<f:selectItems value="#{projetoMB.placas}" var="placa"
+								itemValue="#{placa.id}"
+								itemLabel="#{placa.slot.codSlot} - #{placa.codPlaca}" />
+							<p:ajax update="conectors" listener="#{projetoMB.loadPlaca}"
+								process="@this" />
+						</p:selectOneMenu>
+					</h:panelGrid>
+
+					<br />
+
+					<h:panelGroup id="conectors">
+						<p:outputLabel value="Retorno: " />
+						<p:selectOneRadio id="retorno"
+							value="#{projetoMB.selectedRetorno}">
+							<f:selectItem itemLabel="A" itemValue="A" />
+							<f:selectItem itemLabel="B" itemValue="B" />
+							<f:selectItem itemLabel="C" itemValue="C" />
+							<f:selectItem itemLabel="D" itemValue="D" />
+							<f:selectItems value="#{projetoMB.placas}" var="placa"
+								itemValue="#{placa.id}"
+								itemLabel="#{placa.slot.codSlot} - #{placa.codPlaca}" />
+						</p:selectOneRadio>
+
+						<p:panelGrid id="panelUp" columns="8" style="width:800px;">
+							<ui:repeat var="conn" value="#{projetoMB.placa.conectorList}">
+
+
+								<p:outputLabel rendered="#{not empty conn.upstreamList}"
+									value="Conector: #{conn.numConector}" />
+
+								<p:selectManyCheckbox rendered="#{not empty conn.upstreamList}"
+									value="#{projetoMB.selectedUps}" layout="grid" columns="4">
+									<f:selectItems value="#{conn.upstreamList}" var="up"
+										itemValue="#{up.id}" itemLabel="up#{up.numUpStream}" />
+								</p:selectManyCheckbox>
+
+							</ui:repeat>
+
+							<p:commandButton id="ajaxUp" value="Add"
+								actionListener="#{projetoMB.addUps}" process="@form"
+								update="dtRetorno" />
+						</p:panelGrid>
+
+						<br />
+
+						<p:dataTable id="dtRetorno" var="up"
+							value="#{projetoMB.retornoConnectorsList()}" style="width: 80%;">
+							<p:column>
+								<f:facet name="header">
+									<h:outputText value="CMTS" />
+								</f:facet>
+						#{up.conectorUp.placa.slot.cmts.nome}
+					</p:column>
+
+							<p:column>
+								<f:facet name="header">
+									<h:outputText value="Placa" />
+								</f:facet>
+							#{up.conectorUp.placa.codPlaca}
+						</p:column>
+
+							<p:column>
+								<f:facet name="header">
+									<h:outputText value="Conector" />
+								</f:facet>
+							#{up.conectorUp.numConector}
+						</p:column>
+
+							<p:column>
+								<f:facet name="header">
+									<h:outputText value="Upstream" />
+								</f:facet>
+							#{up.numUpStream}
+						</p:column>
+
+							<p:column>
+								<f:facet name="header">
+									<h:outputText value="Retorno" />
+								</f:facet>
+								<ui:repeat var="node" value="#{up.nodes}">
+								#{node.codNode}, 
+							</ui:repeat>
+							</p:column>
+
+						</p:dataTable>
+
+						<br />
+
+						<p:outputLabel value="Direto: " />
+						<p:selectOneMenu id="direto" value="#{projetoMB.selectedDireto}">
+							<f:selectItem itemLabel="A" itemValue="A" />
+							<f:selectItem itemLabel="B" itemValue="B" />
+							<f:selectItem itemLabel="C" itemValue="C" />
+							<f:selectItem itemLabel="D" itemValue="D" />
+						</p:selectOneMenu>
+						<p:panelGrid id="panelDown" columns="3" style="width:400px;">
+							<ui:repeat var="conn" value="#{projetoMB.placa.conectorList}">
+
+								<p:outputLabel rendered="#{not empty conn.downstreamList}"
+									value="Conector: #{conn.numConector}" />
+
+								<p:selectManyCheckbox
+									rendered="#{not empty conn.downstreamList}"
+									value="#{projetoMB.selectedDowns}" layout="grid" columns="4">
+									<f:selectItems value="#{conn.downstreamList}" var="down"
+										itemValue="#{down.id}" itemLabel="dw#{down.numDownStream}">
+									</f:selectItems>
+								</p:selectManyCheckbox>
+							</ui:repeat>
+
+							<p:commandButton id="ajaxDown" value="Add"
+								actionListener="#{projetoMB.addDowns}" process="@form"
+								update="dtDireto" />
+						</p:panelGrid>
+
+						<br />
+
+						<p:dataTable id="dtDireto" var="down"
+							value="#{projetoMB.diretoConnectorsList()}" style="width:600px;">
+
+							<p:column>
+								<f:facet name="header">
+									<h:outputText value="CMTS" />
+								</f:facet>
+						#{down.conectorDown.placa.slot.cmts.nome}
+					</p:column>
+
+							<p:column>
+								<f:facet name="header">
+									<h:outputText value="Placa" />
+								</f:facet>
+						#{down.conectorDown.placa.codPlaca}
+					</p:column>
+
+							<p:column>
+								<f:facet name="header">
+									<h:outputText value="Conector" />
+								</f:facet>
+						#{down.conectorDown.numConector}
+					</p:column>
+
+							<p:column>
+								<f:facet name="header">
+									<h:outputText value="Downstream" />
+								</f:facet>
+						#{down.numDownStream}
+								</p:column>
+
+							<p:column>
+								<f:facet name="header">
+									<h:outputText value="Direto" />
+								</f:facet>
+								<ui:repeat var="node" value="#{down.nodes}">
+								
+								#{node.codNode}, 
+
+								</ui:repeat>
+							</p:column>
+						</p:dataTable>
+
+						<br />
+
+						<p:commandButton value="Cadastrar" id="addNode" update="growl"
+							actionListener="#{projetoMB.save}"
+							action="cmtsCreateEdit?faces-redirect=true" />
+					</h:panelGroup>
+				</p:panel>
+			</h:form>
+		</div>
+
+	</ui:define>
+</ui:composition>

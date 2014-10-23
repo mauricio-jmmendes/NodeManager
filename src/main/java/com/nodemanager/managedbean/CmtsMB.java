@@ -2,6 +2,7 @@ package com.nodemanager.managedbean;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.StringTokenizer;
 
 import javax.annotation.PostConstruct;
 import javax.faces.bean.ManagedBean;
@@ -23,6 +24,8 @@ public class CmtsMB {
   private HubService hubService;
 
   private Cmts cmts;
+
+  private String slotList;
 
   private List<Hub> hubs;
 
@@ -48,6 +51,18 @@ public class CmtsMB {
     this.hubs = hubService.findAll();
   }
 
+  public List<String> getSlotListFromString() {
+    StringTokenizer stringTokenizer = new StringTokenizer(slotList, ", ");
+
+    List<String> slotList = new ArrayList<>(this.slotList.length());
+
+    while (stringTokenizer.hasMoreElements()) { // 0 1 2 ...
+      slotList.add(stringTokenizer.nextToken());
+    }
+
+    return slotList;
+  }
+
   public void save() {
     Hub hub = hubService.getById(hubId);
     cmts.setHub(hub);
@@ -59,17 +74,25 @@ public class CmtsMB {
       hub.setCmtsList(list);
     }
 
-    cmtsService.save(cmts);
-    FacesUtils.addInfoMessage("CMTS cadastrado com sucesso!");
-    FacesUtils.getExternalContext().getFlash().setKeepMessages(true);
-    list();
-    this.cmts = new Cmts();
+    try {
+      cmtsService.save(cmts, getSlotListFromString());
+      FacesUtils.addInfoMessage("CMTS cadastrado com sucesso!");
+      FacesUtils.getExternalContext().getFlash().setKeepMessages(true);
+      list();
+      this.cmts = new Cmts();
+    } catch (Exception e) {
+      FacesUtils.addInfoMessage("Não foi possível cadastrar o CMTS! \n" + e.getMessage());
+    }
   }
 
   public void delete() {
-    cmtsService.delete(cmts);
-    FacesUtils.addInfoMessage("CMTS removido com sucesso!");
-    list();
+    try {
+      cmtsService.delete(cmts);
+      FacesUtils.addInfoMessage("CMTS removido com sucesso!");
+      list();
+    } catch (Exception e) {
+      FacesUtils.addInfoMessage("Não foi possível remover o CMTS! \n" + e.getMessage());
+    }
   }
 
   public void prepareToUpdate(Cmts cmts) {
@@ -97,6 +120,20 @@ public class CmtsMB {
 
   public void setCmtsList(List<Cmts> cmtsList) {
     this.cmtsList = cmtsList;
+  }
+
+  /**
+   * @return the slotList
+   */
+  public String getSlotList() {
+    return slotList;
+  }
+
+  /**
+   * @param slotList the slotList to set
+   */
+  public void setSlotList(String slotList) {
+    this.slotList = slotList;
   }
 
   /**

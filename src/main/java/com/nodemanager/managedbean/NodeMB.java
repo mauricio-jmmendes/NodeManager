@@ -1,12 +1,14 @@
 package com.nodemanager.managedbean;
 
 import java.util.ArrayList;
+import java.util.Iterator;
 import java.util.List;
 
 import javax.annotation.PostConstruct;
 import javax.faces.bean.ManagedBean;
 import javax.faces.bean.ViewScoped;
 
+import com.nodemanager.managedbean.util.FacesUtils;
 import com.nodemanager.model.Cmts;
 import com.nodemanager.model.Conector;
 import com.nodemanager.model.Downstream;
@@ -18,10 +20,13 @@ import com.nodemanager.model.Upstream;
 import com.nodemanager.service.HubService;
 import com.nodemanager.service.NodeService;
 import com.nodemanager.util.JPAUtil;
+import com.nodemanager.util.Status;
 
 @ManagedBean
 @ViewScoped
 public class NodeMB {
+
+  private String codNode;
 
   private Node node;
   private List<Node> nodes;
@@ -93,8 +98,8 @@ public class NodeMB {
     }
   }
 
-  public void loadNode() {
-    nodes = nodeService.findByCodNode(node.getCodNode());
+  public void loadNodes() {
+    nodes = nodeService.findByCodNode(codNode);
   }
 
 
@@ -108,7 +113,9 @@ public class NodeMB {
 
   public void addUps() {
 
-    String retorno = node.getCodNode() + "-" + selectedRetorno;
+    String retorno = codNode + "-" + selectedRetorno;
+
+    node = getNodeIfAlreadyExists(retorno, "RETORNO");
 
     node.setCodNode(retorno);
 
@@ -116,11 +123,11 @@ public class NodeMB {
 
     for (String idUp : selectedUps) {
       for (Conector conn : placa.getConectorList()) {
-        
+
         if (null == conn.getUpstreamList()) {
           continue;
         }
-        
+
         for (Upstream up : conn.getUpstreamList()) {
           if (up.getId() == Long.parseLong(idUp)) {
             if (null != up.getNodes()) {
@@ -135,6 +142,8 @@ public class NodeMB {
 
               up.setNodes(nodes);
 
+              up.setStatusUp(Status.OCUPADO);
+
               retornos.add(up);
               break;
             }
@@ -142,8 +151,6 @@ public class NodeMB {
         }
       }
     }
-
-
 
     if (!retornos.isEmpty()) {
       if (null != node.getUpstreams()) {
@@ -161,15 +168,57 @@ public class NodeMB {
     }
   }
 
+  public void removeNode(Upstream up) {
+
+    String retorno = codNode + "-" + selectedRetorno;
+
+    List<Node> myListNodes = up.getNodes();
+
+    for (Iterator<Node> iterator = myListNodes.iterator(); iterator.hasNext();) {
+      Node myNode = iterator.next();
+
+      if (myNode.getCodNode().contains(retorno)) {
+        iterator.remove();
+      }
+    }
+  }
+
+  public void removeNode(Downstream down) {
+
+    String direto = codNode + "-" + selectedDireto;
+
+    List<Node> myListNodes = down.getNodes();
+
+    for (Iterator<Node> iterator = myListNodes.iterator(); iterator.hasNext();) {
+      Node myNode = iterator.next();
+
+      if (myNode.getCodNode().contains(direto)) {
+        iterator.remove();
+      }
+    }
+  }
+
   public List<Upstream> retornoList() {
 
     List<Upstream> ups = new ArrayList<>();
 
-    for (Node node : nodes) {
-      if (null != node.getUpstreams()) {
-        for (Upstream upstream : node.getUpstreams()) {
-          if (!ups.contains(upstream)) {
-            ups.add(upstream);
+    if (null != placa.getConectorList()) {
+      for (Conector conector : placa.getConectorList()) {
+        if (null != conector.getUpstreamList()) {
+          for (Upstream upstream : conector.getUpstreamList()) {
+            if (!ups.contains(upstream)) {
+              ups.add(upstream);
+            }
+          }
+        }
+      }
+    } else {
+      for (Node node : nodes) {
+        if (null != node.getUpstreams()) {
+          for (Upstream upstream : node.getUpstreams()) {
+            if (!ups.contains(upstream)) {
+              ups.add(upstream);
+            }
           }
         }
       }
@@ -180,11 +229,24 @@ public class NodeMB {
 
   public List<Downstream> diretoList() {
     List<Downstream> downs = new ArrayList<>();
-    for (Node node : nodes) {
-      if (null != node.getDownstreams()) {
-        for (Downstream down : node.getDownstreams()) {
-          if (!downs.contains(node)) {
-            downs.add(down);
+
+    if (null != placa.getConectorList()) {
+      for (Conector conector : placa.getConectorList()) {
+        if (null != conector.getDownstreamList()) {
+          for (Downstream down : conector.getDownstreamList()) {
+            if (!downs.contains(down)) {
+              downs.add(down);
+            }
+          }
+        }
+      }
+    } else {
+      for (Node node : nodes) {
+        if (null != node.getDownstreams()) {
+          for (Downstream down : node.getDownstreams()) {
+            if (!downs.contains(node)) {
+              downs.add(down);
+            }
           }
         }
       }
@@ -193,12 +255,36 @@ public class NodeMB {
     return downs;
   }
 
+  private Node getNodeIfAlreadyExists(String codNode, String type) {
+
+    List<Node> nodeList = nodeService.findByCodNode(codNode);
+
+    for (Node myNode : nodeList) {
+      if (myNode.getCodNode().equals(codNode)) {
+        if (type.equals("DIRETO")) {
+          if (null != myNode.getDownstreams()) {
+            return myNode;
+          }
+        } else {
+          if (null != myNode.getUpstreams()) {
+            return myNode;
+          }
+        }
+      }
+    }
+
+    return new Node();
+
+  }
+
 
   public void addDowns() {
 
-    String retorno = node.getCodNode() + "-" + selectedDireto;
+    String direto = codNode + "-" + selectedDireto;
 
-    node.setCodNode(retorno);
+    node = getNodeIfAlreadyExists(direto, "DIRETO");
+
+    node.setCodNode(direto);
 
     List<Downstream> diretos = new ArrayList<>();
 
@@ -207,6 +293,7 @@ public class NodeMB {
         if (null == conn.getDownstreamList()) {
           continue;
         }
+
         for (Downstream down : conn.getDownstreamList()) {
           if (down.getId() == Long.parseLong(idDown)) {
             if (null != down.getNodes()) {
@@ -221,12 +308,12 @@ public class NodeMB {
 
               down.setNodes(nodes);
 
+              down.setStatusDown(Status.OCUPADO);
+
               diretos.add(down);
               break;
             }
-            
-            
-            
+
             if (!down.getNodes().contains(node)) {
               down.getNodes().add(node);
               diretos.add(down);
@@ -254,9 +341,41 @@ public class NodeMB {
   }
 
   public void save() {
-    for (Node node : nodes) {
-      nodeService.save(node);
+    try {
+      for (Node myNode : nodes) {
+        nodeService.save(myNode);
+
+        if (null != myNode.getUpstreams()) {
+          FacesUtils.addInfoMessage("Retorno " + myNode.getCodNode() + " com sucesso!");
+          FacesUtils.getExternalContext().getFlash().setKeepMessages(true);
+        } else {
+          FacesUtils.addInfoMessage("Direto " + myNode.getCodNode() + " com sucesso!");
+          FacesUtils.getExternalContext().getFlash().setKeepMessages(true);
+        }
+
+      }
+
+    } catch (Exception e) {
+      FacesUtils.addInfoMessage("Erro ao cadastrar Node!\n" + e.getMessage());
+      FacesUtils.getExternalContext().getFlash().setKeepMessages(true);
     }
+
+
+
+  }
+
+  /**
+   * @return the codNode
+   */
+  public String getCodNode() {
+    return codNode;
+  }
+
+  /**
+   * @param codNode the codNode to set
+   */
+  public void setCodNode(String codNode) {
+    this.codNode = codNode;
   }
 
   /**

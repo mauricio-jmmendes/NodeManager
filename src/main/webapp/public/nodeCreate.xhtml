@@ -6,91 +6,122 @@
 	xmlns:p="http://primefaces.org/ui">
 
 	<ui:define name="content">
-		<h:form prependId="false">
-			<p:growl id="growl" sticky="false" showDetail="true" life="2000" />
+		<h:form id="myForm">
+			<p:growl id="growl" sticky="true" showSummary="true" showDetail="true" life="30000" />
 
-			<p:panel styleClass="form-group" header="Cadastrar Node"
-				style="margin: 15px; width: 900px">
-				<h:panelGrid columns="2">
-					<p:outputLabel styleClass="control-label" value="Node:" />
-					<p:inputText styleClass="form-control"
-						placeholder="Digite o código do Node"
-						value="#{nodeMB.node.codNode}" required="true" />
+			<h:panelGrid columns="2" styleClass="myPanelGridPanel">
 
-					<p:outputLabel styleClass="control-label" for="hub" value="HUB: " />
-					<p:selectOneMenu style="width:150px;" id="hub"
-						value="#{nodeMB.hubId}" required="true">
-						<f:selectItem itemLabel="Selecione a HUB" itemValue="" />
-						<f:selectItems value="#{nodeMB.hubs}" var="hub"
-							itemValue="#{hub.id}" itemLabel="#{hub.codHub}">
+				<p:panel styleClass="form-group" header="Cadastrar Node"
+					style="margin: 5px;	min-width: 500px;">
+					<h:panelGrid columns="2">
+						<p:outputLabel styleClass="control-label" value="Node:" />
+						<p:inputText styleClass="form-control"
+							placeholder="Digite o código do Node" value="#{nodeMB.codNode}"
+							required="true" />
 
-						</f:selectItems>
-						<p:ajax update="lstBoxCmts"
-							listener="#{nodeMB.handleHubListBoxChange}" />
-					</p:selectOneMenu>
+						<p:outputLabel styleClass="control-label" for="hub" value="HUB: " />
+						<p:selectOneMenu style="width:150px;" id="hub"
+							value="#{nodeMB.hubId}" required="true">
+							<f:selectItem itemLabel="Selecione a HUB" itemValue="" />
+							<f:selectItems value="#{nodeMB.hubs}" var="hub"
+								itemValue="#{hub.id}" itemLabel="#{hub.codHub}">
 
-					<p:outputLabel value="CMTS: " />
-					<p:selectOneMenu id="lstBoxCmts" value="#{nodeMB.cmtsId}"
-						required="true">
-						<f:selectItem itemLabel="Selecione o CMTS" itemValue="" />
-						<f:selectItems value="#{nodeMB.cmtsList}" var="cmts"
-							itemValue="#{cmts.id}" itemLabel="#{cmts.nome}">
+							</f:selectItems>
+							<p:ajax update="lstBoxCmts"
+								listener="#{nodeMB.handleHubListBoxChange}" />
+						</p:selectOneMenu>
 
-						</f:selectItems>
-						<p:ajax update="lstBoxPlaca"
-							listener="#{nodeMB.handleCmtsListBoxChange}" process="@this" />
-					</p:selectOneMenu>
+						<p:outputLabel value="CMTS: " />
+						<p:selectOneMenu id="lstBoxCmts" value="#{nodeMB.cmtsId}"
+							required="true">
+							<f:selectItem itemLabel="Selecione o CMTS" itemValue="" />
+							<f:selectItems value="#{nodeMB.cmtsList}" var="cmts"
+								itemValue="#{cmts.id}" itemLabel="#{cmts.nome}">
 
-					<p:outputLabel value="Placa:" />
-					<p:selectOneMenu id="lstBoxPlaca" value="#{nodeMB.placaId}"
-						required="true">
-						<f:selectItem itemLabel="Selecione a Placa" itemValue="" />
-						<f:selectItems value="#{nodeMB.placas}" var="placa"
-							itemValue="#{placa.id}"
-							itemLabel="#{placa.slot.codSlot} - #{placa.codPlaca}" />
-						<p:ajax update="conectors" listener="#{nodeMB.loadPlaca}"
-							process="@this" />
-					</p:selectOneMenu>
-				</h:panelGrid>
+							</f:selectItems>
+							<p:ajax update="lstBoxPlaca"
+								listener="#{nodeMB.handleCmtsListBoxChange}" process="@this" />
+						</p:selectOneMenu>
 
-				<br />
-
-				<h:panelGroup id="conectors">
-					<p:outputLabel value="Retorno: " />
-					<p:selectOneRadio id="retorno" value="#{nodeMB.selectedRetorno}">
-						<f:selectItem itemLabel="A" itemValue="A" />
-						<f:selectItem itemLabel="B" itemValue="B" />
-						<f:selectItem itemLabel="C" itemValue="C" />
-						<f:selectItem itemLabel="D" itemValue="D" />
-						<f:selectItems value="#{nodeMB.placas}" var="placa"
-							itemValue="#{placa.id}"
-							itemLabel="#{placa.slot.codSlot} - #{placa.codPlaca}" />
-					</p:selectOneRadio>
-
-					<p:panelGrid id="panelUp" columns="8" style="width:800px;">
-						<ui:repeat var="conn" value="#{nodeMB.placa.conectorList}">
-
-
-							<p:outputLabel rendered="#{not empty conn.upstreamList}"
-								value="Conector: #{conn.numConector}" />
-
-							<p:selectManyCheckbox rendered="#{not empty conn.upstreamList}"
-								value="#{nodeMB.selectedUps}" layout="grid" columns="4">
-								<f:selectItems value="#{conn.upstreamList}" var="up"
-									itemValue="#{up.id}" itemLabel="up#{up.numUpStream}" />
-							</p:selectManyCheckbox>
-
-						</ui:repeat>
-
-						<p:commandButton style="align: center;" id="ajaxUp" value="Add"
-							actionListener="#{nodeMB.addUps}" process="@form"
-							update="dtRetorno" />
-					</p:panelGrid>
+						<p:outputLabel value="Placa:" />
+						<p:selectOneMenu id="lstBoxPlaca" value="#{nodeMB.placaId}"
+							required="true">
+							<f:selectItem itemLabel="Selecione a Placa" itemValue="" />
+							<f:selectItems value="#{nodeMB.placas}" var="placa"
+								itemValue="#{placa.id}"
+								itemLabel="#{placa.slot.codSlot} - #{placa.codPlaca}" />
+							<p:ajax update="conectors, tbPanel"
+								listener="#{nodeMB.loadPlaca}" process="@this" />
+						</p:selectOneMenu>
+					</h:panelGrid>
 
 					<br />
 
+					<h:panelGroup id="conectors">
+						<p:outputLabel value="Retorno: " />
+						<p:selectOneRadio id="retorno" value="#{nodeMB.selectedRetorno}">
+							<f:selectItem itemLabel="A" itemValue="A" />
+							<f:selectItem itemLabel="B" itemValue="B" />
+							<f:selectItem itemLabel="C" itemValue="C" />
+							<f:selectItem itemLabel="D" itemValue="D" />
+						</p:selectOneRadio>
+
+						<p:panelGrid id="panelUp" columns="8">
+							<ui:repeat var="conn" value="#{nodeMB.placa.conectorList}">
+
+
+								<p:outputLabel rendered="#{not empty conn.upstreamList}"
+									value="Conector: #{conn.numConector}" />
+
+								<p:selectManyCheckbox rendered="#{not empty conn.upstreamList}"
+									value="#{nodeMB.selectedUps}" layout="grid" columns="4">
+									<f:selectItems value="#{conn.upstreamList}" var="up"
+										itemValue="#{up.id}" itemLabel="up#{up.numUpStream}" />
+								</p:selectManyCheckbox>
+
+							</ui:repeat>
+
+							<p:commandButton style="align: center;" id="ajaxUp" value="Add"
+								actionListener="#{nodeMB.addUps}" process="@form"
+								update="dtRetorno" />
+						</p:panelGrid>
+
+						<br />
+
+						<p:outputLabel value="Direto: " />
+						<p:selectOneRadio id="direto" value="#{nodeMB.selectedDireto}">
+							<f:selectItem itemLabel="A" itemValue="A" />
+							<f:selectItem itemLabel="B" itemValue="B" />
+							<f:selectItem itemLabel="C" itemValue="C" />
+							<f:selectItem itemLabel="D" itemValue="D" />
+						</p:selectOneRadio>
+						<p:panelGrid id="panelDown" columns="3">
+							<ui:repeat var="conn" value="#{nodeMB.placa.conectorList}">
+
+								<p:outputLabel rendered="#{not empty conn.downstreamList}"
+									value="Conector: #{conn.numConector}" />
+
+								<p:selectManyCheckbox
+									rendered="#{not empty conn.downstreamList}"
+									value="#{nodeMB.selectedDowns}" layout="grid" columns="4">
+									<f:selectItems value="#{conn.downstreamList}" var="down"
+										itemValue="#{down.id}" itemLabel="dw#{down.numDownStream}">
+									</f:selectItems>
+								</p:selectManyCheckbox>
+							</ui:repeat>
+
+							<p:commandButton id="ajaxDown" value="Add"
+								actionListener="#{nodeMB.addDowns}" process="@form"
+								update="dtDireto" />
+						</p:panelGrid>
+					</h:panelGroup>
+				</p:panel>
+
+				<p:panel style="margin: 5px; 	min-width: 500px;"
+					header="Nodes na placa: #{nodeMB.placa.slot.codSlot} - #{nodeMB.placa.codPlaca}"
+					id="tbPanel">
 					<p:dataTable id="dtRetorno" var="up"
-						value="#{nodeMB.retornoList()}" style="width: 80%;">
+						value="#{nodeMB.retornoList()}">
 						<p:column>
 							<f:facet name="header">
 								<h:outputText value="CMTS" />
@@ -127,42 +158,21 @@
 								#{node.codNode}, 
 							</ui:repeat>
 						</p:column>
+						<p:column>
+							<f:facet name="header">
+								<h:outputText value="Opções" />
+							</f:facet>
+							<p:commandButton value="Remover" process="@this"
+								update="dtRetorno" actionListener="#{nodeMB.removeNode(up)}">
+							</p:commandButton>
+						</p:column>
 
 					</p:dataTable>
 
 					<br />
 
-					<p:outputLabel value="Direto: " />
-					<p:selectOneRadio id="direto" value="#{nodeMB.selectedDireto}">
-						<f:selectItem itemLabel="A" itemValue="A" />
-						<f:selectItem itemLabel="B" itemValue="B" />
-						<f:selectItem itemLabel="C" itemValue="C" />
-						<f:selectItem itemLabel="D" itemValue="D" />
-					</p:selectOneRadio>
-					<p:panelGrid id="panelDown" columns="3" style="width:400px;">
-						<ui:repeat var="conn" value="#{nodeMB.placa.conectorList}">
-
-							<p:outputLabel rendered="#{not empty conn.downstreamList}"
-								value="Conector: #{conn.numConector}" />
-
-							<p:selectManyCheckbox rendered="#{not empty conn.downstreamList}"
-								value="#{nodeMB.selectedDowns}" layout="grid" columns="4">
-								<f:selectItems value="#{conn.downstreamList}" var="down"
-									itemValue="#{down.id}" itemLabel="dw#{down.numDownStream}">
-								</f:selectItems>
-							</p:selectManyCheckbox>
-						</ui:repeat>
-
-						<p:commandButton id="ajaxDown" value="Add"
-							actionListener="#{nodeMB.addDowns}" process="@form"
-							update="dtDireto" />
-					</p:panelGrid>
-
-					<br />
-
 					<p:dataTable id="dtDireto" var="down"
-						value="#{nodeMB.diretoList()}" style="width:600px;">
-
+						value="#{nodeMB.diretoList()}" style="width: 100%;">
 						<p:column>
 							<f:facet name="header">
 								<h:outputText value="CMTS" />
@@ -201,15 +211,23 @@
 
 								</ui:repeat>
 						</p:column>
+						<p:column>
+							<f:facet name="header">
+								<h:outputText value="Opções" />
+							</f:facet>
+							<p:commandButton value="Remover" process="@this"
+								update="dtDireto" actionListener="#{nodeMB.removeNode(down)}">
+							</p:commandButton>
+						</p:column>
 					</p:dataTable>
+				</p:panel>
 
-					<br />
+				<p:spacer />
 
-					<p:commandButton value="Cadastrar" id="addNode" update="growl"
-						actionListener="#{nodeMB.save}"
-						action="cmtsCreateEdit?faces-redirect=true" />
-				</h:panelGroup>
-			</p:panel>
+				<p:commandButton value="Cadastrar" id="addNode" update="growl"
+					actionListener="#{nodeMB.save}"
+					action="nodeList?faces-redirect=true" />
+			</h:panelGrid>
 		</h:form>
 	</ui:define>
 </ui:composition>

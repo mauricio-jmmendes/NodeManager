@@ -15,14 +15,14 @@
 				<h:panelGrid columns="3">
 					<p:outputLabel value="Node: " />
 					<p:inputText placeholder="Digite o código do Node"
-						value="#{nodeMB.node.codNode}" required="true" />
+						value="#{nodeMB.codNode}" required="true" />
 
 					<p:commandButton id="ajax" value="Buscar"
-						actionListener="#{nodeMB.loadNode()}" process="@form"
-						update="@form" rendered="#{nodeMB.node.codNode ne ''}" />
+						actionListener="#{nodeMB.loadNodes()}" process="@form"
+						update="@form" rendered="#{nodeMB.codNode ne ''}" />
 				</h:panelGrid>
 
-			<!-- 	<p:panelGrid style="margin-top:20px">
+				<!-- 	<p:panelGrid style="margin-top:20px">
 					<f:facet name="header">
 						<p:row>
 							<p:column colspan="7">#{nodeMB.node.codNode}</p:column>
@@ -41,7 +41,8 @@
 
 				<h:panelGroup id="conectors">
 
-					<p:fieldset legend="Retorno" toggleable="true" toggleSpeed="500" style="margin-bottom: 10px; width: 1000px">
+					<p:fieldset legend="Retorno" toggleable="true" toggleSpeed="500"
+						style="margin-bottom: 10px; width: 1000px">
 
 						<p:dataTable id="dtRetorno" var="up"
 							value="#{nodeMB.retornoList()}" style="width: 1000px;">
@@ -86,10 +87,12 @@
 
 					<br />
 
-					<p:fieldset legend="Direto" toggleable="true" toggleSpeed="500" style="margin-bottom: 10px; width: 1000px">
+					<p:fieldset legend="Direto" toggleable="true" toggleSpeed="500"
+						style="margin-bottom: 10px; width: 1000px">
 
 						<p:dataTable id="dtDireto" var="down"
-							value="#{nodeMB.diretoList()}" style="width: 1000px;" resizableColumns="true">
+							value="#{nodeMB.diretoList()}" style="width: 1000px;"
+							resizableColumns="true">
 
 							<p:column>
 								<f:facet name="header">

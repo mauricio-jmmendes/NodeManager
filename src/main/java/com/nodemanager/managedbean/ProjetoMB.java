@@ -1,151 +1,105 @@
 package com.nodemanager.managedbean;
 
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 
 import javax.annotation.PostConstruct;
 import javax.faces.bean.ManagedBean;
 import javax.faces.bean.ViewScoped;
 
-import org.primefaces.context.RequestContext;
-
+import com.nodemanager.managedbean.util.FacesUtils;
 import com.nodemanager.model.Cmts;
 import com.nodemanager.model.Conector;
 import com.nodemanager.model.Downstream;
 import com.nodemanager.model.Hub;
 import com.nodemanager.model.Node;
 import com.nodemanager.model.Placa;
-import com.nodemanager.model.Slot;
 import com.nodemanager.model.Upstream;
-import com.nodemanager.service.HubService;
 import com.nodemanager.service.NodeService;
+import com.nodemanager.service.PlacaService;
 import com.nodemanager.util.JPAUtil;
+import com.nodemanager.util.Status;
 
 @ManagedBean
 @ViewScoped
 public class ProjetoMB {
 
+  private String codNode;
   private Node node;
   private List<Node> nodes;
+  private List<Node> selectedNodes;
   private NodeService nodeService;
-
-  private Long hubId;
-  private List<Hub> hubs;
-
-  private HubService hubService;
 
   private Long cmtsId;
   private List<Cmts> cmtsList;
 
   private Long placaId;
   private Placa placa;
+
   private List<Placa> placas;
+  private PlacaService placaService;
 
   private List<Upstream> selectedUps;
   private List<Downstream> selectedDowns;
 
+  private List<String> selectedCheckBoxesUps;
+  private List<String> selectedCheckBoxesDowns;
+
   private String selectedRetorno;
   private String selectedDireto;
+
+  private String strNodeQuebrado;
 
   private Upstream up;
   private Downstream down;
 
-  private String style;
+  private int qtdRetorno;
+  private Long qtdUpstream;
+  private Long qtdDownstream;
+
+  private boolean soUpsLivres;
+  private boolean soDownsLivres;
+
+  private Hub hub;
+
+  private Conector conn;
+
+  private boolean firstPanel;
+  private boolean secondPanel;
+
+  private boolean displayPanel;
+  private boolean cmtsChecked;
+
+  private List<Conector> selectedConnectors;
 
   @PostConstruct
   public void init() {
 
     nodeService = new NodeService(JPAUtil.getSimpleEntityManager());
     node = new Node();
+    selectedNodes = new ArrayList<>();
 
     nodes = new ArrayList<>();
 
-    hubService = new HubService(JPAUtil.getSimpleEntityManager());
-    hubs = hubService.findAll();
-
+    placaService = new PlacaService(JPAUtil.getSimpleEntityManager());
     placa = new Placa();
     placas = new ArrayList<>();
 
     selectedUps = new ArrayList<>();
     selectedDowns = new ArrayList<>();
 
+    selectedConnectors = new ArrayList<>();
 
-  }
-
-  public void prepareToAdd() {
-    this.node = new Node();
-    this.hubs = hubService.findAll();
-
-    placa = new Placa();
-    placas = new ArrayList<>();
-
-  }
-
-  public void handleHubListBoxChange() {
-    for (Hub myHub : hubs) {
-      if (myHub.getId() == hubId) {
-        cmtsList = myHub.getCmtsList();
-      }
-    }
-  }
-
-  public void handleCmtsListBoxChange() {
-    placas = new ArrayList<>();
-
-    for (Cmts myCmts : cmtsList) {
-      if (myCmts.getId() == cmtsId) {
-        for (Slot slot : myCmts.getSlots()) {
-          if (null != slot.getPlaca()) {
-            placas.add(slot.getPlaca());
-          }
-        }
-        break;
-      }
-    }
-  }
-
-  public String getRowSpanRetorno() {
-    int rowSpan = 0;
-    int a = 0, b = 0, c = 0, d = 0;
-
-    for (Conector conn : retornoConnectorsList()) {
-      for (Upstream retorno : conn.getUpstreamList()) {
-        for (Node myNode : retorno.getNodes()) {
-          if (myNode.getCodNode().contains(this.node.getCodNode())) {
-            if (myNode.getCodNode().endsWith("A")) {
-              a = a + 1;
-            } else if (myNode.getCodNode().endsWith("B")) {
-              b = b + 1;
-            } else if (myNode.getCodNode().endsWith("C")) {
-              c = c + 1;
-            } else if (myNode.getCodNode().endsWith("D")) {
-              d = d + 1;
-            }
-          }
-        }
-      }
-    }
-
-    if ((a > b) && (a > c) && (a > d)) {
-      rowSpan = a;
-    } else if ((b > c) && (b > d)) {
-      rowSpan = b;
-    } else if ((c > d)) {
-      rowSpan = c;
-    } else {
-      rowSpan = d;
-    }
-
-    return String.valueOf(rowSpan);
+    firstPanel = true;
+    secondPanel = false;
+    displayPanel = false;
 
   }
 
   public String setUpstreamRendered(Upstream up, Node myNode) {
 
     if (null != up && null != myNode) {
-      if (myNode.getCodNode().contains(this.node.getCodNode())) {
+      if (myNode.getCodNode().contains(codNode)) {
         if (!selectedUps.contains(up)) {
           selectedUps.add(up);
           return String.valueOf(up.getNumUpStream());
@@ -156,34 +110,102 @@ public class ProjetoMB {
     return "";
   }
 
-  public Boolean isDownstreamRendered(Downstream down) {
+  public String setDownstreamRendered(Downstream down, Node myNode) {
 
-    if (selectedDowns.contains(down)) {
-      return false;
+    if (null != down && null != myNode) {
+      if (myNode.getCodNode().contains(codNode)) {
+        if (!selectedDowns.contains(down)) {
+          selectedDowns.add(down);
+          return String.valueOf(down.getNumDownStream());
+        }
+      }
     }
 
-    selectedDowns.add(down);
-    return true;
+    return "";
+  }
+
+  public String setNodeRendered(Conector conn, Node myNode) {
+
+    if (!selectedConnectors.contains(conn)) {
+      selectedNodes.clear();
+      selectedConnectors.add(conn);
+    }
+
+    if (null != conn && null != myNode) {
+      if (myNode.getCodNode().contains(codNode)) {
+        if (!selectedNodes.contains(myNode)) {
+          selectedNodes.add(myNode);
+          return String.valueOf(myNode.getCodNode());
+        }
+      }
+    }
+
+    return "";
   }
 
   public void loadNode() {
 
-    selectedUps = new ArrayList<>();
-    selectedDowns = new ArrayList<>();
+    selectedUps.clear();
+    selectedDowns.clear();
 
-    nodes = nodeService.findByCodNode(node.getCodNode());
+    selectedConnectors.clear();
+    selectedNodes.clear();
+
+    nodes = nodeService.findByCodNode(codNode);
+
+    secondPanel = false;
   }
 
-  public void viewDialogQuebra() {
-    Map<String, Object> options = new HashMap<String, Object>();
-    options.put("modal", true);
-    options.put("draggable", false);
-    options.put("resizable", false);
-    options.put("contentHeight", 420);
+  public void loadPlacas() {
 
-    RequestContext.getCurrentInstance().openDialog("dlgQuebra", options, null);
+    placas = placaService.findPlacaByUpstreamStatus(cmtsId, qtdUpstream, Status.LIVRE);
+
+    displayPanel = true;
+
+    firstPanel = false;
+    secondPanel = false;
+
   }
 
+  public void prepareNodeForQuebra() {
+    node = getNodeFromConector();
+
+    selectedConnectors.clear();
+    selectedUps.clear();
+
+    hub = getCurrentHub();
+    cmtsList = hub.getCmtsList();
+
+    secondPanel = true;
+  }
+
+  private Hub getCurrentHub() {
+    return conn.getPlaca().getSlot().getCmts().getHub();
+  }
+
+  private Node getNodeFromConector() {
+
+    nodes.clear();
+
+    if (null != conn.getUpstreamList()) {
+      for (Upstream myUp : conn.getUpstreamList()) {
+        for (Node myNode : myUp.getNodes()) {
+          if (myNode.getCodNode().contains(codNode)) {
+            nodes.add(myNode);
+          }
+        }
+      }
+    } else {
+      for (Downstream myDown : conn.getDownstreamList()) {
+        for (Node myNode : myDown.getNodes()) {
+          if (myNode.getCodNode().contains(codNode)) {
+            nodes.add(myNode);
+          }
+        }
+      }
+    }
+    return nodes.get(0);
+  }
 
   public void loadPlaca() {
     for (Placa myPlaca : placas) {
@@ -193,13 +215,12 @@ public class ProjetoMB {
     }
   }
 
-
   public List<Conector> retornoConnectorsList() {
 
     List<Conector> conectors = new ArrayList<>();
 
     for (Node node : nodes) {
-      if (node.getCodNode().contains(this.node.getCodNode())) {
+      if (node.getCodNode().contains(codNode)) {
         if (null != node.getUpstreams()) {
           for (Upstream up : node.getUpstreams()) {
             if (!conectors.contains(up.getConectorUp())) {
@@ -218,7 +239,7 @@ public class ProjetoMB {
     List<Conector> conectors = new ArrayList<>();
 
     for (Node node : nodes) {
-      if (node.getCodNode().contains(this.node.getCodNode())) {
+      if (node.getCodNode().contains(codNode)) {
         if (null != node.getDownstreams()) {
           for (Downstream down : node.getDownstreams()) {
             if (!conectors.contains(down.getConectorDown())) {
@@ -232,10 +253,99 @@ public class ProjetoMB {
     return conectors;
   }
 
+  public List<Upstream> retornoList() {
+
+    List<Upstream> ups = new ArrayList<>();
+    if (null != placa.getConectorList()) {
+      for (Conector conector : placa.getConectorList()) {
+        ups.addAll(conector.getUpstreamList());
+      }
+    }
+    return ups;
+  }
+
+  public List<Downstream> diretoList() {
+
+    List<Downstream> downs = new ArrayList<>();
+
+    if (null != placa.getConectorList()) {
+      for (Conector conector : placa.getConectorList()) {
+        downs.addAll(conector.getDownstreamList());
+      }
+    }
+    return downs;
+  }
+
+  public void onCellEdit(Upstream upstream) {
+    Node myNode = new Node();
+    myNode.setCodNode(strNodeQuebrado);
+
+    upstream.getNodes().add(myNode);
+
+    List<Upstream> ups = new ArrayList<>();
+
+    ups.add(upstream);
+
+    myNode.setUpstreams(ups);
+
+    try {
+      nodeService.save(myNode);
+      FacesUtils.addInfoMessage("Retorno " + myNode.getCodNode() + "criado com sucesso!");
+    } catch (Exception e) {
+      FacesUtils.addInfoMessage("Não foi possível criar o Retorno " + myNode.getCodNode() + "! \n"
+          + e.getMessage());
+    }
+
+
+    strNodeQuebrado = "";
+
+  }
+
+  public void reset() {
+
+    loadNode();
+    firstPanel = true;
+    secondPanel = false;
+    displayPanel = false;
+
+  }
+
+  public void onCellEdit(Downstream downstream) {
+    Node node = new Node();
+    node.setCodNode(strNodeQuebrado);
+
+    downstream.getNodes().add(node);
+
+    List<Downstream> downs = new ArrayList<>();
+
+    downs.add(downstream);
+
+    node.setDownstreams(downs);
+
+    nodeService.save(node);
+
+    strNodeQuebrado = "";
+
+  }
+
   public void save() {
     for (Node node : nodes) {
       nodeService.save(node);
     }
+  }
+
+  /**
+   * @return the codNode
+   */
+  public String getCodNode() {
+    return codNode;
+  }
+
+  /**
+   * @param codNode the codNode to set
+   */
+  public void setCodNode(String codNode) {
+    this.codNode = codNode;
   }
 
   /**
@@ -267,31 +377,17 @@ public class ProjetoMB {
   }
 
   /**
-   * @return the hubId
+   * @return the selectedNodes
    */
-  public Long getHubId() {
-    return hubId;
+  public List<Node> getSelectedNodes() {
+    return selectedNodes;
   }
 
   /**
-   * @param hubId the hubId to set
+   * @param selectedNodes the selectedNodes to set
    */
-  public void setHubId(Long hubId) {
-    this.hubId = hubId;
-  }
-
-  /**
-   * @return the hubs
-   */
-  public List<Hub> getHubs() {
-    return hubs;
-  }
-
-  /**
-   * @param hubs the hubs to set
-   */
-  public void setHubs(List<Hub> hubs) {
-    this.hubs = hubs;
+  public void setSelectedNodes(List<Node> selectedNodes) {
+    this.selectedNodes = selectedNodes;
   }
 
   /**
@@ -401,6 +497,34 @@ public class ProjetoMB {
   }
 
   /**
+   * @return the selectedCheckBoxesUps
+   */
+  public List<String> getSelectedCheckBoxesUps() {
+    return selectedCheckBoxesUps;
+  }
+
+  /**
+   * @param selectedCheckBoxesUps the selectedCheckBoxesUps to set
+   */
+  public void setSelectedCheckBoxesUps(List<String> selectedCheckBoxesUps) {
+    this.selectedCheckBoxesUps = selectedCheckBoxesUps;
+  }
+
+  /**
+   * @return the selectedCheckBoxesDowns
+   */
+  public List<String> getSelectedCheckBoxesDowns() {
+    return selectedCheckBoxesDowns;
+  }
+
+  /**
+   * @param selectedCheckBoxesDowns the selectedCheckBoxesDowns to set
+   */
+  public void setSelectedCheckBoxesDowns(List<String> selectedCheckBoxesDowns) {
+    this.selectedCheckBoxesDowns = selectedCheckBoxesDowns;
+  }
+
+  /**
    * @return the selectedRetorno
    */
   public String getSelectedRetorno() {
@@ -426,6 +550,20 @@ public class ProjetoMB {
    */
   public void setSelectedDireto(String selectedDireto) {
     this.selectedDireto = selectedDireto;
+  }
+
+  /**
+   * @return the strNodeQuebrado
+   */
+  public String getStrNodeQuebrado() {
+    return strNodeQuebrado;
+  }
+
+  /**
+   * @param strNodeQuebrado the strNodeQuebrado to set
+   */
+  public void setStrNodeQuebrado(String strNodeQuebrado) {
+    this.strNodeQuebrado = strNodeQuebrado;
   }
 
   /**
@@ -457,16 +595,142 @@ public class ProjetoMB {
   }
 
   /**
-   * @return the style
+   * @return the qtdRetorno
    */
-  public String getStyle() {
-    return style;
+  public int getQtdRetorno() {
+    return qtdRetorno;
   }
 
   /**
-   * @param style the style to set
+   * @param qtdRetorno the qtdRetorno to set
    */
-  public void setStyle(String style) {
-    this.style = style;
+  public void setQtdRetorno(int qtdRetorno) {
+    this.qtdRetorno = qtdRetorno;
+  }
+
+  /**
+   * @return the qtdUpstream
+   */
+  public Long getQtdUpstream() {
+    return qtdUpstream;
+  }
+
+  /**
+   * @param qtdUpstream the qtdUpstream to set
+   */
+  public void setQtdUpstream(Long qtdUpstream) {
+    this.qtdUpstream = qtdUpstream;
+  }
+
+  /**
+   * @return the qtdDownstream
+   */
+  public Long getQtdDownstream() {
+    return qtdDownstream;
+  }
+
+  /**
+   * @param qtdDownstream the qtdDownstream to set
+   */
+  public void setQtdDownstream(Long qtdDownstream) {
+    this.qtdDownstream = qtdDownstream;
+  }
+
+  /**
+   * @return the soUpsLivres
+   */
+  public boolean isSoUpsLivres() {
+    return soUpsLivres;
+  }
+
+  /**
+   * @param soUpsLivres the soUpsLivres to set
+   */
+  public void setSoUpsLivres(boolean soUpsLivres) {
+    this.soUpsLivres = soUpsLivres;
+  }
+
+  /**
+   * @return the soDownsLivres
+   */
+  public boolean isSoDownsLivres() {
+    return soDownsLivres;
+  }
+
+  /**
+   * @param soDownsLivres the soDownsLivres to set
+   */
+  public void setSoDownsLivres(boolean soDownsLivres) {
+    this.soDownsLivres = soDownsLivres;
+  }
+
+  /**
+   * @return the conn
+   */
+  public Conector getConn() {
+    return conn;
+  }
+
+  /**
+   * @param conn the conn to set
+   */
+  public void setConn(Conector conn) {
+    this.conn = conn;
+  }
+
+  /**
+   * @return the show
+   */
+  public boolean isSecondPanel() {
+    return secondPanel;
+  }
+
+  /**
+   * @param show the show to set
+   */
+  public void setSecondPanel(boolean secondPanel) {
+    this.secondPanel = secondPanel;
+  }
+
+  /**
+   * @return the firstPanel
+   */
+  public boolean isFirstPanel() {
+    return firstPanel;
+  }
+
+  /**
+   * @param firstPanel the firstPanel to set
+   */
+  public void setFirstPanel(boolean firstPanel) {
+    this.firstPanel = firstPanel;
+  }
+
+  /**
+   * @return the displayPanel
+   */
+  public boolean isDisplayPanel() {
+    return displayPanel;
+  }
+
+  /**
+   * @param displayPanel the displayPanel to set
+   */
+  public void setDisplayPanel(boolean displayPanel) {
+    this.displayPanel = displayPanel;
+  }
+
+  /**
+   * @return the cmtsChecked
+   */
+  public boolean isCmtsChecked() {
+    return cmtsChecked;
+  }
+
+  /**
+   * @param cmtsChecked the cmtsChecked to set
+   */
+  public void setCmtsChecked(boolean cmtsChecked) {
+    this.cmtsChecked = cmtsChecked;
   }
 }

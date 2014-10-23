@@ -19,12 +19,12 @@ public class CmtsService {
     dao = new CmtsDAO(simpleEntityManager.getEntityManager());
   }
 
-  public void save(Cmts cmts) {
+  public void save(Cmts cmts, List<String> strSlotList) {
     try {
       simpleEntityManager.beginTransaction();
-      createSlots(cmts);
+      createSlots(cmts, strSlotList);
       dao.save(cmts);
-      
+
       simpleEntityManager.commit();
     } catch (Exception e) {
       e.printStackTrace();
@@ -35,15 +35,14 @@ public class CmtsService {
   /**
    * @param cria os slots do CMTS
    */
-  private void createSlots(Cmts cmts) {
+  private void createSlots(Cmts cmts, List<String> slotlList) {
     List<Slot> slots = new ArrayList<Slot>();
 
-    for (int i = 1; i < 11; i++) {
+    for (String strSlot : slotlList) {
       Slot slot = new Slot();
       slot.setCmts(cmts);
-      slot.setCodSlot(i + "/0");
+      slot.setCodSlot(strSlot);
       slot.setStatusSlot(Status.LIVRE);
-
       slots.add(slot);
 
     }
