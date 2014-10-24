@@ -8,22 +8,29 @@
 	<ui:define name="content">
 		<div class="container" style="margin-left: 3%;">
 			<div>
-				<h2 class="h1">Cadastro de Hub</h2>
+				<h2 class="h1">Criar um padrão</h2>
 			</div>
 			<h:form>
 				<p:panelGrid styleClass="myPanelGrid" columns="2">
 
-					<p:outputLabel value="Digite o nome da HUB:" />
-					<p:inputText size="10" value="#{hubMB.hub.codHub}" />
+					<p:outputLabel value="Modelo: " for="alias" />
+					<p:inputText id="alias" value="#{patternMB.pattern.alias}" />
+
+					<p:outputLabel value="Padrão: " for="pattern" />
+					<p:inputText id="pattern" placeholder="Ex.: 1, 2, 3, 4, 5, ..."
+						value="#{patternMB.pattern.description}" />
+
+					<p:outputLabel value="Tipo: " for="type" />
+					<p:inputText id="type" value="#{patternMB.pattern.type}" placeholder="Ex.: Slot ou Placa" />
+
 					<p:spacer />
 					<p:growl id="growl" life="2000" />
 					<p:spacer />
 					<p:commandButton value="Cadastrar" id="ajax" update="growl"
-						actionListener="#{hubMB.save}"
+						actionListener="#{patternMB.save}"
 						action="hubList?faces-redirect=true" />
 				</p:panelGrid>
 			</h:form>
 		</div>
-
 	</ui:define>
 </ui:composition>

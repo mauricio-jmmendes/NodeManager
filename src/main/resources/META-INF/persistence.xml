@@ -9,6 +9,7 @@
 		<class>com.nodemanager.model.Cmts</class>
 		<class>com.nodemanager.model.Hub</class>
 		<class>com.nodemanager.model.Slot</class>
+		<class>com.nodemanager.model.Pattern</class>
 		<class>com.nodemanager.model.Placa</class>
 		<class>com.nodemanager.model.Conector </class>
 		<class>com.nodemanager.model.Downstream</class>

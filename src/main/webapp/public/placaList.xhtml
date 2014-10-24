@@ -1,0 +1,150 @@
+<ui:composition template="template/main.xhtml"
+	xmlns="http://www.w3.org/1999/xhtml"
+	xmlns:f="http://java.sun.com/jsf/core"
+	xmlns:h="http://java.sun.com/jsf/html"
+	xmlns:ui="http://java.sun.com/jsf/facelets"
+	xmlns:p="http://primefaces.org/ui">
+
+	<ui:define name="content">
+		<f:metadata>
+			<f:viewParam name="cmtsId" value="#{placaMB.cmtsId}" />
+			<f:viewAction action="#{placaMB.loadCmtsById()}" />
+		</f:metadata>
+		<div class="container" style="margin-left: 3%;">
+			<h:form id="myForm">
+				<p:growl id="growl" sticky="true" showSummary="true"
+					showDetail="true" life="30000" />
+
+				<h:panelGrid columns="1" styleClass="myPanelGridPanel">
+					<h:panelGrid columns="2">
+						<p:outputLabel value="Placa:" />
+						<p:selectOneMenu id="lstBoxPlaca" value="#{placaMB.placaId}"
+							required="true">
+							<f:selectItem itemLabel="Selecione a Placa" itemValue="" />
+							<f:selectItems value="#{placaMB.getPlacasFromCmts()}" var="placa"
+								itemValue="#{placa.id}"
+								itemLabel="#{placa.slot.codSlot} - #{placa.codPlaca}" />
+							<p:ajax update="tbPanel" listener="#{placaMB.loadPlaca}"
+								process="@this" />
+						</p:selectOneMenu>
+					</h:panelGrid>
+
+					<p:panel style="margin: 5px; 	min-width: 500px;"
+						header="Nodes na placa: #{placaMB.placa.slot.codSlot} - #{placaMB.placa.codPlaca}"
+						id="tbPanel">
+
+						<p:fieldset legend="Retorno" toggleable="true" toggleSpeed="500">
+							<p:dataTable id="dtRetorno" var="up"
+								value="#{placaMB.retornoList()}">
+								<p:column>
+									<f:facet name="header">
+										<h:outputText value="CMTS" />
+									</f:facet>
+						#{up.conectorUp.placa.slot.cmts.nome}
+					</p:column>
+
+								<p:column>
+									<f:facet name="header">
+										<h:outputText value="Placa" />
+									</f:facet>
+							#{up.conectorUp.placa.codPlaca}
+						</p:column>
+
+								<p:column>
+									<f:facet name="header">
+										<h:outputText value="Conector" />
+									</f:facet>
+							#{up.conectorUp.numConector}
+						</p:column>
+
+								<p:column>
+									<f:facet name="header">
+										<h:outputText value="Upstream" />
+									</f:facet>
+							#{up.numUpStream}
+						</p:column>
+
+								<p:column>
+									<f:facet name="header">
+										<h:outputText value="Retorno" />
+									</f:facet>
+									<ui:repeat var="node" value="#{up.nodes}">
+								#{node.codNode}, 
+							</ui:repeat>
+								</p:column>
+								<p:column>
+									<f:facet name="header">
+										<h:outputText value="Opções" />
+									</f:facet>
+									<p:commandButton value="Remover" process="@this"
+										update="dtRetorno">
+									</p:commandButton>
+								</p:column>
+
+							</p:dataTable>
+						</p:fieldset>
+
+						<br />
+						<p:fieldset legend="Direto" toggleable="true" toggleSpeed="500">
+							<p:dataTable id="dtDireto" var="down"
+								value="#{placaMB.diretoList()}" style="width: 100%;">
+								<p:column>
+									<f:facet name="header">
+										<h:outputText value="CMTS" />
+									</f:facet>
+						#{down.conectorDown.placa.slot.cmts.nome}
+					</p:column>
+
+								<p:column>
+									<f:facet name="header">
+										<h:outputText value="Placa" />
+									</f:facet>
+						#{down.conectorDown.placa.codPlaca}
+					</p:column>
+
+								<p:column>
+									<f:facet name="header">
+										<h:outputText value="Conector" />
+									</f:facet>
+						#{down.conectorDown.numConector}
+					</p:column>
+
+								<p:column>
+									<f:facet name="header">
+										<h:outputText value="Downstream" />
+									</f:facet>
+						#{down.numDownStream}
+								</p:column>
+
+								<p:column>
+									<f:facet name="header">
+										<h:outputText value="Direto" />
+									</f:facet>
+									<ui:repeat var="node" value="#{down.nodes}">
+								
+								#{node.codNode}, 
+
+								</ui:repeat>
+								</p:column>
+								<p:column>
+									<f:facet name="header">
+										<h:outputText value="Opções" />
+									</f:facet>
+									<p:commandButton value="Remover" process="@this"
+										update="dtDireto">
+									</p:commandButton>
+								</p:column>
+							</p:dataTable>
+						</p:fieldset>
+					</p:panel>
+
+					<p:spacer />
+
+					<p:commandButton value="Cadastrar" id="addNode" update="growl"
+						actionListener="#{placaMB.save}"
+						action="nodeList?faces-redirect=true" />
+				</h:panelGrid>
+			</h:form>
+		</div>
+	</ui:define>
+</ui:composition>

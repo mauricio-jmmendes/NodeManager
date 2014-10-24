@@ -11,8 +11,10 @@ import javax.faces.bean.RequestScoped;
 import com.nodemanager.managedbean.util.FacesUtils;
 import com.nodemanager.model.Cmts;
 import com.nodemanager.model.Hub;
+import com.nodemanager.model.Pattern;
 import com.nodemanager.service.CmtsService;
 import com.nodemanager.service.HubService;
+import com.nodemanager.service.PatternService;
 import com.nodemanager.util.JPAUtil;
 
 @ManagedBean
@@ -25,20 +27,31 @@ public class CmtsMB {
 
   private Cmts cmts;
 
-  private String slotList;
-
   private List<Hub> hubs;
 
   private Long hubId;
 
   private List<Cmts> cmtsList = new ArrayList<Cmts>();
 
+  private Long cmtsId;
+
+  private PatternService patternService;
+  private Pattern pattern;
+  private List<Pattern> patterns;
+
+
   @PostConstruct
   public void init() {
     cmtsService = new CmtsService(JPAUtil.getSimpleEntityManager());
     hubService = new HubService(JPAUtil.getSimpleEntityManager());
+    patternService = new PatternService(JPAUtil.getSimpleEntityManager());
+
     cmts = new Cmts();
+
     hubs = hubService.findAll();
+
+    patterns = patternService.findAll();
+
     list();
   }
 
@@ -51,10 +64,25 @@ public class CmtsMB {
     this.hubs = hubService.findAll();
   }
 
-  public List<String> getSlotListFromString() {
-    StringTokenizer stringTokenizer = new StringTokenizer(slotList, ", ");
+  /**
+   * Carrega o cmts pelo Id passado no parametro da requisição.
+   */
+  public void loadCmtsById() {
 
-    List<String> slotList = new ArrayList<>(this.slotList.length());
+    for (Cmts myCmts : cmtsList) {
+      if (myCmts.getId() == cmtsId) {
+        cmts = myCmts;
+      }
+    }
+  }
+
+  public List<String> getSlotListFromString() {
+
+    String slots = pattern.getDescription();
+
+    StringTokenizer stringTokenizer = new StringTokenizer(slots, ", ");
+
+    List<String> slotList = new ArrayList<>(slots.length());
 
     while (stringTokenizer.hasMoreElements()) { // 0 1 2 ...
       slotList.add(stringTokenizer.nextToken());
@@ -64,8 +92,16 @@ public class CmtsMB {
   }
 
   public void save() {
+
+    for (Pattern myPattern : patterns) {
+      if (cmts.getModelo().equals(myPattern.getAlias())) {
+        pattern = myPattern;
+      }
+    }
+
     Hub hub = hubService.getById(hubId);
     cmts.setHub(hub);
+
     if (null != hub.getCmtsList()) {
       hub.getCmtsList().add(cmts);
     } else {
@@ -103,7 +139,21 @@ public class CmtsMB {
 
     cmtsService.update(cmts);
     FacesUtils.addInfoMessage("CMTS atualizado com sucesso!");
-    list();
+
+  }
+
+  /**
+   * @return the cmtsId
+   */
+  public Long getCmtsId() {
+    return cmtsId;
+  }
+
+  /**
+   * @param cmtsId the cmtsId to set
+   */
+  public void setCmtsId(Long cmtsId) {
+    this.cmtsId = cmtsId;
   }
 
   public Cmts getCmts() {
@@ -120,20 +170,6 @@ public class CmtsMB {
 
   public void setCmtsList(List<Cmts> cmtsList) {
     this.cmtsList = cmtsList;
-  }
-
-  /**
-   * @return the slotList
-   */
-  public String getSlotList() {
-    return slotList;
-  }
-
-  /**
-   * @param slotList the slotList to set
-   */
-  public void setSlotList(String slotList) {
-    this.slotList = slotList;
   }
 
   /**
@@ -162,5 +198,33 @@ public class CmtsMB {
    */
   public void setHubId(Long hubId) {
     this.hubId = hubId;
+  }
+
+  /**
+   * @return the pattern
+   */
+  public Pattern getPattern() {
+    return pattern;
+  }
+
+  /**
+   * @param pattern the pattern to set
+   */
+  public void setPattern(Pattern pattern) {
+    this.pattern = pattern;
+  }
+
+  /**
+   * @return the patterns
+   */
+  public List<Pattern> getPatterns() {
+    return patterns;
+  }
+
+  /**
+   * @param patterns the patterns to set
+   */
+  public void setPatterns(List<Pattern> patterns) {
+    this.patterns = patterns;
   }
 }

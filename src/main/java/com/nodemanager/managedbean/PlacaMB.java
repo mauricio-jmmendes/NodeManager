@@ -32,12 +32,14 @@ public class PlacaMB {
   private HubService hubService;
 
   private Long cmtsId;
+  private Cmts cmts;
   private List<Cmts> cmtsList;
 
   private Long slotId;
   private Slot slot;
   private List<Slot> slots;
 
+  private Long placaId;
   private Placa placa;
   private PlacaService placaService;
 
@@ -62,6 +64,80 @@ public class PlacaMB {
     hubService = new HubService(JPAUtil.getSimpleEntityManager());
     hubs = hubService.findAll();
 
+  }
+
+  public List<Upstream> retornoList() {
+
+    List<Upstream> ups = new ArrayList<>();
+
+    if (null != placa.getConectorList()) {
+      for (Conector conector : placa.getConectorList()) {
+        if (null != conector.getUpstreamList()) {
+          for (Upstream upstream : conector.getUpstreamList()) {
+            if (!ups.contains(upstream)) {
+              ups.add(upstream);
+            }
+          }
+        }
+      }
+    }
+
+    return ups;
+  }
+
+  public List<Downstream> diretoList() {
+    List<Downstream> downs = new ArrayList<>();
+
+    if (null != placa.getConectorList()) {
+      for (Conector conector : placa.getConectorList()) {
+        if (null != conector.getDownstreamList()) {
+          for (Downstream down : conector.getDownstreamList()) {
+            if (!downs.contains(down)) {
+              downs.add(down);
+            }
+          }
+        }
+      }
+    }
+
+    return downs;
+  }
+
+  public List<Placa> getPlacasFromCmts() {
+
+    List<Placa> placas = new ArrayList<>();
+
+    for (Slot slot : cmts.getSlots()) {
+      if (slot.getStatusSlot().equals(Status.OCUPADO)) {
+        placas.add(slot.getPlaca());
+      }
+    }
+
+    return placas;
+  }
+
+  public void loadPlaca() {
+    for (Placa myPlaca : getPlacasFromCmts()) {
+      if (myPlaca.getId() == placaId) {
+        placa = myPlaca;
+      }
+    }
+  }
+
+  /**
+   * Carrega o cmts pelo Id passado no parametro da requisição.
+   */
+  public void loadCmtsById() {
+
+    for (Hub hub : hubs) {
+      cmtsList = hub.getCmtsList();
+
+      for (Cmts myCmts : cmtsList) {
+        if (myCmts.getId() == cmtsId) {
+          cmts = myCmts;
+        }
+      }
+    }
   }
 
   public void handleHubListBoxChange() {
@@ -223,6 +299,20 @@ public class PlacaMB {
    */
   public void setSlots(List<Slot> slots) {
     this.slots = slots;
+  }
+
+  /**
+   * @return the placaId
+   */
+  public Long getPlacaId() {
+    return placaId;
+  }
+
+  /**
+   * @param placaId the placaId to set
+   */
+  public void setPlacaId(Long placaId) {
+    this.placaId = placaId;
   }
 
   /**

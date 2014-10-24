@@ -9,7 +9,7 @@
 		<div id="container" style="border: none;" align="center">
 			<h1>Lista de CMTS</h1>
 
-			<h:form>
+			<h:form id="myForm">
 				<p:growl id="growl" sticky="false" showDetail="true" life="8000" />
 
 				<div align="right" style="margin-bottom: 10px; width: 90%">
@@ -22,7 +22,8 @@
 					</p:commandButton>
 				</div>
 
-				<p:dataTable tableStyleClass="table" id="tabela" var="cmts" value="#{cmtsMB.cmtsList}"
+				<p:dataTable tableStyleClass="table" id="tabela" var="cmts"
+					value="#{cmtsMB.cmtsList}"
 					paginatorTemplate="{CurrentPageReport}  {FirstPageLink} {PreviousPageLink} {PageLinks} {NextPageLink} {LastPageLink}"
 					paginator="true" rows="10" style="margin-bottom:10px;width: 90%">
 					<p:column>
@@ -55,19 +56,33 @@
 						</f:facet>
 						#{cmts.hub.codHub}
 					</p:column>
-					<p:column>
+					<p:column style="width: 28%">
 						<f:facet name="header">
 							<h:outputText value="Opções" />
 						</f:facet>
-						<h:commandLink styleClass="btn btn-default" value="editar" action="#{cmtsMB.prepareToAdd()}">
-						</h:commandLink>  &#160;
-						<h:commandLink styleClass="btn btn-default" value="remover" action="#{cmtsMB.delete}"
+
+						<p:button outcome="cmtsEdit.jsf" value="editar"
+							includeViewParams="true">
+							<f:param name="cmtsId" value="#{cmts.id}" />
+						</p:button>
+
+						  &#160;
+						
+						<p:commandButton value="remover" action="#{cmtsMB.delete}"
 							onclick="return confirm('Deseja realmente remover este CMTS?');"
-							update="growl">
+							update=":myForm:growl">
 							<f:ajax render="@form" />
 							<f:setPropertyActionListener target="#{cmtsMB.cmts}"
 								value="#{cmts}" />
-						</h:commandLink>
+						</p:commandButton>
+
+						 &#160;
+						
+						<p:button outcome="placaList.jsf" value="placas"
+							icon="ui-icon-search" includeViewParams="true">
+							<f:param name="cmtsId" value="#{cmts.id}" />
+						</p:button>
+
 					</p:column>
 				</p:dataTable>
 			</h:form>

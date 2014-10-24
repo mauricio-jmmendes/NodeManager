@@ -6,9 +6,15 @@
 	xmlns:p="http://primefaces.org/ui">
 
 	<ui:define name="content">
+
+		<f:metadata>
+			<f:viewParam name="cmtsId" value="#{cmtsMB.cmtsId}" />
+			<f:viewAction action="#{cmtsMB.loadCmtsById()}" />
+		</f:metadata>
+
 		<div id="container" style="border: none; margin-left: 3%;"
 			align="left">
-			<h2>Cadastrar CMTS</h2>
+			<h2>Editar CMTS</h2>
 
 			<h:form id="form">
 				<p:growl id="growl" sticky="false" showDetail="true" life="4000" />
@@ -27,22 +33,11 @@
 						<p:outputLabel value="IP: " for="ip" />
 						<p:inputText id="ip" value="#{cmtsMB.cmts.ip}" label="Ip"
 							required="true" />
-							
-						<p:outputLabel value="Slots: " for="slotList" />
-						<p:inputText id="slotList" placeholder="0, 1, 2, 3, 4, 5, ..."
-						value="#{cmtsMB.slotList}" />
-
-						<p:outputLabel for="hub" value="HUB: " />
-						<p:selectOneMenu id="hub" value="#{cmtsMB.hubId}">
-							<f:selectItem itemLabel="Selecione a HUB" itemValue="" />
-							<f:selectItems value="#{cmtsMB.hubs}" var="hub"
-								itemValue="#{hub.id}" itemLabel="#{hub.codHub}" />
-						</p:selectOneMenu>
 
 						<p:spacer />
 
 						<p:commandButton id="btnSalvar" value="Salvar"
-							icon="ui-icon ui-icon-disk" actionListener="#{cmtsMB.save}"
+							icon="ui-icon ui-icon-disk" actionListener="#{cmtsMB.update}"
 							update="form" action="cmtsList?faces-redirect=true" />
 					</p:panelGrid>
 				</p:panel>
