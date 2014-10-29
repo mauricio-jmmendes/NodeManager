@@ -307,7 +307,6 @@ public class NodeMB {
       if (myListNodes.isEmpty()) {
         up.setStatusUp(Status.LIVRE);
       }
-
     }
   }
 
