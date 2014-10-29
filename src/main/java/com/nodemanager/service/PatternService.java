@@ -1,5 +1,6 @@
 package com.nodemanager.service;
 
+import java.sql.SQLException;
 import java.util.List;
 
 import com.nodemanager.dao.impl.PatternDAO;
@@ -16,15 +17,15 @@ public class PatternService {
     dao = new PatternDAO(simpleEntityManager.getEntityManager());
   }
 
-  public void save(Pattern pattern) {
+  public void save(Pattern pattern) throws SQLException {
     try {
       simpleEntityManager.beginTransaction();
       dao.save(pattern);
 
       simpleEntityManager.commit();
     } catch (Exception e) {
-      e.printStackTrace();
       simpleEntityManager.rollBack();
+      throw new SQLException(e);
     }
   }
 
@@ -34,6 +35,12 @@ public class PatternService {
 
   public List<Pattern> findAll() {
     return dao.findAll();
+  }
+
+  public List<Pattern> getByType(String type) {
+
+    return dao.getByType(type);
+
   }
 
   public void update(Pattern pattern) {
@@ -58,4 +65,6 @@ public class PatternService {
       simpleEntityManager.rollBack();
     }
   }
+
+
 }

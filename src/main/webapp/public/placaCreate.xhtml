@@ -6,7 +6,7 @@
 	xmlns:p="http://primefaces.org/ui">
 
 	<ui:define name="content">
-		<h:form prependId="false">
+		<h:form id="myForm">
 			<p:growl id="growl" sticky="false" showDetail="true" life="2000" />
 
 			<p:panel header="Cadastrar Placa" style="margin: 15px; width: 960px">
@@ -42,74 +42,72 @@
 						<f:selectItems value="#{placaMB.slots}" var="slot"
 							itemValue="#{slot.id}" itemLabel="#{slot.codSlot}" />
 					</p:selectOneMenu>
-
-					<p:outputLabel value="Placa:" />
-					<p:inputText placeholder="Digite o modelo da placa"
-						value="#{placaMB.placa.codPlaca}" />
-
-					<p:outputLabel value="Conectores:" />
-					<p:inputText id="conList" placeholder="0,1, 2, 3, 4, 5, ..."
-						value="#{placaMB.converter.stringConectorList}" />
-
-					<p:commandButton id="ajax" value="Add"
-						actionListener="#{placaMB.addConectorsAction}"
-						process="@this, conList" update="conector" />
+					<p:outputLabel value="Placa:  " for="placaSOM" />
+					<p:selectOneMenu id="placaSOM" value="#{placaMB.pattern.id}"
+						required="true">
+						<f:selectItem itemLabel="Selecione o Tipo" itemValue="" />
+						<f:selectItems value="#{placaMB.patterns}" var="pattern"
+							itemValue="#{pattern.id}" itemLabel="#{pattern.alias}" />
+						<p:ajax update="converterDT"
+							listener="#{placaMB.addConectorsAction}" process="placaSOM" />
+					</p:selectOneMenu>
 				</h:panelGrid>
 
 				<br />
 				<h:panelGroup>
-					<p:panelGrid id="grid" columns="4" styleClass="myPanelGrid">
-						<p:selectOneMenu id="conector"
-							value="#{placaMB.converter.stringNumConector}" required="true">
-							<f:selectItem itemLabel="Selecione o Conector" itemValue="" />
-							<f:selectItems value="#{placaMB.conectors}" var="conector"
-								itemValue="#{conector.numConector}"
-								itemLabel="#{conector.numConector}">
-							</f:selectItems>
-						</p:selectOneMenu>
+					<p:dataTable id="converterDT" var="converter" editable="true"
+						editMode="cell" value="#{placaMB.converterList}"
+						style="width: 900px;">
 
-						<p:selectOneMenu id="typeStream"
-							value="#{placaMB.converter.stringTypeStream}" required="true">
-							<f:selectItem itemLabel="Selecione o tipo de Stream" itemValue="" />
-							<f:selectItem itemLabel="UPSTREAM" itemValue="UPSTREAM" />
-							<f:selectItem itemLabel="DOWNSTREAM" itemValue="DOWNSTREAM" />
-						</p:selectOneMenu>
+						<f:facet name="header">
+				           Configure a placa abaixo
+				       </f:facet>
 
-						<p:inputText placeholder="0,1, 2, 3, 4, 5, ..."
-							value="#{placaMB.converter.stringNameUpOrDownList}" />
+						<p:ajax event="cellEdit"
+							listener="#{placaMB.onCellEdit(converter)}"
+							update=":myForm:growl" />
 
-						<p:commandButton value="Add"
-							actionListener="#{placaMB.addConvertersAction}"
-							process="@this, grid" update="converterDT" />
-					</p:panelGrid>
-
-					<p:spacer />
-
-					<p:dataTable id="converterDT" var="converter"
-						value="#{placaMB.converterList}" style="width: 900px;">>
 						<p:column>
 							<f:facet name="header">
 								<h:outputText value="Conector" />
 							</f:facet>
 						#{converter.stringNumConector}
 					</p:column>
-						<p:column>
-							<f:facet name="header">
-								<h:outputText value="Tipo" />
-							</f:facet>
-						#{converter.stringTypeStream}
-					</p:column>
-						<p:column>
-							<f:facet name="header">
-								<h:outputText value="Nomes" />
-							</f:facet>
-						#{converter.stringNameUpOrDownList}
-					</p:column>
+
+						<p:column headerText="Tipo">
+							<p:cellEditor>
+								<f:facet name="output">
+									<h:outputText value="#{converter.stringTypeStream}" />
+								</f:facet>
+								<f:facet name="input">
+									<p:selectOneMenu id="typeStream"
+										value="#{converter.stringTypeStream}" required="true">
+										<f:selectItem itemLabel="Selecione o tipo de Stream"
+											itemValue="" />
+										<f:selectItem itemLabel="UPSTREAM" itemValue="UPSTREAM" />
+										<f:selectItem itemLabel="DOWNSTREAM" itemValue="DOWNSTREAM" />
+									</p:selectOneMenu>
+								</f:facet>
+							</p:cellEditor>
+						</p:column>
+
+						<p:column headerText="Ups/Downs">
+							<p:cellEditor>
+								<f:facet name="output">
+									<h:outputText value="#{converter.stringNameUpOrDownList}" />
+								</f:facet>
+								<f:facet name="input">
+									<p:inputText value="#{converter.stringNameUpOrDownList}"
+										style="width:96%" label="Year" />
+								</f:facet>
+							</p:cellEditor>
+						</p:column>
+
 						<p:column>
 							<f:facet name="header">
 								<h:outputText value="Opções" />
 							</f:facet>
-							
+
 							<p:commandButton value="remover" process="@this"
 								oncomplete="PF('confirmDialog').show()">
 								<f:setPropertyActionListener value="#{converter}"

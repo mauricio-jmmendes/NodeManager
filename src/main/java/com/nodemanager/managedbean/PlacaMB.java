@@ -14,10 +14,12 @@ import com.nodemanager.model.Cmts;
 import com.nodemanager.model.Conector;
 import com.nodemanager.model.Downstream;
 import com.nodemanager.model.Hub;
+import com.nodemanager.model.Pattern;
 import com.nodemanager.model.Placa;
 import com.nodemanager.model.Slot;
 import com.nodemanager.model.Upstream;
 import com.nodemanager.service.HubService;
+import com.nodemanager.service.PatternService;
 import com.nodemanager.service.PlacaService;
 import com.nodemanager.util.JPAUtil;
 import com.nodemanager.util.Status;
@@ -49,6 +51,10 @@ public class PlacaMB {
   private Converter converter;
   private List<Converter> converterList = new ArrayList<>();
 
+  private PatternService patternService;
+  private Pattern pattern;
+  private List<Pattern> patterns;
+
 
   @PostConstruct
   public void init() {
@@ -63,6 +69,17 @@ public class PlacaMB {
 
     hubService = new HubService(JPAUtil.getSimpleEntityManager());
     hubs = hubService.findAll();
+
+    patternService = new PatternService(JPAUtil.getSimpleEntityManager());
+    patterns = patternService.getByType("Placa");
+
+    pattern = new Pattern();
+
+  }
+
+  public void onCellEdit(Converter converter) {
+
+    FacesUtils.addInfoMessage("Conector " + converter.getStringNumConector() + " atualizado!");
 
   }
 
@@ -132,9 +149,11 @@ public class PlacaMB {
     for (Hub hub : hubs) {
       cmtsList = hub.getCmtsList();
 
-      for (Cmts myCmts : cmtsList) {
-        if (myCmts.getId() == cmtsId) {
-          cmts = myCmts;
+      if (null != cmtsList) {
+        for (Cmts myCmts : cmtsList) {
+          if (myCmts.getId() == cmtsId) {
+            cmts = myCmts;
+          }
         }
       }
     }
@@ -157,22 +176,43 @@ public class PlacaMB {
   }
 
   public void addConectorsAction() {
-    for (String conn : converter.getConectorList()) {
+
+    Long id = pattern.getId();
+
+    pattern = patternService.getById(id);
+
+    placa.setCodPlaca(pattern.getAlias());
+
+    converter.setStringConectorList(pattern.getDescription());
+
+    converterList.clear();
+
+    List<String> connList = converter.getConectorList();
+
+    for (String conn : connList) {
       Conector conector = new Conector();
       conector.setNumConector(conn);
       conectors.add(conector);
+
+      converter = new Converter();
+      converter.setStringNumConector(conn);
+
+      converterList.add(converter);
     }
+    // TODO Alterar isso aqui depois, usar uma string
+    converter = new Converter();
+    pattern = new Pattern();
   }
 
   public void addConvertersAction() {
-    converterList.add(converter);
-    converter = new Converter();
+
+
 
   }
 
   public void deleteConverterAction(ActionEvent actionEvent) {
-    converterList.remove(converter);
-    converter = new Converter();
+    converter.setStringNameUpOrDownList("");
+    converter.setStringTypeStream("");
   }
 
   public void save() {
@@ -229,10 +269,16 @@ public class PlacaMB {
     }
 
     placa.setConectorList(conectors);
+    placa.setStatusPlaca(Status.FUNCIONANDO);
 
-    placaService.save(placa);
-    FacesUtils.addInfoMessage("Placa cadastrada com sucesso!");
-
+    try {
+      placaService.save(placa);
+      FacesUtils.addInfoMessage("Placa cadastrada com sucesso!");
+      FacesUtils.getExternalContext().getFlash().setKeepMessages(true);
+    } catch (Exception e) {
+      FacesUtils.addInfoMessage("Erro ao cadastrar a placa, verifique os dados e tente novamente!");
+      FacesUtils.getExternalContext().getFlash().setKeepMessages(true);
+    }
   }
 
   private Slot getSlotFromCmtsById() {
@@ -439,6 +485,34 @@ public class PlacaMB {
    */
   public void setConverterList(List<Converter> converterList) {
     this.converterList = converterList;
+  }
+
+  /**
+   * @return the pattern
+   */
+  public Pattern getPattern() {
+    return pattern;
+  }
+
+  /**
+   * @param pattern the pattern to set
+   */
+  public void setPattern(Pattern pattern) {
+    this.pattern = pattern;
+  }
+
+  /**
+   * @return the patterns
+   */
+  public List<Pattern> getPatterns() {
+    return patterns;
+  }
+
+  /**
+   * @param patterns the patterns to set
+   */
+  public void setPatterns(List<Pattern> patterns) {
+    this.patterns = patterns;
   }
 
 }

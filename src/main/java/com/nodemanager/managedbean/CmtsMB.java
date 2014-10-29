@@ -44,6 +44,7 @@ public class CmtsMB {
   public void init() {
     cmtsService = new CmtsService(JPAUtil.getSimpleEntityManager());
     hubService = new HubService(JPAUtil.getSimpleEntityManager());
+   
     patternService = new PatternService(JPAUtil.getSimpleEntityManager());
 
     cmts = new Cmts();
