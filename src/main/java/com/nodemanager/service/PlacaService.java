@@ -1,5 +1,6 @@
 package com.nodemanager.service;
 
+import java.sql.SQLException;
 import java.util.List;
 
 import com.nodemanager.dao.impl.PlacaDAO;
@@ -18,14 +19,14 @@ public class PlacaService {
     dao = new PlacaDAO(simpleEntityManager.getEntityManager());
   }
 
-  public void save(Placa placa) {
+  public void save(Placa placa) throws SQLException {
     try {
       simpleEntityManager.beginTransaction();
       dao.save(placa);
       simpleEntityManager.commit();
     } catch (Exception e) {
-      e.printStackTrace();
       simpleEntityManager.rollBack();
+      throw new SQLException(e);
     }
   }
 
@@ -47,5 +48,17 @@ public class PlacaService {
       simpleEntityManager.rollBack();
     }
   }
+
+  public void update(Placa placa) throws SQLException {
+    try {
+      simpleEntityManager.beginTransaction();
+      dao.update(placa);
+      simpleEntityManager.commit();
+    } catch (Exception e) {
+      simpleEntityManager.rollBack();
+      throw new SQLException(e);
+    }
+  }
+
 
 }

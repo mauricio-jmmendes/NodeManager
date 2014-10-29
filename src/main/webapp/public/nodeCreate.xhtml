@@ -7,7 +7,7 @@
 
 	<ui:define name="content">
 		<h:form id="myForm">
-			<p:growl id="growl" sticky="true" showSummary="true" showDetail="true" life="30000" />
+			<p:growl id="growl" sticky="false" showSummary="true" life="5000" />
 
 			<h:panelGrid columns="2" styleClass="myPanelGridPanel">
 
@@ -15,9 +15,11 @@
 					style="margin: 5px;	min-width: 500px;">
 					<h:panelGrid columns="2">
 						<p:outputLabel styleClass="control-label" value="Node:" />
-						<p:inputText styleClass="form-control"
+						<p:inputText id="cod" styleClass="form-control"
 							placeholder="Digite o código do Node" value="#{nodeMB.codNode}"
-							required="true" />
+							required="true">
+							<p:ajax event="blur" update="cod" />
+						</p:inputText>
 
 						<p:outputLabel styleClass="control-label" for="hub" value="HUB: " />
 						<p:selectOneMenu style="width:150px;" id="hub"
@@ -50,78 +52,21 @@
 							<f:selectItems value="#{nodeMB.placas}" var="placa"
 								itemValue="#{placa.id}"
 								itemLabel="#{placa.slot.codSlot} - #{placa.codPlaca}" />
-							<p:ajax update="conectors, tbPanel"
-								listener="#{nodeMB.loadPlaca}" process="@this" />
+							<p:ajax update="tbPanel" listener="#{nodeMB.loadPlaca}"
+								process="@this" />
 						</p:selectOneMenu>
 					</h:panelGrid>
-
-					<br />
-
-					<h:panelGroup id="conectors">
-						<p:outputLabel value="Retorno: " />
-						<p:selectOneRadio id="retorno" value="#{nodeMB.selectedRetorno}">
-							<f:selectItem itemLabel="A" itemValue="A" />
-							<f:selectItem itemLabel="B" itemValue="B" />
-							<f:selectItem itemLabel="C" itemValue="C" />
-							<f:selectItem itemLabel="D" itemValue="D" />
-						</p:selectOneRadio>
-
-						<p:panelGrid id="panelUp" columns="8">
-							<ui:repeat var="conn" value="#{nodeMB.placa.conectorList}">
-
-
-								<p:outputLabel rendered="#{not empty conn.upstreamList}"
-									value="Conector: #{conn.numConector}" />
-
-								<p:selectManyCheckbox rendered="#{not empty conn.upstreamList}"
-									value="#{nodeMB.selectedUps}" layout="grid" columns="4">
-									<f:selectItems value="#{conn.upstreamList}" var="up"
-										itemValue="#{up.id}" itemLabel="up#{up.numUpStream}" />
-								</p:selectManyCheckbox>
-
-							</ui:repeat>
-
-							<p:commandButton style="align: center;" id="ajaxUp" value="Add"
-								actionListener="#{nodeMB.addUps}" process="@form"
-								update="dtRetorno" />
-						</p:panelGrid>
-
-						<br />
-
-						<p:outputLabel value="Direto: " />
-						<p:selectOneRadio id="direto" value="#{nodeMB.selectedDireto}">
-							<f:selectItem itemLabel="A" itemValue="A" />
-							<f:selectItem itemLabel="B" itemValue="B" />
-							<f:selectItem itemLabel="C" itemValue="C" />
-							<f:selectItem itemLabel="D" itemValue="D" />
-						</p:selectOneRadio>
-						<p:panelGrid id="panelDown" columns="3">
-							<ui:repeat var="conn" value="#{nodeMB.placa.conectorList}">
-
-								<p:outputLabel rendered="#{not empty conn.downstreamList}"
-									value="Conector: #{conn.numConector}" />
-
-								<p:selectManyCheckbox
-									rendered="#{not empty conn.downstreamList}"
-									value="#{nodeMB.selectedDowns}" layout="grid" columns="4">
-									<f:selectItems value="#{conn.downstreamList}" var="down"
-										itemValue="#{down.id}" itemLabel="dw#{down.numDownStream}">
-									</f:selectItems>
-								</p:selectManyCheckbox>
-							</ui:repeat>
-
-							<p:commandButton id="ajaxDown" value="Add"
-								actionListener="#{nodeMB.addDowns}" process="@form"
-								update="dtDireto" />
-						</p:panelGrid>
-					</h:panelGroup>
 				</p:panel>
 
 				<p:panel style="margin: 5px; 	min-width: 500px;"
 					header="Nodes na placa: #{nodeMB.placa.slot.codSlot} - #{nodeMB.placa.codPlaca}"
 					id="tbPanel">
 					<p:dataTable id="dtRetorno" var="up"
-						value="#{nodeMB.retornoList()}">
+						value="#{nodeMB.retornoList()}" editable="true" editMode="cell">
+
+						<p:ajax event="cellEdit" listener="#{nodeMB.onCellEdit(up)}"
+							process="@form" update="@this, :myForm:growl" />
+
 						<p:column>
 							<f:facet name="header">
 								<h:outputText value="CMTS" />
@@ -154,15 +99,25 @@
 							<f:facet name="header">
 								<h:outputText value="Retorno" />
 							</f:facet>
-							<ui:repeat var="node" value="#{up.nodes}">
-								#{node.codNode}, 
-							</ui:repeat>
+
+							<p:cellEditor>
+								<f:facet name="output">
+									<ui:repeat var="node" value="#{up.nodes}">
+										#{node.codNode}, 
+									</ui:repeat>
+								</f:facet>
+								<f:facet name="input">
+									<p:inputText value="#{nodeMB.inputCodNode}" style="width:96%"
+										label="Year" />
+								</f:facet>
+							</p:cellEditor>
 						</p:column>
+
 						<p:column>
 							<f:facet name="header">
 								<h:outputText value="Opções" />
 							</f:facet>
-							<p:commandButton value="Remover" process="@this"
+							<p:commandButton value="Remover" process="@form"
 								update="dtRetorno" actionListener="#{nodeMB.removeNode(up)}">
 							</p:commandButton>
 						</p:column>
@@ -172,7 +127,11 @@
 					<br />
 
 					<p:dataTable id="dtDireto" var="down"
-						value="#{nodeMB.diretoList()}" style="width: 100%;">
+						value="#{nodeMB.diretoList()}" editable="true" editMode="cell">
+
+						<p:ajax event="cellEdit" listener="#{nodeMB.onCellEdit(down)}"
+							process="@form" update="@this, :myForm:growl" />
+
 						<p:column>
 							<f:facet name="header">
 								<h:outputText value="CMTS" />
@@ -205,12 +164,20 @@
 							<f:facet name="header">
 								<h:outputText value="Direto" />
 							</f:facet>
-							<ui:repeat var="node" value="#{down.nodes}">
-								
-								#{node.codNode}, 
 
-								</ui:repeat>
+							<p:cellEditor>
+								<f:facet name="output">
+									<ui:repeat var="node" value="#{down.nodes}">
+										#{node.codNode}, 
+									</ui:repeat>
+								</f:facet>
+								<f:facet name="input">
+									<p:inputText value="#{nodeMB.inputCodNode}" style="width:96%"
+										label="Year" />
+								</f:facet>
+							</p:cellEditor>
 						</p:column>
+
 						<p:column>
 							<f:facet name="header">
 								<h:outputText value="Opções" />
@@ -224,8 +191,8 @@
 
 				<p:spacer />
 
-				<p:commandButton value="Cadastrar" id="addNode" update="growl"
-					actionListener="#{nodeMB.save}"
+				<p:commandButton value="Salvar" id="addNode"
+					update=":myForm:growl" actionListener="#{nodeMB.save}"
 					action="nodeList?faces-redirect=true" />
 			</h:panelGrid>
 		</h:form>

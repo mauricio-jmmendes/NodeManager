@@ -31,10 +31,10 @@ public class Pattern implements Serializable {
   @Column(length = 100, unique = true, nullable = false)
   private String alias;
 
-  @Column(length = 100, unique = true, nullable = false)
+  @Column(length = 100, nullable = false)
   private String description;
 
-  @Column(length = 45, unique = true, nullable = false)
+  @Column(length = 45, nullable = false)
   private String type;
 
   /**

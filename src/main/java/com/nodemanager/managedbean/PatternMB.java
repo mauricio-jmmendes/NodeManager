@@ -48,6 +48,7 @@ public class PatternMB {
 
     } catch (Exception e) {
       FacesUtils.addInfoMessage("Não foi possível cadastrar o Padrão! \n" + e.getMessage());
+      FacesUtils.getExternalContext().getFlash().setKeepMessages(true);
     }
 
   }
