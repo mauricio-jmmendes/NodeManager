@@ -86,6 +86,13 @@ h6,.h6 {
 
 .myPanelGrid tr,.myPanelGrid td {
 	border: none !important;
+	vertical-align: text-top;
+}
+
+.myPanelGridQuebra tr,.myPanelGridQuebra td {
+	border: 1px solid #dddddd !important;
+	background: #ffffff !important;
+	color: #333333 !important;
 }
 
 /* .jumbotron {

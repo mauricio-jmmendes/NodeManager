@@ -8,6 +8,8 @@ import javax.annotation.PostConstruct;
 import javax.faces.bean.ManagedBean;
 import javax.faces.bean.ViewScoped;
 
+import org.apache.commons.lang3.StringUtils;
+
 import com.nodemanager.managedbean.util.FacesUtils;
 import com.nodemanager.model.Cmts;
 import com.nodemanager.model.Conector;
@@ -19,13 +21,16 @@ import com.nodemanager.model.Slot;
 import com.nodemanager.model.Upstream;
 import com.nodemanager.service.HubService;
 import com.nodemanager.service.NodeService;
-import com.nodemanager.service.PlacaService;
 import com.nodemanager.util.JPAUtil;
 import com.nodemanager.util.Status;
 
 @ManagedBean
 @ViewScoped
 public class NodeMB {
+
+  private static final String DIRETO = "DIRETO";
+
+  private static final String RETORNO = "RETORNO";
 
   private String codNode;
 
@@ -44,19 +49,10 @@ public class NodeMB {
   private Long placaId;
   private Placa placa;
   private List<Placa> placas;
-  private PlacaService placaService;
-
-  private List<String> selectedUps;
-  private List<String> selectedDowns;
-
-  private String selectedRetorno;
-  private String selectedDireto;
 
   private String inputCodNode;
 
-  private List<Node> retornos;
-  private List<Node> diretos;
-
+  private List<Node> nodeList;
 
   @PostConstruct
   public void init() {
@@ -65,13 +61,11 @@ public class NodeMB {
     node = new Node();
 
     nodes = new ArrayList<>();
-    retornos = new ArrayList<>();
-    diretos = new ArrayList<>();
+    nodeList = new ArrayList<>();
 
     hubService = new HubService(JPAUtil.getSimpleEntityManager());
     hubs = hubService.findAll();
 
-    placaService = new PlacaService(JPAUtil.getSimpleEntityManager());
     placa = new Placa();
     placas = new ArrayList<>();
 
@@ -113,7 +107,6 @@ public class NodeMB {
     nodes = nodeService.findByCodNode(codNode);
   }
 
-
   public void loadPlaca() {
     for (Placa myPlaca : placas) {
       if (myPlaca.getId() == placaId) {
@@ -122,71 +115,14 @@ public class NodeMB {
     }
   }
 
-  public void addUps() {
-
-    String retorno = codNode + "-" + selectedRetorno;
-
-    node = getNodeIfAlreadyExists(retorno, "RETORNO");
-
-    node.setCodNode(retorno);
-
-    List<Upstream> retornos = new ArrayList<>();
-
-    for (String idUp : selectedUps) {
-      for (Conector conn : placa.getConectorList()) {
-
-        if (null == conn.getUpstreamList()) {
-          continue;
-        }
-
-        for (Upstream up : conn.getUpstreamList()) {
-          if (up.getId() == Long.parseLong(idUp)) {
-            if (null != up.getNodes()) {
-              if (!up.getNodes().contains(node)) {
-                up.getNodes().add(node);
-                retornos.add(up);
-                break;
-              }
-            } else {
-              List<Node> nodes = new ArrayList<>();
-              nodes.add(node);
-
-              up.setNodes(nodes);
-
-              up.setStatusUp(Status.OCUPADO);
-
-              retornos.add(up);
-              break;
-            }
-          }
-        }
-      }
-    }
-
-    if (!retornos.isEmpty()) {
-      if (null != node.getUpstreams()) {
-        node.getUpstreams().addAll(retornos);
-      } else {
-        node.setUpstreams(retornos);
-      }
-
-      selectedUps.clear();
-    }
-
-    if (!nodes.contains(node)) {
-      nodes.add(node);
-      node = new Node();
-    }
-  }
-
   public void onCellEdit(Upstream upstream) {
 
     String StrCod = codNode + "-" + inputCodNode;
 
-    Node myNode = getNodeIfAlreadyExists(StrCod, "RETORNO");
+    Node myNode = getNodeIfAlreadyExists(StrCod, RETORNO);
 
-    for (Node retorno : retornos) {
-      if (retorno.getCodNode().equalsIgnoreCase(StrCod)) {
+    for (Node retorno : nodeList) {
+      if (retorno.getCodNode().equalsIgnoreCase(StrCod) && retorno.getType().equals(RETORNO)) {
         myNode = retorno;
       }
     }
@@ -196,8 +132,10 @@ public class NodeMB {
       if ((myNode.getUpstreams() == null) || (myNode.getUpstreams().isEmpty())) {
         myNode.setCodNode(StrCod);
 
+        myNode.setType(RETORNO);
+
         upstream.getNodes().add(myNode);
-        upstream.setStatusUp(Status.LIVRE);
+        upstream.setStatusUp(Status.OCUPADO);
 
         List<Upstream> ups = new ArrayList<>();
 
@@ -206,7 +144,7 @@ public class NodeMB {
         myNode.setUpstreams(ups);
       } else {
         upstream.getNodes().add(myNode);
-        upstream.setStatusUp(Status.LIVRE);
+        upstream.setStatusUp(Status.OCUPADO);
 
         List<Upstream> ups = new ArrayList<>();
 
@@ -218,8 +156,8 @@ public class NodeMB {
           + upstream.getNumUpStream());
       FacesUtils.getExternalContext().getFlash().setKeepMessages(true);
 
-      if (!retornos.contains(myNode)) {
-        retornos.add(myNode);
+      if (!nodeList.contains(myNode)) {
+        nodeList.add(myNode);
       }
 
     } else {
@@ -236,11 +174,11 @@ public class NodeMB {
 
     String StrCod = codNode + "-" + inputCodNode;
 
-    Node myNode = getNodeIfAlreadyExists(StrCod, "DIRETO");
+    Node myNode = getNodeIfAlreadyExists(StrCod, DIRETO);
 
-    for (Node retorno : diretos) {
-      if (retorno.getCodNode().equalsIgnoreCase(StrCod)) {
-        myNode = retorno;
+    for (Node direto : nodeList) {
+      if (direto.getCodNode().equalsIgnoreCase(StrCod) && direto.getType().equalsIgnoreCase(DIRETO)) {
+        myNode = direto;
       }
     }
 
@@ -248,6 +186,8 @@ public class NodeMB {
 
       if ((myNode.getDownstreams() == null) || (myNode.getDownstreams().isEmpty())) {
         myNode.setCodNode(StrCod);
+
+        myNode.setType(DIRETO);
 
         downstream.getNodes().add(myNode);
         downstream.setStatusDown(Status.OCUPADO);
@@ -272,8 +212,8 @@ public class NodeMB {
           + downstream.getNumDownStream());
       FacesUtils.getExternalContext().getFlash().setKeepMessages(true);
 
-      if (!diretos.contains(myNode)) {
-        diretos.add(myNode);
+      if (!nodeList.contains(myNode)) {
+        nodeList.add(myNode);
       }
 
     } else {
@@ -294,13 +234,14 @@ public class NodeMB {
       Node myNode = iterator.next();
 
       if (myNode.getCodNode().contains(codNode)) {
-
         iterator.remove();
         myNode.getUpstreams().remove(up);
 
-        // se não está em nenhuma outra up, então remover da lista de retornos
-        if (myNode.getUpstreams().isEmpty()) {
-          retornos.remove(myNode);
+        nodeList.add(myNode);
+
+        // se é um node novo e não está em nenhuma outra up, então remover da lista
+        if (myNode.getUpstreams().isEmpty() && myNode.getId() == null) {
+          nodeList.remove(myNode);
         }
       }
 
@@ -318,13 +259,14 @@ public class NodeMB {
       Node myNode = iterator.next();
 
       if (myNode.getCodNode().contains(codNode)) {
-
         iterator.remove();
         myNode.getDownstreams().remove(down);
 
-        // se não está em nenhuma outra down, então remover da lista de diretos
-        if (myNode.getDownstreams().isEmpty()) {
-          diretos.remove(myNode);
+        nodeList.add(myNode);
+
+        // se é um node novo e não está em nenhuma down, então remover da lista
+        if (myNode.getDownstreams().isEmpty() && myNode.getId() == null) {
+          nodeList.remove(myNode);
         }
       }
 
@@ -396,16 +338,8 @@ public class NodeMB {
     List<Node> nodeList = nodeService.findByCodNode(codNode);
 
     for (Node myNode : nodeList) {
-      if (myNode.getCodNode().equals(codNode)) {
-        if (type.equals("DIRETO")) {
-          if (!myNode.getDownstreams().isEmpty()) {
-            return myNode;
-          }
-        } else {
-          if (!myNode.getUpstreams().isEmpty()) {
-            return myNode;
-          }
-        }
+      if (myNode.getType().equals(type)) {
+        return myNode;
       }
     }
 
@@ -413,107 +347,53 @@ public class NodeMB {
 
   }
 
-
-  public void addDowns() {
-
-    String direto = codNode + "-" + selectedDireto;
-
-    node = getNodeIfAlreadyExists(direto, "DIRETO");
-
-    node.setCodNode(direto);
-
-    List<Downstream> diretos = new ArrayList<>();
-
-    for (String idDown : selectedDowns) {
-      for (Conector conn : placa.getConectorList()) {
-        if (null == conn.getDownstreamList()) {
-          continue;
-        }
-
-        for (Downstream down : conn.getDownstreamList()) {
-          if (down.getId() == Long.parseLong(idDown)) {
-            if (null != down.getNodes()) {
-              if (!down.getNodes().contains(node)) {
-                down.getNodes().add(node);
-                diretos.add(down);
-                break;
-              }
-            } else {
-              List<Node> nodes = new ArrayList<>();
-              nodes.add(node);
-
-              down.setNodes(nodes);
-
-              down.setStatusDown(Status.OCUPADO);
-
-              diretos.add(down);
-              break;
-            }
-
-            if (!down.getNodes().contains(node)) {
-              down.getNodes().add(node);
-              diretos.add(down);
-              break;
-            }
-          }
-        }
-      }
-    }
-
-    if (!diretos.isEmpty()) {
-      if (null != node.getUpstreams()) {
-        node.getDownstreams().addAll(diretos);
-      } else {
-        node.setDownstreams(diretos);
-      }
-
-      selectedDowns.clear();
-    }
-
-    if (!nodes.contains(node)) {
-      nodes.add(node);
-      node = new Node();
-    }
-  }
-
   public void save() {
-    try {
-      for (Node myNode : retornos) {
-        nodeService.save(myNode);
-        FacesUtils.addInfoMessage("Retorno " + myNode.getCodNode() + " cadastrado com sucesso!");
-        FacesUtils.getExternalContext().getFlash().setKeepMessages(true);
-      }
+    for (Node myNode : nodeList) {
+      if (myNode.getId() == null) {
+        try {
 
-    } catch (Exception e) {
-      FacesUtils.addInfoMessage("Erro ao cadastrar um Retorno!\n" + e.getMessage());
-      FacesUtils.getExternalContext().getFlash().setKeepMessages(true);
+          nodeService.save(myNode);
+          FacesUtils.addInfoMessage(StringUtils.capitalize(myNode.getType().toLowerCase()) + " "
+              + myNode.getCodNode() + " cadastrado com sucesso!");
+          FacesUtils.getExternalContext().getFlash().setKeepMessages(true);
+
+        } catch (Exception e) {
+
+          FacesUtils.addInfoMessage("Erro ao cadastrar o "
+              + StringUtils.capitalize(myNode.getType().toLowerCase()) + " " + myNode.getCodNode()
+              + "\n" + e.getMessage());
+          FacesUtils.getExternalContext().getFlash().setKeepMessages(true);
+
+        }
+      } else if (myNode.getDownstreams().isEmpty() && myNode.getUpstreams().isEmpty()) {
+        try {
+
+          nodeService.delete(myNode);
+          FacesUtils.addInfoMessage(StringUtils.capitalize(myNode.getType().toLowerCase()) + " "
+              + myNode.getCodNode() + " removido com sucesso!");
+          FacesUtils.getExternalContext().getFlash().setKeepMessages(true);
+        } catch (Exception e) {
+          FacesUtils.addInfoMessage("Erro ao remover o "
+              + StringUtils.capitalize(myNode.getType().toLowerCase()) + " " + myNode.getCodNode()
+              + "\n" + e.getMessage());
+          FacesUtils.getExternalContext().getFlash().setKeepMessages(true);
+        }
+
+      } else {
+        try {
+          nodeService.update(myNode);
+          FacesUtils.addInfoMessage(StringUtils.capitalize(myNode.getType().toLowerCase()) + " "
+              + myNode.getCodNode() + " atualizado com sucesso!");
+          FacesUtils.getExternalContext().getFlash().setKeepMessages(true);
+        } catch (Exception e) {
+          FacesUtils.addInfoMessage("Erro ao atualizar o "
+              + StringUtils.capitalize(myNode.getType().toLowerCase()) + " " + myNode.getCodNode()
+              + "\n" + e.getMessage());
+          FacesUtils.getExternalContext().getFlash().setKeepMessages(true);
+        }
+      }
     }
 
-    try {
-      for (Node myNode : diretos) {
-        nodeService.save(myNode);
-        FacesUtils.addInfoMessage("Direto " + myNode.getCodNode() + " cadastrado com sucesso!");
-        FacesUtils.getExternalContext().getFlash().setKeepMessages(true);
-      }
-    } catch (Exception e) {
-      FacesUtils.addInfoMessage("Erro ao cadastrar um Direto!\n" + e.getMessage());
-      FacesUtils.getExternalContext().getFlash().setKeepMessages(true);
-    }
-
-    for (Placa myPlaca : placas) {
-      try {
-
-        placaService.update(myPlaca);
-        FacesUtils.addInfoMessage("As configurações da placa: " + myPlaca.getCodPlaca()
-            + " foram salvas!");
-        FacesUtils.getExternalContext().getFlash().setKeepMessages(true);
-
-      } catch (Exception e) {
-        FacesUtils.addInfoMessage("Erro ao salvar as configurações da placa: "
-            + myPlaca.getCodPlaca());
-        FacesUtils.getExternalContext().getFlash().setKeepMessages(true);
-      }
-    }
   }
 
   /**
@@ -671,95 +551,17 @@ public class NodeMB {
   }
 
   /**
-   * @return the selectedUps
+   * @return the nodeList
    */
-  public List<String> getSelectedUps() {
-    return selectedUps;
+  public List<Node> getNodeList() {
+    return nodeList;
   }
 
   /**
-   * @param selectedUps the selectedUps to set
+   * @param list the list of nodes to be set
    */
-  public void setSelectedUps(List<String> selectedUps) {
-    if (null == this.selectedUps) {
-      this.selectedUps = selectedUps;
-    } else if (selectedUps.size() != 0) {
-      this.selectedUps.addAll(selectedUps);
-    }
-  }
-
-  /**
-   * @return the selectedDowns
-   */
-  public List<String> getSelectedDowns() {
-    return selectedDowns;
-  }
-
-  /**
-   * @param selectedDowns the selectedDowns to set
-   */
-  public void setSelectedDowns(List<String> selectedDowns) {
-    if (null == this.selectedDowns) {
-      this.selectedDowns = selectedDowns;
-    } else if (selectedDowns.size() != 0) {
-      this.selectedDowns.addAll(selectedDowns);
-    }
-  }
-
-  /**
-   * @return the selectedRetorno
-   */
-  public String getSelectedRetorno() {
-    return selectedRetorno;
-  }
-
-  /**
-   * @param selectedRetorno the selectedRetorno to set
-   */
-  public void setSelectedRetorno(String selectedRetorno) {
-    this.selectedRetorno = selectedRetorno;
-  }
-
-  /**
-   * @return the selectedDireto
-   */
-  public String getSelectedDireto() {
-    return selectedDireto;
-  }
-
-  /**
-   * @param selectedDireto the selectedDireto to set
-   */
-  public void setSelectedDireto(String selectedDireto) {
-    this.selectedDireto = selectedDireto;
-  }
-
-  /**
-   * @return the retornos
-   */
-  public List<Node> getRetornos() {
-    return retornos;
-  }
-
-  /**
-   * @param retornos the retornos to set
-   */
-  public void setRetornos(List<Node> retornos) {
-    this.retornos = retornos;
-  }
-
-  /**
-   * @return the diretos
-   */
-  public List<Node> getDiretos() {
-    return diretos;
-  }
-
-  /**
-   * @param diretos the diretos to set
-   */
-  public void setDiretos(List<Node> diretos) {
-    this.diretos = diretos;
+  public void setNodeList(List<Node> list) {
+    this.nodeList = list;
   }
 
 }

@@ -322,15 +322,36 @@ public class ProjetoMB {
 
     node.setDownstreams(downs);
 
-    nodeService.save(node);
+    try {
+
+      nodeService.save(node);
+      FacesUtils.addInfoMessage("Node " + node.getCodNode() + " cadastrado com sucesso!");
+      FacesUtils.getExternalContext().getFlash().setKeepMessages(true);
+
+    } catch (Exception e) {
+      FacesUtils.addInfoMessage("Erro ao cadastrar o Node! " + node.getCodNode() + "\n"
+          + e.getMessage());
+      FacesUtils.getExternalContext().getFlash().setKeepMessages(true);
+    }
 
     strNodeQuebrado = "";
 
   }
 
   public void save() {
-    for (Node node : nodes) {
-      nodeService.save(node);
+    for (Node myNode : nodes) {
+      try {
+
+        nodeService.save(myNode);
+        FacesUtils.addInfoMessage("Node " + myNode.getCodNode() + " cadastrado com sucesso!");
+        FacesUtils.getExternalContext().getFlash().setKeepMessages(true);
+
+
+      } catch (Exception e) {
+        FacesUtils.addInfoMessage("Erro ao cadastrar o Node! " + myNode.getCodNode() + "\n"
+            + e.getMessage());
+        FacesUtils.getExternalContext().getFlash().setKeepMessages(true);
+      }
     }
   }
 
@@ -345,7 +366,7 @@ public class ProjetoMB {
    * @param codNode the codNode to set
    */
   public void setCodNode(String codNode) {
-    this.codNode = codNode;
+    this.codNode = codNode.toUpperCase();
   }
 
   /**

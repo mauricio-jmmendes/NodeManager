@@ -50,7 +50,6 @@ public class Projeto implements Serializable {
   @Column(name = "status_projeto", nullable = false)
   private StatusProjeto statusProjeto;
 
-
   /**
    * @return the id
    */

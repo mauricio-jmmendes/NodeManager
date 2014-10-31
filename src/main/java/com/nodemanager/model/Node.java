@@ -49,6 +49,10 @@ public class Node implements Serializable {
       name = "downstream_id", nullable = false, updatable = false)})
   private List<Downstream> downstreams;
 
+  @Column(name = "type_node", nullable = false, length = 10)
+  private String type;
+
+
   /**
    * @return the id
    */
@@ -103,6 +107,20 @@ public class Node implements Serializable {
    */
   public void setDownstreams(List<Downstream> downstreams) {
     this.downstreams = downstreams;
+  }
+
+  /**
+   * @return the type
+   */
+  public String getType() {
+    return type;
+  }
+
+  /**
+   * @param type the type to set
+   */
+  public void setType(String type) {
+    this.type = type;
   }
 
   @Override
