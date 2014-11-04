@@ -115,7 +115,6 @@
 											update="@form" action="#{projetoMB.prepareNodeForQuebra()}">
 											<f:setPropertyActionListener value="#{conn}"
 												target="#{projetoMB.conn}" />
-
 											<f:ajax render="searchPanel" />
 										</p:commandButton>
 									</p:column>
@@ -204,14 +203,20 @@
 
 					<p:panel id="searchPanel" rendered="#{projetoMB.secondPanel}">
 						<h:panelGrid columns="2" cellpadding="5" class="ui-grid">
-							<h:outputLabel for="spinUp" value=" Quantidade Retorno: " />
-							<p:spinner id="spinRetorno" value="#{projetoMB.qtdRetorno}" />
+							<h:outputLabel for="spinRetorno" value="Quantidade Retorno: " />
+							<p:spinner id="spinRetorno" value="#{projetoMB.qtdRetorno}"
+								min="1" />
 
-							<h:outputLabel for="spinUp" value=" Quantidade Upstream: " />
-							<p:spinner id="spinUp" value="#{projetoMB.qtdUpstream}" />
+							<h:outputLabel for="spinUp" value="Quantidade Upstream: " />
+							<p:spinner min="2" stepFactor="2" id="spinUp"
+								value="#{projetoMB.qtdUpstream}" />
+
+							<h:outputLabel for="spinDireto" value="Quantidade Direto: " />
+							<p:spinner id="spinDireto" value="#{projetoMB.qtdDireto}" min="1" />
 
 							<h:outputLabel for="spinDown" value="Quantidade de Downstream: " />
-							<p:spinner id="spinDown" value="#{projetoMB.qtdDownstream}" />
+							<p:spinner min="2" stepFactor="2" id="spinDown"
+								value="#{projetoMB.qtdDownstream}" />
 
 							<p:panelGrid columns="2" styleClass="myPanelGrid">
 								<h:outputText value="Escolha o CMTS: " />
@@ -238,7 +243,7 @@
 						</h:panelGrid>
 					</p:panel>
 
-					<p:row rowspan="3">
+					<p:row rowspan="5">
 						<p:panel id="dpPlaca" rendered="#{projetoMB.displayPanel}">
 							<p:panelGrid styleClass="myPanelGrid" columns="2">
 								<p:outputLabel value="Placa: " />
@@ -246,24 +251,37 @@
 									<f:selectItem itemLabel="Selecione a Placa" itemValue="" />
 									<f:selectItems value="#{projetoMB.placas}" var="placa"
 										itemValue="#{placa.id}"
-										itemLabel="#{placa.slot.codSlot} - #{placa.codPlaca}" />
+										itemLabel="#{placa.slot.cmts.nome} -> #{placa.slot.codSlot} - #{placa.codPlaca}" />
 									<p:ajax update="dtRetorno dtDireto"
 										listener="#{projetoMB.loadPlaca}" process="@this" />
 								</p:selectOneMenu>
+
+								<p:outputLabel value="Node para: " />
+								<p:inputText id="codBreak" placeholder="Código do Node"
+									value="#{projetoMB.codNodeToBeBroken}" required="true">
+									<p:ajax event="blur" update="codBreak" />
+								</p:inputText>
+
+								<p:outputLabel for="dtManobra" value="Data da Manobra:" />
+								<p:calendar id="dtManobra"
+									value="#{projetoMB.projeto.dataManobra}" pattern="dd/MM/yyyy"
+									mask="true" />
+
 							</p:panelGrid>
 						</p:panel>
 					</p:row>
 
 					<br />
 
-					<p:panel id="dpRetorno" rendered="#{projetoMB.displayPanel}">
-
+					<p:fieldset id="dpRetorno" rendered="#{projetoMB.displayPanel}"
+						style="min-width:800px;" legend="Retorno" toggleable="true"
+						toggleSpeed="300">
 						<p:dataTable id="dtRetorno" var="up"
 							value="#{projetoMB.retornoList()}" editable="true"
 							editMode="cell">
 
 							<p:ajax event="cellEdit" listener="#{projetoMB.onCellEdit(up)}"
-								update="@this" />
+								update="@this, :myForm:growl" />
 
 							<p:column style="width: 23%;">
 								<f:facet name="header">
@@ -298,21 +316,30 @@
 							</ui:repeat>
 									</f:facet>
 									<f:facet name="input">
-										<p:inputText value="#{projetoMB.strNodeQuebrado}" />
+										<p:inputText value="#{projetoMB.sufix}" />
 									</f:facet>
 								</p:cellEditor>
+							</p:column>
 
-
+							<p:column>
+								<f:facet name="header">
+									<h:outputText value="Opções" />
+								</f:facet>
+								<p:commandButton value="Remover" process="@this"
+									update="dtRetorno" actionListener="#{projetoMB.removeNode(up)}">
+								</p:commandButton>
 							</p:column>
 						</p:dataTable>
-					</p:panel>
+					</p:fieldset>
 
-					<p:panel id="dpDireto" rendered="#{projetoMB.displayPanel}">
+					<p:fieldset id="dpDireto" rendered="#{projetoMB.displayPanel}"
+						style="min-width:800px;" legend="Direto" toggleable="true"
+						toggleSpeed="300">
 						<p:dataTable id="dtDireto" var="down"
 							value="#{projetoMB.diretoList()}" editable="true" editMode="cell">
 
 							<p:ajax event="cellEdit" listener="#{projetoMB.onCellEdit(down)}"
-								update="@this" />
+								update="@this, :myForm:growl" />
 
 							<p:column style="width: 23%;">
 								<f:facet name="header">
@@ -347,15 +374,29 @@
 							</ui:repeat>
 									</f:facet>
 									<f:facet name="input">
-										<p:inputText value="#{projetoMB.strNodeQuebrado}" label="Year" />
+										<p:inputText value="#{projetoMB.sufix}" label="Year" />
 									</f:facet>
 								</p:cellEditor>
 							</p:column>
+							<p:column>
+								<f:facet name="header">
+									<h:outputText value="Opções" />
+								</f:facet>
+								<p:commandButton value="Remover" process="@this"
+									update="dtDireto"
+									actionListener="#{projetoMB.removeNode(down)}">
+								</p:commandButton>
+							</p:column>
 						</p:dataTable>
-					</p:panel>
+					</p:fieldset>
 					<p:commandButton id="btnBack" value="Voltar"
 						actionListener="#{projetoMB.reset()}" process="@form"
 						update="@form" rendered="#{not projetoMB.firstPanel}" />
+
+					<p:commandButton value="Salvar" id="btnSave" update=":myForm:growl"
+						rendered="#{not projetoMB.firstPanel}"
+						actionListener="#{projetoMB.save}"
+						action="nodeList?faces-redirect=true" />
 
 				</p:panelGrid>
 			</h:form>

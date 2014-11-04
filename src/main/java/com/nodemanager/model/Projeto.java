@@ -9,6 +9,8 @@ import javax.persistence.GeneratedValue;
 import javax.persistence.Id;
 import javax.persistence.SequenceGenerator;
 import javax.persistence.Table;
+import javax.persistence.Temporal;
+import javax.persistence.TemporalType;
 
 import org.apache.commons.lang3.builder.EqualsBuilder;
 import org.apache.commons.lang3.builder.HashCodeBuilder;
@@ -41,14 +43,21 @@ public class Projeto implements Serializable {
   @Column(name = "obs", nullable = false, length = 500)
   private String obs;
 
+  @Column(name = "node_de", nullable = false, length = 10)
+  private String nodeDe;
+
+  @Column(name = "node_para", nullable = false, length = 10)
+  private String nodePara;
+
+  @Column(name = "status_projeto", nullable = false)
+  private StatusProjeto statusProjeto;
+
   @Column(name = "dt_projeto", nullable = false)
+  @Temporal(value=TemporalType.TIMESTAMP)
   private Date dataProjeto;
 
   @Column(name = "dt_manobra", nullable = false)
   private Date dataManobra;
-
-  @Column(name = "status_projeto", nullable = false)
-  private StatusProjeto statusProjeto;
 
   /**
    * @return the id
@@ -104,6 +113,34 @@ public class Projeto implements Serializable {
    */
   public void setObs(String obs) {
     this.obs = obs;
+  }
+
+  /**
+   * @return the nodeDe
+   */
+  public String getNodeDe() {
+    return nodeDe;
+  }
+
+  /**
+   * @param nodeDe the nodeDe to set
+   */
+  public void setNodeDe(String nodeDe) {
+    this.nodeDe = nodeDe;
+  }
+
+  /**
+   * @return the nodePara
+   */
+  public String getNodePara() {
+    return nodePara;
+  }
+
+  /**
+   * @param nodePara the nodePara to set
+   */
+  public void setNodePara(String nodePara) {
+    this.nodePara = nodePara;
   }
 
   /**

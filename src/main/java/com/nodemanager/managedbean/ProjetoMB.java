@@ -1,28 +1,41 @@
 package com.nodemanager.managedbean;
 
 import java.util.ArrayList;
+import java.util.Calendar;
+import java.util.Collections;
+import java.util.Comparator;
+import java.util.Iterator;
 import java.util.List;
 
 import javax.annotation.PostConstruct;
 import javax.faces.bean.ManagedBean;
 import javax.faces.bean.ViewScoped;
 
+import org.apache.commons.lang3.StringUtils;
+
 import com.nodemanager.managedbean.util.FacesUtils;
 import com.nodemanager.model.Cmts;
 import com.nodemanager.model.Conector;
 import com.nodemanager.model.Downstream;
 import com.nodemanager.model.Hub;
+import com.nodemanager.model.Login;
 import com.nodemanager.model.Node;
 import com.nodemanager.model.Placa;
+import com.nodemanager.model.Projeto;
 import com.nodemanager.model.Upstream;
 import com.nodemanager.service.NodeService;
 import com.nodemanager.service.PlacaService;
+import com.nodemanager.service.ProjetoService;
 import com.nodemanager.util.JPAUtil;
 import com.nodemanager.util.Status;
+import com.nodemanager.util.StatusProjeto;
 
 @ManagedBean
 @ViewScoped
 public class ProjetoMB {
+
+  private static final String DIRETO = "DIRETO";
+  private static final String RETORNO = "RETORNO";
 
   private String codNode;
   private Node node;
@@ -42,18 +55,18 @@ public class ProjetoMB {
   private List<Upstream> selectedUps;
   private List<Downstream> selectedDowns;
 
-  private List<String> selectedCheckBoxesUps;
-  private List<String> selectedCheckBoxesDowns;
-
   private String selectedRetorno;
   private String selectedDireto;
 
-  private String strNodeQuebrado;
+  private String codNodeToBeBroken;
+  private String sufix;
 
   private Upstream up;
   private Downstream down;
 
   private int qtdRetorno;
+  private int qtdDireto;
+
   private Long qtdUpstream;
   private Long qtdDownstream;
 
@@ -71,6 +84,10 @@ public class ProjetoMB {
   private boolean cmtsChecked;
 
   private List<Conector> selectedConnectors;
+  private List<Node> nodeList;
+
+  private Projeto projeto;
+  private ProjetoService projetoService;
 
   @PostConstruct
   public void init() {
@@ -79,7 +96,11 @@ public class ProjetoMB {
     node = new Node();
     selectedNodes = new ArrayList<>();
 
+    projetoService = new ProjetoService(JPAUtil.getSimpleEntityManager());
+    setProjeto(new Projeto());
+
     nodes = new ArrayList<>();
+    nodeList = new ArrayList<>();
 
     placaService = new PlacaService(JPAUtil.getSimpleEntityManager());
     placa = new Placa();
@@ -153,12 +174,43 @@ public class ProjetoMB {
 
     nodes = nodeService.findByCodNode(codNode);
 
+    projeto.setNodeDe(codNode);
+
     secondPanel = false;
   }
 
   public void loadPlacas() {
 
-    placas = placaService.findPlacaByUpstreamStatus(cmtsId, qtdUpstream, Status.LIVRE);
+    placas = placaService.findPlacaByDownstreamStatus(qtdDownstream * qtdDireto, Status.LIVRE);
+
+    if (!placas.isEmpty()) {
+
+      List<Long> CmtsIds = new ArrayList<>();
+
+      for (Iterator<Placa> iterator = placas.iterator(); iterator.hasNext();) {
+        Placa myPlaca = (Placa) iterator.next();
+
+        Long id = myPlaca.getSlot().getCmts().getId();
+
+        if (!CmtsIds.contains(id)) {
+          CmtsIds.add(id);
+        }
+      }
+
+      List<Placa> list =
+          placaService.findPlacaByUpstreamStatus(CmtsIds, qtdUpstream * qtdRetorno, Status.LIVRE);
+
+      placas.addAll(list);
+
+      Collections.sort(placas, new Comparator<Placa>() {
+        @Override
+        public int compare(Placa placa, Placa anotherPlaca) {
+          return placa.getSlot().getCmts().getNome()
+              .compareTo(anotherPlaca.getSlot().getCmts().getNome());
+        }
+      });
+
+    }
 
     displayPanel = true;
 
@@ -277,29 +329,169 @@ public class ProjetoMB {
   }
 
   public void onCellEdit(Upstream upstream) {
+
+    String codRetorno = codNodeToBeBroken + "-" + sufix;
+
     Node myNode = new Node();
-    myNode.setCodNode(strNodeQuebrado);
 
-    upstream.getNodes().add(myNode);
-
-    List<Upstream> ups = new ArrayList<>();
-
-    ups.add(upstream);
-
-    myNode.setUpstreams(ups);
-
-    try {
-      nodeService.save(myNode);
-      FacesUtils.addInfoMessage("Retorno " + myNode.getCodNode() + "criado com sucesso!");
-    } catch (Exception e) {
-      FacesUtils.addInfoMessage("Não foi possível criar o Retorno " + myNode.getCodNode() + "! \n"
-          + e.getMessage());
+    for (Node retorno : nodeList) {
+      if (retorno.getCodNode().equalsIgnoreCase(codRetorno) && retorno.getType().equals(RETORNO)) {
+        myNode = retorno;
+      }
     }
 
+    if ((upstream.getNodes() == null) || (!upstream.getNodes().contains(myNode))) {
 
-    strNodeQuebrado = "";
+      if ((myNode.getUpstreams() == null) || (myNode.getUpstreams().isEmpty())) {
+        myNode.setCodNode(codRetorno);
+
+        myNode.setType(RETORNO);
+        myNode.setStatusNode(Status.EM_PROJETO);
+
+        upstream.getNodes().add(myNode);
+        upstream.setStatusUp(Status.OCUPADO);
+
+        List<Upstream> ups = new ArrayList<>();
+
+        ups.add(upstream);
+
+        myNode.setUpstreams(ups);
+      } else {
+        upstream.getNodes().add(myNode);
+        upstream.setStatusUp(Status.OCUPADO);
+
+        List<Upstream> ups = new ArrayList<>();
+
+        ups.add(upstream);
+        myNode.getUpstreams().addAll(ups);
+      }
+
+      FacesUtils.addInfoMessage("Retorno " + codRetorno + " adicionado na up "
+          + upstream.getNumUpStream());
+      FacesUtils.getExternalContext().getFlash().setKeepMessages(true);
+
+      if (!nodeList.contains(myNode)) {
+        nodeList.add(myNode);
+      }
+
+    } else {
+      FacesUtils.addInfoMessage("O Retorno " + codRetorno + " já existe nessa up! "
+          + upstream.getNumUpStream());
+      FacesUtils.getExternalContext().getFlash().setKeepMessages(true);
+    }
+
+    sufix = "";
 
   }
+
+  public void onCellEdit(Downstream downstream) {
+
+    String codDireto = codNodeToBeBroken + "-" + sufix;
+
+    Node myNode = new Node();
+
+    for (Node direto : nodeList) {
+      if (direto.getCodNode().equalsIgnoreCase(codDireto)
+          && direto.getType().equalsIgnoreCase(DIRETO)) {
+        myNode = direto;
+      }
+    }
+
+    if ((downstream.getNodes() == null) || (!downstream.getNodes().contains(myNode))) {
+
+      if ((myNode.getDownstreams() == null) || (myNode.getDownstreams().isEmpty())) {
+        myNode.setCodNode(codDireto);
+
+        myNode.setType(DIRETO);
+        myNode.setStatusNode(Status.EM_PROJETO);
+
+        downstream.getNodes().add(myNode);
+        downstream.setStatusDown(Status.OCUPADO);
+
+        List<Downstream> downs = new ArrayList<>();
+
+        downs.add(downstream);
+
+        myNode.setDownstreams(downs);
+
+      } else {
+        downstream.getNodes().add(myNode);
+        downstream.setStatusDown(Status.OCUPADO);
+
+        List<Downstream> downs = new ArrayList<>();
+
+        downs.add(downstream);
+        myNode.getDownstreams().addAll(downs);
+      }
+
+      FacesUtils.addInfoMessage("O Direto " + codDireto + " adicionado na down "
+          + downstream.getNumDownStream());
+      FacesUtils.getExternalContext().getFlash().setKeepMessages(true);
+
+      if (!nodeList.contains(myNode)) {
+        nodeList.add(myNode);
+      }
+
+    } else {
+      FacesUtils.addInfoMessage("O Retorno " + codDireto + " já existe nessa down! "
+          + downstream.getNumDownStream());
+      FacesUtils.getExternalContext().getFlash().setKeepMessages(true);
+    }
+
+    sufix = "";
+
+  }
+
+  public void removeNode(Upstream up) {
+
+    List<Node> myListNodes = up.getNodes();
+
+    for (Iterator<Node> iterator = myListNodes.iterator(); iterator.hasNext();) {
+      Node myNode = iterator.next();
+
+      if (myNode.getCodNode().contains(codNodeToBeBroken)) {
+        iterator.remove();
+        myNode.getUpstreams().remove(up);
+
+        nodeList.add(myNode);
+
+        // se é um node novo e não está em nenhuma outra up, então remover da lista
+        if (myNode.getUpstreams().isEmpty() && myNode.getId() == null) {
+          nodeList.remove(myNode);
+        }
+      }
+
+      if (myListNodes.isEmpty()) {
+        up.setStatusUp(Status.LIVRE);
+      }
+    }
+  }
+
+  public void removeNode(Downstream down) {
+
+    List<Node> myListNodes = down.getNodes();
+
+    for (Iterator<Node> iterator = myListNodes.iterator(); iterator.hasNext();) {
+      Node myNode = iterator.next();
+
+      if (myNode.getCodNode().contains(codNodeToBeBroken)) {
+        iterator.remove();
+        myNode.getDownstreams().remove(down);
+
+        nodeList.add(myNode);
+
+        // se é um node novo e não está em nenhuma down, então remover da lista
+        if (myNode.getDownstreams().isEmpty() && myNode.getId() == null) {
+          nodeList.remove(myNode);
+        }
+      }
+
+      if (myListNodes.isEmpty()) {
+        down.setStatusDown(Status.LIVRE);
+      }
+    }
+  }
+
 
   public void reset() {
 
@@ -310,49 +502,74 @@ public class ProjetoMB {
 
   }
 
-  public void onCellEdit(Downstream downstream) {
-    Node node = new Node();
-    node.setCodNode(strNodeQuebrado);
-
-    downstream.getNodes().add(node);
-
-    List<Downstream> downs = new ArrayList<>();
-
-    downs.add(downstream);
-
-    node.setDownstreams(downs);
-
-    try {
-
-      nodeService.save(node);
-      FacesUtils.addInfoMessage("Node " + node.getCodNode() + " cadastrado com sucesso!");
-      FacesUtils.getExternalContext().getFlash().setKeepMessages(true);
-
-    } catch (Exception e) {
-      FacesUtils.addInfoMessage("Erro ao cadastrar o Node! " + node.getCodNode() + "\n"
-          + e.getMessage());
-      FacesUtils.getExternalContext().getFlash().setKeepMessages(true);
-    }
-
-    strNodeQuebrado = "";
-
-  }
-
   public void save() {
-    for (Node myNode : nodes) {
-      try {
+    for (Node myNode : nodeList) {
+      if (myNode.getId() == null) {
+        try {
 
-        nodeService.save(myNode);
-        FacesUtils.addInfoMessage("Node " + myNode.getCodNode() + " cadastrado com sucesso!");
-        FacesUtils.getExternalContext().getFlash().setKeepMessages(true);
+          nodeService.save(myNode);
+          FacesUtils.addInfoMessage(StringUtils.capitalize(myNode.getType().toLowerCase()) + " "
+              + myNode.getCodNode() + " cadastrado com sucesso!");
+          FacesUtils.getExternalContext().getFlash().setKeepMessages(true);
 
+        } catch (Exception e) {
 
-      } catch (Exception e) {
-        FacesUtils.addInfoMessage("Erro ao cadastrar o Node! " + myNode.getCodNode() + "\n"
-            + e.getMessage());
-        FacesUtils.getExternalContext().getFlash().setKeepMessages(true);
+          FacesUtils.addInfoMessage("Erro ao cadastrar o "
+              + StringUtils.capitalize(myNode.getType().toLowerCase()) + " " + myNode.getCodNode()
+              + "\n" + e.getMessage());
+          FacesUtils.getExternalContext().getFlash().setKeepMessages(true);
+
+        }
+      } else if (myNode.getDownstreams().isEmpty() && myNode.getUpstreams().isEmpty()) {
+        try {
+
+          nodeService.delete(myNode);
+          FacesUtils.addInfoMessage(StringUtils.capitalize(myNode.getType().toLowerCase()) + " "
+              + myNode.getCodNode() + " removido com sucesso!");
+          FacesUtils.getExternalContext().getFlash().setKeepMessages(true);
+        } catch (Exception e) {
+          FacesUtils.addInfoMessage("Erro ao remover o "
+              + StringUtils.capitalize(myNode.getType().toLowerCase()) + " " + myNode.getCodNode()
+              + "\n" + e.getMessage());
+          FacesUtils.getExternalContext().getFlash().setKeepMessages(true);
+        }
+
+      } else {
+        try {
+          nodeService.update(myNode);
+          FacesUtils.addInfoMessage(StringUtils.capitalize(myNode.getType().toLowerCase()) + " "
+              + myNode.getCodNode() + " atualizado com sucesso!");
+          FacesUtils.getExternalContext().getFlash().setKeepMessages(true);
+        } catch (Exception e) {
+          FacesUtils.addInfoMessage("Erro ao atualizar o "
+              + StringUtils.capitalize(myNode.getType().toLowerCase()) + " " + myNode.getCodNode()
+              + "\n" + e.getMessage());
+          FacesUtils.getExternalContext().getFlash().setKeepMessages(true);
+        }
       }
     }
+
+    Login login = new Login();
+
+    login.setLogin("admin");
+    login.setSenha("1234");
+
+    projeto.setNodePara(codNodeToBeBroken);
+    projeto.setDataProjeto(Calendar.getInstance().getTime());
+    projeto.setDescricao("Quebra de Node");
+    projeto.setStatusProjeto(StatusProjeto.INICIADO);
+    projeto.setUsuario(login);
+    projeto.setObs("Node será quebrado sem exclusão do Antigo.");
+
+    try {
+      projetoService.save(projeto);
+      FacesUtils.addInfoMessage("Projeto salvo com Sucesso!");
+      FacesUtils.getExternalContext().getFlash().setKeepMessages(true);
+    } catch (Exception e) {
+      FacesUtils.addInfoMessage("Erro ao atualizar o Projeto" + e.getMessage());
+      FacesUtils.getExternalContext().getFlash().setKeepMessages(true);
+    }
+
   }
 
   /**
@@ -518,34 +735,6 @@ public class ProjetoMB {
   }
 
   /**
-   * @return the selectedCheckBoxesUps
-   */
-  public List<String> getSelectedCheckBoxesUps() {
-    return selectedCheckBoxesUps;
-  }
-
-  /**
-   * @param selectedCheckBoxesUps the selectedCheckBoxesUps to set
-   */
-  public void setSelectedCheckBoxesUps(List<String> selectedCheckBoxesUps) {
-    this.selectedCheckBoxesUps = selectedCheckBoxesUps;
-  }
-
-  /**
-   * @return the selectedCheckBoxesDowns
-   */
-  public List<String> getSelectedCheckBoxesDowns() {
-    return selectedCheckBoxesDowns;
-  }
-
-  /**
-   * @param selectedCheckBoxesDowns the selectedCheckBoxesDowns to set
-   */
-  public void setSelectedCheckBoxesDowns(List<String> selectedCheckBoxesDowns) {
-    this.selectedCheckBoxesDowns = selectedCheckBoxesDowns;
-  }
-
-  /**
    * @return the selectedRetorno
    */
   public String getSelectedRetorno() {
@@ -574,17 +763,17 @@ public class ProjetoMB {
   }
 
   /**
-   * @return the strNodeQuebrado
+   * @return the codNodeToBeBroken
    */
-  public String getStrNodeQuebrado() {
-    return strNodeQuebrado;
+  public String getCodNodeToBeBroken() {
+    return codNodeToBeBroken;
   }
 
   /**
-   * @param strNodeQuebrado the strNodeQuebrado to set
+   * @param codNodeToBeBroken the codNodeToBeBroken to set
    */
-  public void setStrNodeQuebrado(String strNodeQuebrado) {
-    this.strNodeQuebrado = strNodeQuebrado;
+  public void setCodNodeToBeBroken(String codNodeToBeBroken) {
+    this.codNodeToBeBroken = codNodeToBeBroken.toUpperCase();
   }
 
   /**
@@ -627,6 +816,20 @@ public class ProjetoMB {
    */
   public void setQtdRetorno(int qtdRetorno) {
     this.qtdRetorno = qtdRetorno;
+  }
+
+  /**
+   * @return the qtdDireto
+   */
+  public int getQtdDireto() {
+    return qtdDireto;
+  }
+
+  /**
+   * @param qtdDireto the qtdDireto to set
+   */
+  public void setQtdDireto(int qtdDireto) {
+    this.qtdDireto = qtdDireto;
   }
 
   /**
@@ -754,4 +957,33 @@ public class ProjetoMB {
   public void setCmtsChecked(boolean cmtsChecked) {
     this.cmtsChecked = cmtsChecked;
   }
+
+  /**
+   * @return the projeto
+   */
+  public Projeto getProjeto() {
+    return projeto;
+  }
+
+  /**
+   * @param projeto the projeto to set
+   */
+  public void setProjeto(Projeto projeto) {
+    this.projeto = projeto;
+  }
+
+  /**
+   * @return the sufix
+   */
+  public String getSufix() {
+    return sufix;
+  }
+
+  /**
+   * @param sufix the sufix to set
+   */
+  public void setSufix(String sufix) {
+    this.sufix = sufix.toUpperCase();
+  }
+
 }

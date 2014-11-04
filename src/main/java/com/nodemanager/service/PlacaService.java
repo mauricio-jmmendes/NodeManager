@@ -34,9 +34,15 @@ public class PlacaService {
     return dao.findAll();
   }
 
-  public List<Placa> findPlacaByUpstreamStatus(Long idCmts, Long qtdUpstream, Status soUpsLivres) {
-    return dao.findPlacaByUpstreamStatus(idCmts, qtdUpstream, soUpsLivres);
+  public List<Placa> findPlacaByUpstreamStatus(List<Long> cmtsIds, Long qtdUpstream, Status soUpsLivres) {
+    return dao.findPlacaByUpstreamStatus(cmtsIds, qtdUpstream, soUpsLivres);
   }
+  
+  public List<Placa> findPlacaByDownstreamStatus(Long qtdDownstream, Status statusDownstream) {
+    return dao.findPlacaByDownstreamStatus(qtdDownstream, statusDownstream);
+  }
+
+  
 
   public void delete(Placa placa) {
     try {

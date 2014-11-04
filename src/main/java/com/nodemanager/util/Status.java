@@ -2,7 +2,8 @@ package com.nodemanager.util;
 
 public enum Status {
 
-  LIVRE(0, "Livre"), OCUPADO(1, "Ocupado"), FUNCIONANDO(2, "Funcionando"), DEFEITO(3, "Com Defeito");
+  LIVRE(0, "Livre"), OCUPADO(1, "Ocupado"), FUNCIONANDO(2, "Funcionando"), DEFEITO(3, "Com Defeito"), EM_PROJETO(
+      3, "Em Projeto"), ATIVO(4, "Ativo");
 
   private String name;
   private int id;

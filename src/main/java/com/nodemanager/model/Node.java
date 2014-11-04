@@ -20,6 +20,8 @@ import org.apache.commons.lang3.builder.HashCodeBuilder;
 import org.apache.commons.lang3.builder.ToStringBuilder;
 import org.apache.commons.lang3.builder.ToStringStyle;
 
+import com.nodemanager.util.Status;
+
 @Entity
 @Table(name = "NODE")
 @SequenceGenerator(name = "seqN", sequenceName = "seq_node", allocationSize = 1, initialValue = 1)
@@ -52,6 +54,8 @@ public class Node implements Serializable {
   @Column(name = "type_node", nullable = false, length = 10)
   private String type;
 
+  @Column(name = "status_node", nullable = false, length = 10)
+  private Status statusNode;
 
   /**
    * @return the id
@@ -121,6 +125,20 @@ public class Node implements Serializable {
    */
   public void setType(String type) {
     this.type = type;
+  }
+
+  /**
+   * @return the statusNode
+   */
+  public Status getStatusNode() {
+    return statusNode;
+  }
+
+  /**
+   * @param statusNode the statusNode to set
+   */
+  public void setStatusNode(Status statusNode) {
+    this.statusNode = statusNode;
   }
 
   @Override

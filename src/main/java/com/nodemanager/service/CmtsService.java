@@ -71,7 +71,6 @@ public class CmtsService {
   }
 
   public void delete(Cmts cmts) {
-
     try {
       simpleEntityManager.beginTransaction();
       dao.delete(cmts);
@@ -81,4 +80,5 @@ public class CmtsService {
       simpleEntityManager.rollBack();
     }
   }
+
 }

@@ -86,4 +86,5 @@ public class GenericDAO<T, PK> implements IGenericDAO<T, PK> {
   public void setEntityManager(EntityManager entityManager) {
     this.entityManager = entityManager;
   }
+
 }
