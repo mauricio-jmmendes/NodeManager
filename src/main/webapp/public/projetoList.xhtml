@@ -1,0 +1,328 @@
+<ui:composition template="template/main.xhtml"
+	xmlns="http://www.w3.org/1999/xhtml"
+	xmlns:f="http://java.sun.com/jsf/core"
+	xmlns:h="http://java.sun.com/jsf/html"
+	xmlns:ui="http://java.sun.com/jsf/facelets"
+	xmlns:p="http://primefaces.org/ui">
+
+	<ui:define name="content">
+		<div id="container" style="border: none;" align="center">
+			<h1>Projetos cadastrados</h1>
+
+			<h:form id="myForm">
+				<p:growl id="growl" sticky="false" showDetail="true" life="8000" />
+
+				<h:panelGrid columns="3">
+					<p:outputLabel value="Buscar por node: " />
+					<p:inputText placeholder="Digite o código do Node"
+						value="#{projetoMB.codNode}" required="true" />
+
+					<p:commandButton id="ajax" value="Buscar"
+						actionListener="#{projetoMB.loadProjetos()}" process="@form"
+						update="@form" />
+				</h:panelGrid>
+
+				<br />
+
+				<p:fieldset legend="projetos" toggleable="true" toggleSpeed="500"
+					style="margin-bottom: 10px; width: 1300px">
+
+					<p:dataTable id="dtProjetos" var="proj"
+						value="#{projetoMB.projetos}">
+						<p:column>
+							<f:facet name="header">
+								<h:outputText value="Data da Manobra" />
+							</f:facet>
+						#{proj.dataManobra}
+					</p:column>
+
+						<p:column>
+							<f:facet name="header">
+								<h:outputText value="Data do Projeto" />
+							</f:facet>
+							#{proj.dataProjeto}
+						</p:column>
+
+						<p:column>
+							<f:facet name="header">
+								<h:outputText value="Descrição" />
+							</f:facet>
+							#{proj.descricao}
+						</p:column>
+
+						<p:column>
+							<f:facet name="header">
+								<h:outputText value="Observações" />
+							</f:facet>
+							#{proj.obs}
+						</p:column>
+
+						<p:column>
+							<f:facet name="header">
+								<h:outputText value="Node Origem" />
+							</f:facet>
+							#{proj.nodeOrigem}
+						</p:column>
+
+						<p:column>
+							<f:facet name="header">
+								<h:outputText value="Node Destino" />
+							</f:facet>
+							#{proj.nodeDestino}
+						</p:column>
+
+						<p:column>
+							<f:facet name="header">
+								<h:outputText value="Retorno" />
+							</f:facet>
+							#{proj.statusProjeto}
+						</p:column>
+
+						<p:column>
+							<f:facet name="header">
+								<h:outputText value="Criador" />
+							</f:facet>
+							#{proj.usuario.login}
+						</p:column>
+
+						<p:column style="width: 28%">
+							<f:facet name="header">
+								<h:outputText value="Opções" />
+							</f:facet>
+
+							<p:button outcome="projetoEdit.jsf" value="editar"
+								includeViewParams="true">
+								<f:param name="projetoId" value="#{proj.id}" />
+							</p:button>
+
+						  &#160;
+						
+						<p:commandButton value="remover"
+								action="#{projetoMB.deleteProjeto()}"
+								onclick="return confirm('Deseja realmente remover este CMTS?');"
+								update=":myForm:growl">
+								<f:setPropertyActionListener target="#{projetoMB.projeto}"
+									value="#{proj}" />
+							</p:commandButton>
+
+						 &#160;
+						
+						<p:commandButton value="detalhes" update=":myForm:details">
+								<f:setPropertyActionListener target="#{projetoMB.projeto}"
+									value="#{proj}" />
+							</p:commandButton>
+
+						</p:column>
+					</p:dataTable>
+				</p:fieldset>
+
+				<br />
+
+				<p:fieldset legend="Nodes" toggleable="true" toggleSpeed="500"
+					style="margin-bottom: 10px;">
+
+					<p:panelGrid id="details" columns="2" styleClass="myPanelGrid">
+
+						<h:panelGroup id="nodeOrigem">
+
+							<p:fieldset legend="Node origem - Retornos" toggleable="true"
+								toggleSpeed="500" style="margin-bottom: 10px;">
+
+								<p:dataTable id="dtRetornoNodeOrigem" var="up"
+									value="#{projetoMB.retornoNodesQuebra('ORIGEM')}">
+									<p:column>
+										<f:facet name="header">
+											<h:outputText value="CMTS" />
+										</f:facet>
+						#{up.conectorUp.placa.slot.cmts.nome}
+					</p:column>
+
+									<p:column>
+										<f:facet name="header">
+											<h:outputText value="Placa" />
+										</f:facet>
+							#{up.conectorUp.placa.slot.codSlot} - #{up.conectorUp.placa.codPlaca}
+						</p:column>
+
+									<p:column>
+										<f:facet name="header">
+											<h:outputText value="Conector" />
+										</f:facet>
+							#{up.conectorUp.numConector}
+						</p:column>
+
+									<p:column>
+										<f:facet name="header">
+											<h:outputText value="Upstream" />
+										</f:facet>
+							#{up.numUpStream}
+						</p:column>
+
+									<p:column>
+										<f:facet name="header">
+											<h:outputText value="Retorno" />
+										</f:facet>
+										<ui:repeat var="node" value="#{up.nodes}">
+								#{node.codNode}, 
+							</ui:repeat>
+									</p:column>
+								</p:dataTable>
+							</p:fieldset>
+
+							<br />
+
+							<p:fieldset legend="Node origem - Diretos" toggleable="true"
+								toggleSpeed="500" style="margin-bottom: 10px;">
+
+								<p:dataTable id="dtDiretoNodeOrigem" var="down"
+									value="#{projetoMB.diretoNodesQuebra('ORIGEM')}">
+
+									<p:column>
+										<f:facet name="header">
+											<h:outputText value="CMTS" />
+										</f:facet>
+						#{down.conectorDown.placa.slot.cmts.nome}
+					</p:column>
+
+									<p:column>
+										<f:facet name="header">
+											<h:outputText value="Placa" />
+										</f:facet>
+						#{down.conectorDown.placa.slot.codSlot} - #{down.conectorDown.placa.codPlaca}
+					</p:column>
+
+									<p:column>
+										<f:facet name="header">
+											<h:outputText value="Conector" />
+										</f:facet>
+						#{down.conectorDown.numConector}
+					</p:column>
+
+									<p:column>
+										<f:facet name="header">
+											<h:outputText value="Downstream" />
+										</f:facet>
+						#{down.numDownStream}
+								</p:column>
+
+									<p:column>
+										<f:facet name="header">
+											<h:outputText value="Direto" />
+										</f:facet>
+										<ui:repeat var="node" value="#{down.nodes}">
+								
+								#{node.codNode}, 
+
+								</ui:repeat>
+									</p:column>
+								</p:dataTable>
+
+							</p:fieldset>
+
+						</h:panelGroup>
+
+						<h:panelGroup id="nodeDestino">
+
+							<p:fieldset legend="Node destino - Retornos" toggleable="true"
+								toggleSpeed="500" style="margin-bottom: 10px;">
+
+								<p:dataTable id="dtRetornoNodeDestino" var="up"
+									value="#{projetoMB.retornoNodesQuebra('DESTINO')}">
+									<p:column>
+										<f:facet name="header">
+											<h:outputText value="CMTS" />
+										</f:facet>
+						#{up.conectorUp.placa.slot.cmts.nome}
+					</p:column>
+
+									<p:column>
+										<f:facet name="header">
+											<h:outputText value="Placa" />
+										</f:facet>
+							#{up.conectorUp.placa.slot.codSlot} - #{up.conectorUp.placa.codPlaca}
+						</p:column>
+
+									<p:column>
+										<f:facet name="header">
+											<h:outputText value="Conector" />
+										</f:facet>
+							#{up.conectorUp.numConector}
+						</p:column>
+
+									<p:column>
+										<f:facet name="header">
+											<h:outputText value="Upstream" />
+										</f:facet>
+							#{up.numUpStream}
+						</p:column>
+
+									<p:column>
+										<f:facet name="header">
+											<h:outputText value="Retorno" />
+										</f:facet>
+										<ui:repeat var="node" value="#{up.nodes}">
+								#{node.codNode}, 
+							</ui:repeat>
+									</p:column>
+								</p:dataTable>
+							</p:fieldset>
+
+							<br />
+
+							<p:fieldset legend="Node destino - Diretos" toggleable="true"
+								toggleSpeed="500" style="margin-bottom: 10px;">
+
+								<p:dataTable id="dtDiretoNodeDestino" var="down"
+									value="#{projetoMB.diretoNodesQuebra('DESTINO')}">
+
+									<p:column>
+										<f:facet name="header">
+											<h:outputText value="CMTS" />
+										</f:facet>
+						#{down.conectorDown.placa.slot.cmts.nome}
+					</p:column>
+
+									<p:column>
+										<f:facet name="header">
+											<h:outputText value="Placa" />
+										</f:facet>
+						#{down.conectorDown.placa.slot.codSlot} - #{down.conectorDown.placa.codPlaca}
+					</p:column>
+
+									<p:column>
+										<f:facet name="header">
+											<h:outputText value="Conector" />
+										</f:facet>
+						#{down.conectorDown.numConector}
+					</p:column>
+
+									<p:column>
+										<f:facet name="header">
+											<h:outputText value="Downstream" />
+										</f:facet>
+						#{down.numDownStream}
+								</p:column>
+
+									<p:column>
+										<f:facet name="header">
+											<h:outputText value="Direto" />
+										</f:facet>
+										<ui:repeat var="node" value="#{down.nodes}">
+								
+								#{node.codNode}, 
+
+								</ui:repeat>
+									</p:column>
+								</p:dataTable>
+
+							</p:fieldset>
+
+						</h:panelGroup>
+
+					</p:panelGrid>
+
+				</p:fieldset>
+			</h:form>
+		</div>
+	</ui:define>
+</ui:composition>

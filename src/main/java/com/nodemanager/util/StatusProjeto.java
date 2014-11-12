@@ -2,7 +2,7 @@ package com.nodemanager.util;
 
 public enum StatusProjeto {
 
-  INICIADO(0, "Iniciado"), EM_ANDAMENTO(1, "Em andamento"), CONCLUIDO(2, "Concluido");
+  EM_ANDAMENTO(0, "Em andamento"), CONCLUIDO(1, "Concluido"), CANCELADO(2, "Cancelado");
 
   private String name;
   private int id;

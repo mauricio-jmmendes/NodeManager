@@ -43,17 +43,17 @@ public class Projeto implements Serializable {
   @Column(name = "obs", nullable = false, length = 500)
   private String obs;
 
-  @Column(name = "node_de", nullable = false, length = 10)
-  private String nodeDe;
+  @Column(name = "node_origem", nullable = false, length = 10)
+  private String nodeOrigem;
 
-  @Column(name = "node_para", nullable = false, length = 10)
-  private String nodePara;
+  @Column(name = "node_destino", nullable = false, length = 10)
+  private String nodeDestino;
 
   @Column(name = "status_projeto", nullable = false)
   private StatusProjeto statusProjeto;
 
   @Column(name = "dt_projeto", nullable = false)
-  @Temporal(value=TemporalType.TIMESTAMP)
+  @Temporal(value = TemporalType.TIMESTAMP)
   private Date dataProjeto;
 
   @Column(name = "dt_manobra", nullable = false)
@@ -118,29 +118,29 @@ public class Projeto implements Serializable {
   /**
    * @return the nodeDe
    */
-  public String getNodeDe() {
-    return nodeDe;
+  public String getNodeOrigem() {
+    return nodeOrigem;
   }
 
   /**
-   * @param nodeDe the nodeDe to set
+   * @param nodeOrigem the nodeOrigem to set
    */
-  public void setNodeDe(String nodeDe) {
-    this.nodeDe = nodeDe;
+  public void setNodeOrigem(String nodeOrigem) {
+    this.nodeOrigem = nodeOrigem;
   }
 
   /**
    * @return the nodePara
    */
-  public String getNodePara() {
-    return nodePara;
+  public String getNodeDestino() {
+    return nodeDestino;
   }
 
   /**
-   * @param nodePara the nodePara to set
+   * @param nodeDestino the nodeDestino to set
    */
-  public void setNodePara(String nodePara) {
-    this.nodePara = nodePara;
+  public void setNodeDestino(String nodeDestino) {
+    this.nodeDestino = nodeDestino;
   }
 
   /**

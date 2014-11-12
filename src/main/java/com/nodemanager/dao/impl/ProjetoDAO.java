@@ -13,11 +13,12 @@ public class ProjetoDAO extends GenericDAO<Projeto, Long> {
     super(entityManager);
   }
 
-  public List<Projeto> getByNode(String node) {
+  public List<Projeto> getByNode(String codNode) {
 
     return getEntityManager()
-        .createQuery("FROM Projeto p where p.nodeDe = :codNode OR p.nodePara = :codNode",
-            Projeto.class).setParameter("codNode", node).getResultList();
+        .createQuery(
+            "FROM Projeto p where p.nodeOrigem like :codNode OR p.nodeDestino like :codNode",
+            Projeto.class).setParameter("codNode", "%" + codNode + "%").getResultList();
 
   }
 

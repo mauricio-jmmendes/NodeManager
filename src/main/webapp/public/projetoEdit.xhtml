@@ -1,0 +1,53 @@
+<ui:composition template="template/main.xhtml"
+	xmlns="http://www.w3.org/1999/xhtml"
+	xmlns:f="http://java.sun.com/jsf/core"
+	xmlns:h="http://java.sun.com/jsf/html"
+	xmlns:ui="http://java.sun.com/jsf/facelets"
+	xmlns:p="http://primefaces.org/ui">
+
+	<ui:define name="content">
+
+		<f:metadata>
+			<f:viewParam name="projetoId" value="#{projetoMB.projetoId}" />
+			<f:viewAction action="#{projetoMB.loadProjetoById()}" />
+		</f:metadata>
+
+		<div id="container" style="border: none; margin-left: 3%;"
+			align="left">
+			<h2>Editar Projeto</h2>
+
+			<h:form id="form">
+				<p:growl id="growl" sticky="false" showDetail="true" life="4000" />
+
+				<p:panel style="border: none;">
+					<p:panelGrid columns="2" id="display" styleClass="myPanelGrid">
+						<p:outputLabel value="Descrição: " for="desc" />
+						<p:inputText id="desc" value="#{projetoMB.projeto.descricao}"
+							required="true" />
+
+						<p:outputLabel for="dtManobra" value="Data da Manobra:" />
+						<p:calendar id="dtManobra"
+							value="#{projetoMB.projeto.dataManobra}" pattern="dd/MM/yyyy"
+							mask="true" />
+
+						<p:outputLabel value="Obs: " for="obs" />
+						<p:inputTextarea id="obs" value="#{projetoMB.projeto.obs}"
+							required="true" rows="5" />
+
+						<p:outputLabel for="status" value="Status: " />
+						<p:selectOneMenu id="status"
+							value="#{projetoMB.projeto.statusProjeto}" required="true">
+							<f:selectItems value="#{projetoMB.getStatusValues()}" />
+						</p:selectOneMenu>
+
+						<p:spacer />
+
+						<p:commandButton id="btnSalvar" value="Salvar"
+							icon="ui-icon ui-icon-disk" actionListener="#{projetoMB.update}"
+							update="form" action="projetoList?faces-redirect=true" />
+					</p:panelGrid>
+				</p:panel>
+			</h:form>
+		</div>
+	</ui:define>
+</ui:composition>

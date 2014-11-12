@@ -133,12 +133,16 @@ public class NodeMB {
         myNode.setCodNode(StrCod);
 
         myNode.setType(RETORNO);
+        myNode.setStatusNode(Status.ATIVO);
 
-        upstream.getNodes().add(myNode);
+        List<Node> nds = new ArrayList<>();
+        nds.add(myNode);
+
+        upstream.setNodes(nds);
+
         upstream.setStatusUp(Status.OCUPADO);
 
         List<Upstream> ups = new ArrayList<>();
-
         ups.add(upstream);
 
         myNode.setUpstreams(ups);
@@ -168,6 +172,8 @@ public class NodeMB {
 
     inputCodNode = "";
 
+    System.gc();
+
   }
 
   public void onCellEdit(Downstream downstream) {
@@ -188,8 +194,14 @@ public class NodeMB {
         myNode.setCodNode(StrCod);
 
         myNode.setType(DIRETO);
+        myNode.setStatusNode(Status.ATIVO);
 
-        downstream.getNodes().add(myNode);
+
+        List<Node> nds = new ArrayList<>();
+        nds.add(myNode);
+
+        downstream.setNodes(nds);
+
         downstream.setStatusDown(Status.OCUPADO);
 
         List<Downstream> downs = new ArrayList<>();
@@ -224,6 +236,8 @@ public class NodeMB {
 
     inputCodNode = "";
 
+    System.gc();
+
   }
 
   public void removeNode(Upstream up) {
@@ -249,6 +263,8 @@ public class NodeMB {
         up.setStatusUp(Status.LIVRE);
       }
     }
+
+    System.gc();
   }
 
   public void removeNode(Downstream down) {
@@ -274,6 +290,8 @@ public class NodeMB {
         down.setStatusDown(Status.LIVRE);
       }
     }
+
+    System.gc();
   }
 
   public List<Upstream> retornoList() {
@@ -302,6 +320,8 @@ public class NodeMB {
       }
     }
 
+    System.gc();
+
     return ups;
   }
 
@@ -329,6 +349,8 @@ public class NodeMB {
         }
       }
     }
+
+    System.gc();
 
     return downs;
   }
@@ -393,6 +415,8 @@ public class NodeMB {
         }
       }
     }
+
+    System.gc();
 
   }
 

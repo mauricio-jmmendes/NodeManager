@@ -1,5 +1,6 @@
 package com.nodemanager.managedbean;
 
+import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Collections;
@@ -86,8 +87,13 @@ public class ProjetoMB {
   private List<Conector> selectedConnectors;
   private List<Node> nodeList;
 
+  private Long projetoId;
   private Projeto projeto;
+  private List<Projeto> projetos;
   private ProjetoService projetoService;
+
+  private Node nodeDe;
+  private Node nodePara;
 
   @PostConstruct
   public void init() {
@@ -97,7 +103,9 @@ public class ProjetoMB {
     selectedNodes = new ArrayList<>();
 
     projetoService = new ProjetoService(JPAUtil.getSimpleEntityManager());
-    setProjeto(new Projeto());
+
+    projeto = new Projeto();
+    projetos = new ArrayList<>();
 
     nodes = new ArrayList<>();
     nodeList = new ArrayList<>();
@@ -115,6 +123,8 @@ public class ProjetoMB {
     secondPanel = false;
     displayPanel = false;
 
+    System.gc();
+
   }
 
   public String setUpstreamRendered(Upstream up, Node myNode) {
@@ -127,6 +137,8 @@ public class ProjetoMB {
         }
       }
     }
+
+    System.gc();
 
     return "";
   }
@@ -141,6 +153,8 @@ public class ProjetoMB {
         }
       }
     }
+
+    System.gc();
 
     return "";
   }
@@ -161,6 +175,8 @@ public class ProjetoMB {
       }
     }
 
+    System.gc();
+
     return "";
   }
 
@@ -174,9 +190,11 @@ public class ProjetoMB {
 
     nodes = nodeService.findByCodNode(codNode);
 
-    projeto.setNodeDe(codNode);
+    projeto.setNodeOrigem(codNode);
 
     secondPanel = false;
+
+    System.gc();
   }
 
   public void loadPlacas() {
@@ -217,6 +235,60 @@ public class ProjetoMB {
     firstPanel = false;
     secondPanel = false;
 
+    System.gc();
+
+  }
+
+  public void update() {
+
+    try {
+      projetoService.update(projeto);
+      FacesUtils.addInfoMessage("Projeto atualizado com sucesso!");
+      FacesUtils.getExternalContext().getFlash().setKeepMessages(true);
+    } catch (SQLException e) {
+      FacesUtils.addInfoMessage("Erro ao atualizar projeto!\n" + e.getMessage());
+      FacesUtils.getExternalContext().getFlash().setKeepMessages(true);
+    }
+
+  }
+
+  public void loadProjetoById() {
+
+    projeto = projetoService.getById(projetoId);
+
+  }
+
+  public void loadProjetos() {
+
+    projetos = projetoService.getByNode(codNode);
+
+  }
+
+  public void deleteProjeto() {
+
+
+    nodeList = nodeService.findByCodNode(projeto.getNodeDestino());
+
+    for (Node myNode : nodeList) {
+      try {
+        nodeService.delete(myNode);
+        FacesUtils.addInfoMessage("Node destino removindo com sucesso!");
+        FacesUtils.getExternalContext().getFlash().setKeepMessages(true);
+      } catch (Exception e) {
+        FacesUtils.addInfoMessage("Erro ao remover o Node destino!");
+        FacesUtils.getExternalContext().getFlash().setKeepMessages(true);
+      }
+    }
+
+    try {
+      projetoService.delete(projeto);
+      FacesUtils.addInfoMessage("Projeto excluído com sucesso!");
+      FacesUtils.getExternalContext().getFlash().setKeepMessages(true);
+    } catch (Exception e) {
+      FacesUtils.addInfoMessage("Erro ao excluir o projeto!");
+      FacesUtils.getExternalContext().getFlash().setKeepMessages(true);
+    }
+
   }
 
   public void prepareNodeForQuebra() {
@@ -256,6 +328,10 @@ public class ProjetoMB {
         }
       }
     }
+
+    System.gc();
+
+    // Aqui se tiver mais de um node na lista lançar um dialog perguntando qual node escolher.
     return nodes.get(0);
   }
 
@@ -283,6 +359,8 @@ public class ProjetoMB {
       }
     }
 
+    System.gc();
+
     return conectors;
   }
 
@@ -302,6 +380,8 @@ public class ProjetoMB {
       }
     }
 
+    System.gc();
+
     return conectors;
   }
 
@@ -313,6 +393,9 @@ public class ProjetoMB {
         ups.addAll(conector.getUpstreamList());
       }
     }
+
+    System.gc();
+
     return ups;
   }
 
@@ -325,14 +408,87 @@ public class ProjetoMB {
         downs.addAll(conector.getDownstreamList());
       }
     }
+
+    System.gc();
+
     return downs;
+  }
+
+  public List<Upstream> retornoNodesQuebra(String type) {
+
+    List<Upstream> ups = new ArrayList<>();
+
+    List<Node> nodeList;
+
+    if (type.equals("ORIGEM")) {
+      nodeList = nodeService.findByCodNode(projeto.getNodeOrigem());
+    } else {
+      nodeList = nodeService.findByCodNode(projeto.getNodeDestino());
+    }
+
+    for (Node node : nodeList) {
+      if (null != node.getUpstreams()) {
+        for (Upstream upstream : node.getUpstreams()) {
+          if (!ups.contains(upstream)) {
+            ups.add(upstream);
+          }
+        }
+      }
+    }
+
+    System.gc();
+
+    return ups;
+  }
+
+  public List<Downstream> diretoNodesQuebra(String type) {
+
+    List<Downstream> downs = new ArrayList<>();
+
+    if (type.equals("ORIGEM")) {
+      nodeList = nodeService.findByCodNode(projeto.getNodeOrigem());
+    } else {
+      nodeList = nodeService.findByCodNode(projeto.getNodeDestino());
+    }
+
+    for (Node node : nodeList) {
+      if (null != node.getDownstreams()) {
+        for (Downstream down : node.getDownstreams()) {
+          if (!downs.contains(node)) {
+            downs.add(down);
+          }
+        }
+      }
+    }
+
+    System.gc();
+
+    return downs;
+  }
+
+  private Node getNodeIfAlreadyExists(String codNode, String type) {
+
+    List<Node> nodeList = nodeService.findByCodNode(codNode);
+
+    for (Node myNode : nodeList) {
+      if (myNode.getType().equals(type)) {
+        return myNode;
+      }
+    }
+
+    return new Node();
+
+  }
+
+  public StatusProjeto[] getStatusValues() {
+    return StatusProjeto.values();
   }
 
   public void onCellEdit(Upstream upstream) {
 
     String codRetorno = codNodeToBeBroken + "-" + sufix;
 
-    Node myNode = new Node();
+    Node myNode = getNodeIfAlreadyExists(codRetorno, RETORNO);
 
     for (Node retorno : nodeList) {
       if (retorno.getCodNode().equalsIgnoreCase(codRetorno) && retorno.getType().equals(RETORNO)) {
@@ -382,13 +538,15 @@ public class ProjetoMB {
 
     sufix = "";
 
+    System.gc();
+
   }
 
   public void onCellEdit(Downstream downstream) {
 
     String codDireto = codNodeToBeBroken + "-" + sufix;
 
-    Node myNode = new Node();
+    Node myNode = getNodeIfAlreadyExists(codDireto, RETORNO);
 
     for (Node direto : nodeList) {
       if (direto.getCodNode().equalsIgnoreCase(codDireto)
@@ -440,6 +598,8 @@ public class ProjetoMB {
 
     sufix = "";
 
+    System.gc();
+
   }
 
   public void removeNode(Upstream up) {
@@ -465,6 +625,8 @@ public class ProjetoMB {
         up.setStatusUp(Status.LIVRE);
       }
     }
+
+    System.gc();
   }
 
   public void removeNode(Downstream down) {
@@ -490,6 +652,8 @@ public class ProjetoMB {
         down.setStatusDown(Status.LIVRE);
       }
     }
+
+    System.gc();
   }
 
 
@@ -554,10 +718,10 @@ public class ProjetoMB {
     login.setLogin("admin");
     login.setSenha("1234");
 
-    projeto.setNodePara(codNodeToBeBroken);
+    projeto.setNodeDestino(codNodeToBeBroken);
     projeto.setDataProjeto(Calendar.getInstance().getTime());
     projeto.setDescricao("Quebra de Node");
-    projeto.setStatusProjeto(StatusProjeto.INICIADO);
+    projeto.setStatusProjeto(StatusProjeto.EM_ANDAMENTO);
     projeto.setUsuario(login);
     projeto.setObs("Node será quebrado sem exclusão do Antigo.");
 
@@ -569,6 +733,8 @@ public class ProjetoMB {
       FacesUtils.addInfoMessage("Erro ao atualizar o Projeto" + e.getMessage());
       FacesUtils.getExternalContext().getFlash().setKeepMessages(true);
     }
+
+    System.gc();
 
   }
 
@@ -973,6 +1139,20 @@ public class ProjetoMB {
   }
 
   /**
+   * @return the projetos
+   */
+  public List<Projeto> getProjetos() {
+    return projetos;
+  }
+
+  /**
+   * @param projetos the projetos to set
+   */
+  public void setProjetos(List<Projeto> projetos) {
+    this.projetos = projetos;
+  }
+
+  /**
    * @return the sufix
    */
   public String getSufix() {
@@ -984,6 +1164,48 @@ public class ProjetoMB {
    */
   public void setSufix(String sufix) {
     this.sufix = sufix.toUpperCase();
+  }
+
+  /**
+   * @return the projetoId
+   */
+  public Long getProjetoId() {
+    return projetoId;
+  }
+
+  /**
+   * @param projetoId the projetoId to set
+   */
+  public void setProjetoId(Long projetoId) {
+    this.projetoId = projetoId;
+  }
+
+  /**
+   * @return the nodeDe
+   */
+  public Node getNodeDe() {
+    return nodeDe;
+  }
+
+  /**
+   * @param nodeDe the nodeDe to set
+   */
+  public void setNodeDe(Node nodeDe) {
+    this.nodeDe = nodeDe;
+  }
+
+  /**
+   * @return the nodePara
+   */
+  public Node getNodePara() {
+    return nodePara;
+  }
+
+  /**
+   * @param nodePara the nodePara to set
+   */
+  public void setNodePara(Node nodePara) {
+    this.nodePara = nodePara;
   }
 
 }
